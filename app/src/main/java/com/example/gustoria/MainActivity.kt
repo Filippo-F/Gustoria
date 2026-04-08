@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center) {
                     Row(Modifier,
                         horizontalArrangement = Arrangement.Center) {
-                        BasicButton(Modifier, "OWNED User Profile")
+                        BasicButton(displayText = "OWNED User Profile")
                     }
                     Spacer(Modifier.height(20.dp))
                     Row(Modifier,
@@ -55,9 +55,12 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun BasicButton(modifier: Modifier, displayText: String) {
+fun BasicButton(modifier: Modifier = Modifier, displayText: String) {
     GustoriaTheme {
-        Button(onClick = {}) {
+        Button(
+            onClick = {},
+            modifier = modifier
+        ) {
             Text(displayText, style = MaterialTheme.typography.displaySmall)
         }
     }
