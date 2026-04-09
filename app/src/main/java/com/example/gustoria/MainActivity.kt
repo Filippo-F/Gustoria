@@ -24,6 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gustoria.ui.theme.GustoriaTheme
 
+private var myProfile = UserProfile(
+    id = "1",
+    fullName = "Name Surname",
+    nickname = "SuperChef",
+    email = "chef@gustoria.it",
+    description = "---"
+)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,35 +40,33 @@ class MainActivity : ComponentActivity() {
                 Column(Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center) {
-                    Row(Modifier,
-                        horizontalArrangement = Arrangement.Center) {
-                        BasicButton(displayText = "OWNED User Profile")
-                    }
+
+                    // 1 button
+                    BasicButton(displayText = "OWNED User Profile")
                     Spacer(Modifier.height(20.dp))
-                    Row(Modifier,
-                        horizontalArrangement = Arrangement.Center) {
-                        BasicButton(Modifier, "OTHER User Profile")
-                    }
+
+                    // 2 button
+                    BasicButton(displayText ="OTHER User Profile")
                     Spacer(Modifier.height(20.dp))
-                    Row(Modifier,
-                        horizontalArrangement = Arrangement.Center) {
-                        BasicButton(Modifier, "Recipe View")
-                    }
+
+                    // 3 button
+                    BasicButton(displayText ="Recipe View")
+
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun BasicButton(modifier: Modifier = Modifier, displayText: String) {
+fun BasicButton(displayText: String, modifier: Modifier = Modifier) {
     GustoriaTheme {
         Button(
             onClick = {},
             modifier = modifier
         ) {
-            Text(displayText, style = MaterialTheme.typography.displaySmall)
+            Text(displayText, style = MaterialTheme.typography.labelLarge)
         }
     }
 }
