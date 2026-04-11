@@ -13,14 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.theme.GustoriaTheme
@@ -78,23 +76,14 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
 
 @Composable
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
-    val user by viewModel.user.collectAsState()
-
     Column(
-        Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.Start
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("My Profile", style = MaterialTheme.typography.headlineLarge)
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        
-        ProfileDetail(label = "Full Name", value = user.fullName)
-        ProfileDetail(label = "Username", value = user.username)
-        ProfileDetail(label = "Email", value = user.email)
-        ProfileDetail(label = "Location", value = user.location ?: "N/A")
-        ProfileDetail(label = "Bio", value = user.bio)
-        
-        Spacer(Modifier.weight(1f))
-        Button(onClick = onBack, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+        Text("Owned User Profile Page", style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
             Text("Back")
         }
     }
@@ -102,22 +91,14 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
 
 @Composable
 fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
-    val user by viewModel.user.collectAsState()
-
     Column(
-        Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.Start
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("User Profile", style = MaterialTheme.typography.headlineLarge)
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        
-        ProfileDetail(label = "Name", value = user.fullName)
-        ProfileDetail(label = "Username", value = user.username)
-        ProfileDetail(label = "Location", value = user.location ?: "N/A")
-        ProfileDetail(label = "Bio", value = user.bio)
-        
-        Spacer(Modifier.weight(1f))
-        Button(onClick = onBack, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+        Text("Other User Profile Page", style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
             Text("Back")
         }
     }
@@ -126,14 +107,12 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
 @Composable
 fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().padding(16.dp),
+        Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Recipe View", style = MaterialTheme.typography.headlineLarge)
+        Text("Recipe View Page", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(16.dp))
-        Text("Mockup recipe content will go here.", style = MaterialTheme.typography.bodyLarge)
-        Spacer(Modifier.height(32.dp))
         Button(onClick = onBack) {
             Text("Back")
         }
@@ -141,19 +120,11 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-fun ProfileDetail(label: String, value: String) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(text = label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-    }
-}
-
-@Composable
 fun BasicButton(modifier: Modifier = Modifier, displayText: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(0.8f)
+        modifier = modifier
     ) {
-        Text(displayText, style = MaterialTheme.typography.bodyLarge)
+        Text(displayText, style = MaterialTheme.typography.displaySmall)
     }
 }
