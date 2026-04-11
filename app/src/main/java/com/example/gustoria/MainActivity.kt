@@ -12,17 +12,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.theme.GustoriaTheme
+
+enum class Screen {
+    MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
+}
+
+enum class Screen {
+    MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
+}
 
 private var myProfile = UserProfile(
     id = "1",
@@ -37,36 +44,98 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GustoriaTheme {
-                Column(Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center) {
-
-                    // 1 button
-                    BasicButton(displayText = "OWNED User Profile")
-                    Spacer(Modifier.height(20.dp))
-
-                    // 2 button
-                    BasicButton(displayText ="OTHER User Profile")
-                    Spacer(Modifier.height(20.dp))
-
-                    // 3 button
-                    BasicButton(displayText ="Recipe View")
-
-                }
+                AppContent()
             }
         }
     }
 }
 
-//@Preview(showBackground = true)
 @Composable
-fun BasicButton(displayText: String, modifier: Modifier = Modifier) {
-    GustoriaTheme {
-        Button(
-            onClick = {},
-            modifier = modifier
-        ) {
-            Text(displayText, style = MaterialTheme.typography.labelLarge)
+fun AppContent(
+    ownedProfileViewModel: OwnedProfileViewModel = viewModel(),
+    otherProfileViewModel: OtherProfileViewModel = viewModel(),
+    recipeViewModel: RecipeViewModel = viewModel()
+) {
+    var currentScreen by remember { mutableStateOf(Screen.MAIN) }
+
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            when (currentScreen) {
+                Screen.MAIN -> MainScreen(onNavigate = { currentScreen = it })
+                Screen.OWNED_PROFILE -> OwnedProfileScreen(ownedProfileViewModel) { currentScreen = Screen.MAIN }
+                Screen.OTHER_PROFILE -> OtherProfileScreen(otherProfileViewModel) { currentScreen = Screen.MAIN }
+                Screen.RECIPE -> RecipeScreen(recipeViewModel) { currentScreen = Screen.MAIN }
+            }
         }
+    }
+}
+
+@Composable
+fun MainScreen(onNavigate: (Screen) -> Unit) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        BasicButton(displayText = "OWNED User Profile", onClick = { onNavigate(Screen.OWNED_PROFILE) })
+        Spacer(Modifier.height(20.dp))
+        BasicButton(displayText = "OTHER User Profile", onClick = { onNavigate(Screen.OTHER_PROFILE) })
+        Spacer(Modifier.height(20.dp))
+        BasicButton(displayText = "Recipe View", onClick = { onNavigate(Screen.RECIPE) })
+    }
+}
+
+@Composable
+fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Owned User Profile Page", style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+    }
+}
+
+@Composable
+fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Other User Profile Page", style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+    }
+}
+
+@Composable
+fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Recipe View Page", style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+    }
+}
+
+@Composable
+fun BasicButton(displayText: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Text(displayText, style = MaterialTheme.typography.labelLarge)
     }
 }
