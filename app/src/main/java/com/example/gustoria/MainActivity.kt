@@ -27,12 +27,7 @@ enum class Screen {
     MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
 }
 
-enum class Screen {
-    MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
-}
-
 private var myProfile = UserProfile(
-    id = "1",
     fullName = "Name Surname",
     nickname = "SuperChef",
     email = "chef@gustoria.it",
