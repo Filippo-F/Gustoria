@@ -1,6 +1,6 @@
 package com.example.gustoria
 
-data class UserProfile(
+data class UserClass(
     val fullName: String,
     val nickname: String,
     val email: String,
