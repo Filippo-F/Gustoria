@@ -37,12 +37,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@Preview
+@Preview(name = "Portrait", showSystemUi = true)
 @Composable
-fun OwnedProfileScreenPreview () {
+fun OwnedProfileScreenPreviewPortrait() {
     MaterialTheme {
         OwnedProfileScreen(
-            viewModel = viewModel(),
+            viewModel = OwnedProfileViewModel(),
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "Landscape", widthDp = 851, heightDp = 393, showSystemUi = true)
+@Composable
+fun OwnedProfileScreenPreviewLandscape() {
+    MaterialTheme {
+        OwnedProfileScreen(
+            viewModel = OwnedProfileViewModel(),
             onBack = {}
         )
     }
