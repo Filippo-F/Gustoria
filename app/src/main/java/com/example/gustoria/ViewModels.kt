@@ -5,8 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
+data class ProfileValidation(
+    // TODO: inserire errori campi editabili
+    val nicknameError: String = "",
+    val phoneError: String = "",
+    val isValid: Boolean = true
+)
+
 class OwnedProfileViewModel : ViewModel() {
-    var user by mutableStateOf(
+    var user by mutableStateOf( // dati reali del profilo
         UserClass(
             fullName = "Name Surname",
             nickname = "SuperChef",
@@ -21,28 +28,66 @@ class OwnedProfileViewModel : ViewModel() {
     )
         private set
 
-    var validation by mutableStateOf(true)
+    var editableUser by mutableStateOf(user) // bozza mentre sto modificando
+        private set
+
+    var validation by mutableStateOf(ProfileValidation())
         private set
 
     var isEditing by mutableStateOf(false)
         private set
 
-    fun edit() {
+    fun startEditing() { // quando premo EDIT
+        editableUser = user
+        validation = ProfileValidation()
         isEditing = true
     }
 
-    // Setters
-
-    fun setFullName(fullName: String) {
-        user = user.copy(fullName = fullName)
+    fun cancelEditing() { // scarto modifiche
+        editableUser = user
+        validation = ProfileValidation()
+        isEditing = false
     }
-    fun setNickname(nickname: String) { user = user.copy(nickname = nickname) }
-    fun setDescription(description: String) { user = user.copy(description = description) }
-    fun setPhoneNumber(phone: String?) { user = user.copy(phoneNumber = phone) }
-    fun setCookingRole(role: CookingRole) { user = user.copy(cookingRole = role) }
-    fun setCuisinePreferences(list: List<String>) { user = user.copy(cuisinePreferences = list) }
-    fun setDietaryRestrictions(list: List<String>) { user = user.copy(dietaryRestrictions = list) }
-    fun setFavoriteIngredients(list: List<String>) { user = user.copy(favoriteIngredients = list) }
+
+    fun validateAndSave() {
+        var currentNicknameError = ""
+        var currentPhoneError = ""
+
+        if (editableUser.nickname.isBlank()) {
+            currentNicknameError = "Nickname cannot be blank"
+        }
+
+        val phone = editableUser.phoneNumber.orEmpty()
+        if (phone.isNotBlank() && phone.length < 6) {
+            currentPhoneError = "Invalid phone number"
+        }
+
+        val formIsValid = currentNicknameError.isBlank() && currentPhoneError.isBlank()
+
+        validation = ProfileValidation(
+            nicknameError = currentNicknameError,
+            phoneError = currentPhoneError,
+            isValid = formIsValid
+        )
+
+        if (formIsValid) {
+            user = editableUser
+            isEditing = false
+        }
+    }
+
+    // Setters per editableUser
+
+//    fun setFullName(fullName: String) {
+//        editableUser = editableUser.copy(fullName = fullName)
+//    }
+    fun setNickname(nickname: String) { editableUser = editableUser.copy(nickname = nickname) }
+    fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
+    fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
+    fun setCookingRole(role: CookingRole?) { editableUser = editableUser.copy(cookingRole = role) }
+    fun setCuisinePreferences(list: List<String>) { editableUser = editableUser.copy(cuisinePreferences = list) }
+    fun setDietaryRestrictions(list: List<String>) { editableUser = editableUser.copy(dietaryRestrictions = list) }
+    fun setFavoriteIngredients(list: List<String>) { editableUser = editableUser.copy(favoriteIngredients = list) }
 }
 
 class OtherProfileViewModel : ViewModel() {

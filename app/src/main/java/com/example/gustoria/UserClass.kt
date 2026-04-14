@@ -21,7 +21,7 @@ data class UserClass(
 
     //modificabili
     val nickname: String,
-    val phoneNumber: String? = null,
+    val phoneNumber: String = "",
     val description: String = "",
     val profileImageUri: String? = null, //per ora
     val cookingRole: CookingRole? = null,
