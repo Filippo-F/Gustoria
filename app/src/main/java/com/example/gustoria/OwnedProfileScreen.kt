@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-//import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +42,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -131,34 +140,62 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
 @Composable
 fun PresentationPane(user: UserClass) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            // Profile Image
+            // Profile Image OR Monogram if image is missing
             Box(
-                modifier = Modifier.fillMaxWidth().height(150.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.guest_user_profile_pic),
-                    contentDescription = "Profile Picture",
-                    contentScale = ContentScale.Crop, // crops to fill the circle
-                    modifier = Modifier
-                        .size(120.dp)
-                        .border(2.dp, Color.Gray, CircleShape) // width, color, shape
-                        .clip(CircleShape)
-                )
+                // TODO: Replace with actual image URI check from UserClass
+                val hasImage = true
+
+                if (hasImage) {
+                    Image(
+                        painter = painterResource(id = R.drawable.guest_user_profile_pic), // Placeholder
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    // MONOGRAM
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = user.fullName.take(1).uppercase(), // Takes first letter
+                            color = Color.White,
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
 
         item {
-            // Profile Info
+            // Profile Info (Name & Role)
             Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Full Name and Nickname
-                Text("${user.fullName} (${user.nickname})", fontSize = 20.sp)
+                Text(
+                    text = "${user.fullName} (${user.nickname})",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
                 // Description
                 Text(
@@ -167,13 +204,76 @@ fun PresentationPane(user: UserClass) {
                     textAlign = TextAlign.Center,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                 )
             }
         }
 
-        // Preferences
-        // TODO: implement preferences
+        // PREFERENCES / TAGS
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Tag 1
+                Box(modifier = Modifier.background(Color(0xFFFDECE8), RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 6.dp)) {
+                    Text("🌿 Vegan Specialist", color = Color(0xFFA0522D), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                // Tag 2
+                Box(modifier = Modifier.background(Color(0xFFE8F8F5), RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 6.dp)) {
+                    Text("⭐ Top Curator", color = Color(0xFF0E6655), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        // STATS BOXES (Similar to OtherProfile)
+        item {
+            FlowRow(
+                modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                maxItemsInEachRow = 3,
+            ) {
+                // Placeholder numbers
+                ValueBox(value = 42, text = "Recipes")
+                ValueBox(value = 1200, text = "Followers")
+                ValueBox(value = 850, text = "Likes")
+            }
+        }
+
+        // SETTINGS MENU LIST
+        item {
+            Column(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 24.dp)) {
+                MenuListItem(title = "Profile Info", icon = Icons.Default.Person)
+                MenuListItem(title = "Settings", icon = Icons.Default.Settings)
+                MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info)
+                Spacer(modifier = Modifier.height(16.dp))
+                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true)
+            }
+        }
+    }
+}
+
+/**
+ * Helper component for the settings list at the bottom of the profile
+ */
+@Composable
+fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).height(56.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isDestructive) Color(0xFFFDECE8) else Color.White),
+        border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) Color.Red else Color.LightGray),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) Color.Red else Color.DarkGray)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) Color.Red else Color.Black)
+        }
     }
 }
 
