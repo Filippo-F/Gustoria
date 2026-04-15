@@ -55,7 +55,7 @@ fun OwnedProfileScreenPreviewPortrait() {
     }
 }
 
-@Preview(name = "Landscape", widthDp = 851, heightDp = 393, showSystemUi = true)
+@Preview(name = "Landscape", widthDp = 851, heightDp = 393, showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
 @Composable
 fun OwnedProfileScreenPreviewLandscape() {
     MaterialTheme {

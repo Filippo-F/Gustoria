@@ -12,25 +12,28 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-class OwnedProfileViewModel : ViewModel() {
-    var user by mutableStateOf( // dati reali del profilo
-        UserClass(
-            fullName = "Name Surname",
-            nickname = "SuperChef",
-            email = "chef@gustoria.it",
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu volutpat massa.",
-            phoneNumber = "+39 333 1234567",
-            cookingRole = CookingRole.HOME_COOK,
+// Shared user state visible to all ViewModels in this file
+private val loggedInUser = mutableStateOf(
+    UserClass(
+        fullName = "Name Surname",
+        nickname = "SuperChef",
+        email = "chef@gustoria.it",
+        description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu volutpat massa.",
+        phoneNumber = "+39 333 1234567",
+        cookingRole = CookingRole.HOME_COOK,
 
-            cuisinePreferences = listOf("Italian", "Japanese", "Mexican"),
-            dietaryRestrictions = listOf("Gluten-Free"),
-            favoriteIngredients = listOf("Garlic", "Olive Oil", "Basil"),
+        cuisinePreferences = listOf("Italian", "Japanese", "Mexican"),
+        dietaryRestrictions = listOf("Gluten-Free"),
+        favoriteIngredients = listOf("Garlic", "Olive Oil", "Basil"),
 
-            numberOfRecipes = 42,
-            numberOfFollowers = 1200,
-            numberOfLikes = 850
-        )
+        numberOfRecipes = 42,
+        numberOfFollowers = 1200,
+        numberOfLikes = 850
     )
+)
+
+class OwnedProfileViewModel : ViewModel() {
+    var user by loggedInUser
         private set
 
     var editableUser by mutableStateOf(user) // bozza mentre sto modificando
@@ -96,7 +99,28 @@ class OwnedProfileViewModel : ViewModel() {
 }
 
 class OtherProfileViewModel : ViewModel() {
-    // ViewModel logic for Other User Profile
+    var user by loggedInUser
+        private set
+
+    var isFollowing by mutableStateOf(false)
+        private set
+
+    fun toggleFollow() {
+        isFollowing = !isFollowing
+        if (isFollowing) {
+            follow()
+        } else {
+            unfollow()
+        }
+    }
+
+    fun follow() {
+        user = user.copy(numberOfFollowers = user.numberOfFollowers + 1)
+    }
+
+    fun unfollow() {
+        user = user.copy(numberOfFollowers = user.numberOfFollowers - 1)
+    }
 }
 
 class RecipeViewModel : ViewModel() {
