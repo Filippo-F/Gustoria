@@ -21,9 +21,14 @@ class OwnedProfileViewModel : ViewModel() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu volutpat massa.",
             phoneNumber = "+39 333 1234567",
             cookingRole = CookingRole.HOME_COOK,
+
             cuisinePreferences = listOf("Italian", "Japanese", "Mexican"),
             dietaryRestrictions = listOf("Gluten-Free"),
             favoriteIngredients = listOf("Garlic", "Olive Oil", "Basil"),
+
+            numberOfRecipes = 42,
+            numberOfFollowers = 1200,
+            numberOfLikes = 850
         )
     )
         private set
@@ -58,7 +63,7 @@ class OwnedProfileViewModel : ViewModel() {
         }
 
         val phone = editableUser.phoneNumber.orEmpty()
-        if (phone.isNotBlank() && phone.length < 6) {
+        if (phone.isBlank() || (phone.isNotBlank() && phone.length < 6)) {
             currentPhoneError = "Invalid phone number"
         }
 

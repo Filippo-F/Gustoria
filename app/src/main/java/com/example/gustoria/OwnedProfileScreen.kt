@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -222,6 +224,7 @@ fun EditProfilePane(
             OutlinedTextField(
                 value = user.nickname,
                 onValueChange = onNicknameChange,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 label = { Text("Nickname") },
                 isError = validation.nicknameError.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
@@ -244,6 +247,7 @@ fun EditProfilePane(
             OutlinedTextField(
                 value = user.description,
                 onValueChange = onDescriptionChange,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 label = { Text("Description") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,10 +257,11 @@ fun EditProfilePane(
 
         item {
             OutlinedTextField(
-                value = user.phoneNumber.orEmpty(),
+                value = user.phoneNumber,
                 onValueChange = onPhoneChange,
                 label = { Text("Phone Number") },
                 isError = validation.phoneError.isNotBlank(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)
