@@ -79,22 +79,40 @@ fun ProfileImage(image_url: String?) {
 }
 
 @Composable
-fun ProfileInfo(fullName: String, nickname: String, description: String){
+fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, description: String){
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Full Name and Nickname
-        Text("${fullName} (${nickname})", fontSize = 20.sp)
+//        // Full Name and Nickname
+//        Text("${fullName} (${nickname})", fontSize = 20.sp)
+
+        Text(
+            text = fullName,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = buildString {
+                append(nickname)
+                cookingRole?.let {
+                    append(" • ")
+                    append(it.displayName())
+                }
+            },
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
 
         // Description
         Text(
             text = description,
             color = Color.Gray,
             textAlign = TextAlign.Center,
-            maxLines = 3,
+            maxLines = 4,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         )
     }
 }
@@ -119,6 +137,116 @@ fun ValueBox (
 }
 
 @Composable
+fun CollectionCard(
+    collection: UserCollection
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        contentAlignment = Alignment.BottomStart
+    ) {
+        Column {
+            Text(
+                text = collection.title,
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+            Text(
+                text = collection.subtitle,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun CollectionsSection(collections: List<UserCollection>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Curated Collections",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "VIEW ALL",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+
+        Column(
+            modifier = Modifier.padding(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            collections.forEach { collection ->
+                CollectionCard(collection = collection)
+            }
+        }
+    }
+}
+
+@Composable
+fun ActivityCard(
+    activity: UserActivity
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(12.dp))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(
+                text = activity.title,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = activity.subtitle,
+                color = Color.Gray,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun RecentActivitySection(activities: List<UserActivity>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Recent Activity",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Column(
+            modifier = Modifier.padding(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            activities.forEach { activity ->
+                ActivityCard(activity = activity)
+            }
+        }
+    }
+}
+
+@Composable
 fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -138,6 +266,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
                 ProfileInfo(
                     fullName = viewModel.user.fullName,
                     nickname = viewModel.user.nickname,
+                    cookingRole = viewModel.user.cookingRole,
                     description = viewModel.user.description
                 )
             }
@@ -170,6 +299,14 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
                     ValueBox(viewModel.user.numberOfFollowers, "Followers")
                     ValueBox(viewModel.user.numberOfLikes, "Likes")
                 }
+            }
+
+            item {
+                CollectionsSection(collections = viewModel.collections)
+            }
+
+            item {
+                RecentActivitySection(activities = viewModel.recentActivities)
             }
         }
     }

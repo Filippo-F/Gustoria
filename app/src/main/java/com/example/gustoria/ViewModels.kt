@@ -12,6 +12,8 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
+
+
 // Shared user state visible to all ViewModels in this file
 private val loggedInUser = mutableStateOf(
     UserClass(
@@ -101,6 +103,16 @@ class OwnedProfileViewModel : ViewModel() {
 class OtherProfileViewModel : ViewModel() {
     var user by loggedInUser
         private set
+
+    val collections = listOf(
+        UserCollection("Summer Harvest", "12 Recipes • 2.4k Views"),
+        UserCollection("Artisan Bakes", "8 Recipes • 1.1k Views")
+    )
+
+    val recentActivities = listOf(
+        UserActivity("Published \"Golden Turmeric Latte\"", "2 hours ago"),
+        UserActivity("Liked Marco's \"Focaccia Masterclass\"", "Yesterday")
+    )
 
     var isFollowing by mutableStateOf(false)
         private set

@@ -34,3 +34,13 @@ data class UserClass(
     val numberOfFollowers: Int = 0,
     val numberOfLikes: Int = 0,
 )
+
+data class UserCollection(
+    val title: String,
+    val subtitle: String
+)
+
+data class UserActivity(
+    val title: String,
+    val subtitle: String
+)

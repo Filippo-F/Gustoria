@@ -45,11 +45,14 @@ fun ShareNavbar (modifier: Modifier, title: String, onBack: () -> Unit) {
             Text(title, fontSize = 20.sp)
         }
 
-        // Blank box for correct formatting
-        Icon(
+        IconButton(
             modifier = Modifier.size(56.dp),
-            imageVector = Icons.Default.Share,
-            contentDescription = "Share"
-        )
+            onClick = onBack
+        ) {
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Share"
+            )
+        }
     }
 }
