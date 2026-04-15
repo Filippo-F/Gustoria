@@ -37,6 +37,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.ShareNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -248,19 +254,27 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 
 @Composable
 fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
+    // State to handle tab switching
+    var selectedTabIndex by remember { mutableIntStateOf(0) }  // 0 for Collections, 1 for Recent Activity
+    val tabs = listOf("Collections", "Recent Activity")
+
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     ) {
-        ShareNavbar(modifier = Modifier.fillMaxWidth().height(56.dp).background(MaterialTheme.colorScheme.background), title = "Other Profile", onBack = onBack)
+        // Navigation Bar
+        ShareNavbar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(MaterialTheme.colorScheme.background),
+            title = "Other Profile",
+            onBack = onBack
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            item {
-                ProfileImage(
-                    image_url = viewModel.user.profileImageUri
-                )
-            }
+            item { ProfileImage(image_url = viewModel.user.profileImageUri) }
 
             item {
                 ProfileInfo(
@@ -301,12 +315,35 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
                 }
             }
 
+            // Implementation of the tabs
             item {
-                CollectionsSection(collections = viewModel.collections)
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = {
+                                Text(
+                                    text = title,
+                                    fontSize = 12.sp,
+                                    fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else Color.Gray
+                                )
+                            }
+                        )
+                    }
+                }
             }
 
             item {
-                RecentActivitySection(activities = viewModel.recentActivities)
+                when (selectedTabIndex) {
+                    0 -> CollectionsSection(collections = viewModel.collections)
+                    1 -> RecentActivitySection(activities = viewModel.recentActivities)
+                }
             }
         }
     }
