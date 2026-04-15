@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -127,42 +128,46 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
 
 @Composable
 fun PresentationPane(user: UserClass) {
-    Column(
+    LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Profile Image
-        Box(
-            modifier = Modifier.fillMaxWidth().height(150.dp),
-            contentAlignment = Alignment.Center
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.guest_user_profile_pic),
-                contentDescription = "Profile Picture",
-                contentScale = ContentScale.Crop, // crops to fill the circle
-                modifier = Modifier
-                    .size(120.dp)
-                    .border(2.dp, Color.Gray, CircleShape) // width, color, shape
-                    .clip(CircleShape)
-            )
+        item {
+            // Profile Image
+            Box(
+                modifier = Modifier.fillMaxWidth().height(150.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.guest_user_profile_pic),
+                    contentDescription = "Profile Picture",
+                    contentScale = ContentScale.Crop, // crops to fill the circle
+                    modifier = Modifier
+                        .size(120.dp)
+                        .border(2.dp, Color.Gray, CircleShape) // width, color, shape
+                        .clip(CircleShape)
+                )
+            }
         }
 
-        // Profile Info
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // Full Name and Nickname
-            Text("${user.fullName} (${user.nickname})", fontSize = 20.sp)
+        item {
+            // Profile Info
+            Column(
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // Full Name and Nickname
+                Text("${user.fullName} (${user.nickname})", fontSize = 20.sp)
 
-            // Description
-            Text(
-                text = user.description,
-                color = Color.Gray,
-                textAlign = TextAlign.Center,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth()
-            )
+                // Description
+                Text(
+                    text = user.description,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
 
         // Preferences
@@ -180,97 +185,113 @@ fun EditProfilePane(
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.guest_user_profile_pic),
-                contentDescription = "Profile Picture",
-                contentScale = ContentScale.Crop,
+        item {
+            Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .border(2.dp, Color.Gray, CircleShape)
-                    .clip(CircleShape)
+                    .fillMaxWidth()
+                    .height(150.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.guest_user_profile_pic),
+                    contentDescription = "Profile Picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .border(2.dp, Color.Gray, CircleShape)
+                        .clip(CircleShape)
+                )
+            }
+        }
+
+        item {
+            Text(
+                text = user.fullName,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
-        Text(
-            text = user.fullName,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = user.nickname,
-            onValueChange = onNicknameChange,
-            label = { Text("Nickname") },
-            isError = validation.nicknameError.isNotBlank(),
-            modifier = Modifier.fillMaxWidth()
-        )
+        item {
+            OutlinedTextField(
+                value = user.nickname,
+                onValueChange = onNicknameChange,
+                label = { Text("Nickname") },
+                isError = validation.nicknameError.isNotBlank(),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         if (validation.nicknameError.isNotBlank()) {
-            Text(
-                text = validation.nicknameError,
-                color = MaterialTheme.colorScheme.error,
+            item {
+                Text(
+                    text = validation.nicknameError,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                )
+            }
+        }
+
+        item {
+            OutlinedTextField(
+                value = user.description,
+                onValueChange = onDescriptionChange,
+                label = { Text("Description") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp)
+                    .padding(top = 12.dp)
             )
         }
 
-        OutlinedTextField(
-            value = user.description,
-            onValueChange = onDescriptionChange,
-            label = { Text("Description") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-        )
-
-        OutlinedTextField(
-            value = user.phoneNumber.orEmpty(),
-            onValueChange = onPhoneChange,
-            label = { Text("Phone Number") },
-            isError = validation.phoneError.isNotBlank(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-        )
+        item {
+            OutlinedTextField(
+                value = user.phoneNumber.orEmpty(),
+                onValueChange = onPhoneChange,
+                label = { Text("Phone Number") },
+                isError = validation.phoneError.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            )
+        }
 
         if (validation.phoneError.isNotBlank()) {
-            Text(
-                text = validation.phoneError,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
-            )
+            item {
+                Text(
+                    text = validation.phoneError,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                )
+            }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = onCancel) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = onSave,
-                modifier = Modifier.padding(start = 8.dp)
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text("Save")
+                TextButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
+
+                Button(
+                    onClick = onSave,
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("Save")
+                }
             }
         }
     }
