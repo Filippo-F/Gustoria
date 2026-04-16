@@ -10,17 +10,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.theme.GustoriaTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 
 enum class Screen {
     MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
@@ -61,11 +70,36 @@ fun AppContent(
 @Composable
 fun MainScreen(onNavigate: (Screen) -> Unit) {
     Column(
-        Modifier.fillMaxSize(),
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        BasicButton(displayText = "OWNED User Profile", onClick = { onNavigate(Screen.OWNED_PROFILE) })
+
+        // Titolo
+        Text(
+            text = "GUSTORIA",
+            fontSize = 48.sp,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 6.sp,
+            color = Color(0xFFC0422A)
+        )
+        Text(
+            text = "Your culinary world",
+            fontSize = 14.sp,
+            color = Color.Gray,
+            letterSpacing = 2.sp,
+            modifier = Modifier.padding(bottom = 64.dp, top = 8.dp)
+        )
+
+        // bottoni
+        BasicButton(
+            displayText = "Owned Profile",
+            icon = Icons.Default.Person,
+            onClick = { onNavigate(Screen.OWNED_PROFILE) }
+        )
+        //BasicButton(displayText = "OWNED User Profile", onClick = { onNavigate(Screen.OWNED_PROFILE) })
         Spacer(Modifier.height(20.dp))
         BasicButton(displayText = "OTHER User Profile", onClick = { onNavigate(Screen.OTHER_PROFILE) })
         Spacer(Modifier.height(20.dp))
@@ -74,11 +108,19 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
 }
 
 @Composable
-fun BasicButton(displayText: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun BasicButton(displayText: String, modifier: Modifier = Modifier, icon: ImageVector? = null, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = modifier
     ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+        }
         Text(displayText, style = MaterialTheme.typography.labelLarge)
     }
 }

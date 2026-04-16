@@ -52,6 +52,8 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.padding
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -59,7 +61,8 @@ fun OwnedProfileScreenPreviewPortrait() {
     MaterialTheme {
         OwnedProfileScreen(
             viewModel = viewModel(),
-            onBack = {}
+            onBack = {},
+            onNavigate = {}
         )
     }
 }
@@ -70,71 +73,83 @@ fun OwnedProfileScreenPreviewLandscape() {
     MaterialTheme {
         OwnedProfileScreen(
             viewModel = viewModel(),
-            onBack = {}
+            onBack = {},
+            onNavigate = {}
         )
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            maxItemsInEachRow = 3,
-        ) {
-            // Back Icon
-            IconButton(
-                modifier = Modifier.width(56.dp),
-                onClick =
-                    if (viewModel.isEditing) { viewModel::cancelEditing }
-                    else { onBack }
+fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
+    Scaffold(
+        bottomBar = {
+            AppBottomNavBar(currentDestination = NavDestination.PROFILE, onNavigate = onNavigate)
+        }
+    ) { innerPadding ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)) {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                maxItemsInEachRow = 3,
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-
-            // Page name
-            Box(
-                modifier = Modifier.height(56.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Profile Page", fontSize = 20.sp)
-            }
-
-            if (!viewModel.isEditing) {
-                // Edit Button
+                // Back Icon
                 IconButton(
                     modifier = Modifier.width(56.dp),
-                    onClick = { viewModel.startEditing() }
+                    onClick =
+                        if (viewModel.isEditing) {
+                            viewModel::cancelEditing
+                        } else {
+                            onBack
+                        }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit"
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
                     )
                 }
-            } else {
-                Box(modifier = Modifier.width(56.dp))
-            }
-        }
 
-        if (viewModel.isEditing) {
-            EditProfilePane(
-                user = viewModel.editableUser,
-                validation = viewModel.validation,
-                onNicknameChange = viewModel::setNickname,
-                onDescriptionChange = viewModel::setDescription,
-                onPhoneChange = viewModel::setPhoneNumber,
-                onSave = viewModel::validateAndSave,
-                onCancel = viewModel::cancelEditing
-            )
-        } else {
-            PresentationPane(user = viewModel.user)
+                // Page name
+                Box(
+                    modifier = Modifier.height(56.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("Profile Page", fontSize = 20.sp)
+                }
+
+                if (!viewModel.isEditing) {
+                    // Edit Button
+                    IconButton(
+                        modifier = Modifier.width(56.dp),
+                        onClick = { viewModel.startEditing() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit"
+                        )
+                    }
+                } else {
+                    Box(modifier = Modifier.width(56.dp))
+                }
+            }
+
+            if (viewModel.isEditing) {
+                EditProfilePane(
+                    user = viewModel.editableUser,
+                    validation = viewModel.validation,
+                    onNicknameChange = viewModel::setNickname,
+                    onDescriptionChange = viewModel::setDescription,
+                    onPhoneChange = viewModel::setPhoneNumber,
+                    onSave = viewModel::validateAndSave,
+                    onCancel = viewModel::cancelEditing
+                )
+            } else {
+                PresentationPane(user = viewModel.user)
+            }
         }
     }
 }
@@ -142,7 +157,9 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
 @Composable
 fun PresentationPane(user: UserClass) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -190,7 +207,9 @@ fun PresentationPane(user: UserClass) {
         item {
             // Profile Info (Name & Role)
             Column(
-                modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
@@ -201,12 +220,14 @@ fun PresentationPane(user: UserClass) {
 
                 // Description
                 Text(
-                    text = user.description,
+                    text = user.description.ifBlank { "No description yet." },
                     color = Color.Gray,
                     textAlign = TextAlign.Center,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
                 )
             }
         }
@@ -214,17 +235,23 @@ fun PresentationPane(user: UserClass) {
         // PREFERENCES / TAGS
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Tag 1
-                Box(modifier = Modifier.background(Color(0xFFFDECE8), RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 6.dp)) {
+                Box(modifier = Modifier
+                    .background(Color(0xFFFDECE8), RoundedCornerShape(16.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)) {
                     Text("🌿 Vegan Specialist", color = Color(0xFFA0522D), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 // Tag 2
-                Box(modifier = Modifier.background(Color(0xFFE8F8F5), RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 6.dp)) {
+                Box(modifier = Modifier
+                    .background(Color(0xFFE8F8F5), RoundedCornerShape(16.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)) {
                     Text("⭐ Top Curator", color = Color(0xFF0E6655), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -233,20 +260,24 @@ fun PresentationPane(user: UserClass) {
         // STATS BOXES (Similar to OtherProfile)
         item {
             FlowRow(
-                modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 maxItemsInEachRow = 3,
             ) {
                 // Placeholder numbers
-                ValueBox(value = 42, text = "Recipes")
-                ValueBox(value = 1200, text = "Followers")
-                ValueBox(value = 850, text = "Likes")
+                ValueBox(value = user.numberOfRecipes, text = "Recipes")
+                ValueBox(value = user.numberOfFollowers, text = "Followers")
+                ValueBox(value = user.numberOfLikes, text = "Likes")
             }
         }
 
         // SETTINGS MENU LIST
         item {
-            Column(modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 24.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, bottom = 24.dp)) {
                 MenuListItem(title = "Profile Info", icon = Icons.Default.Person)
                 MenuListItem(title = "Settings", icon = Icons.Default.Settings)
                 MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info)
@@ -263,13 +294,18 @@ fun PresentationPane(user: UserClass) {
 @Composable
 fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).height(56.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .height(56.dp),
         colors = CardDefaults.cardColors(containerColor = if (isDestructive) Color(0xFFFDECE8) else Color.White),
         border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) Color.Red else Color.LightGray),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) Color.Red else Color.DarkGray)

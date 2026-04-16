@@ -17,10 +17,10 @@ data class ProfileValidation(
 // Shared user state visible to all ViewModels in this file
 private val loggedInUser = mutableStateOf(
     UserClass(
-        fullName = "Name Surname",
+        fullName = "Mario Rossi",
         nickname = "SuperChef",
         email = "chef@gustoria.it",
-        description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu volutpat massa.",
+        description = "Simple ingredients, great passion, amazing food.",
         phoneNumber = "+39 333 1234567",
         cookingRole = CookingRole.HOME_COOK,
 
