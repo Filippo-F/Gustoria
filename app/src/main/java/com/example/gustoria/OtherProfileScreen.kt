@@ -254,8 +254,6 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 
 @Composable
 fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
-    // State to handle tab switching
-    var selectedTabIndex by remember { mutableIntStateOf(0) }  // 0 for Collections, 1 for Recent Activity
     val tabs = listOf("Collections", "Recent Activity")
 
     Column(
@@ -318,20 +316,20 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
             // Implementation of the tabs
             item {
                 SecondaryTabRow(
-                    selectedTabIndex = selectedTabIndex,
+                    selectedTabIndex = viewModel.currentTab,
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.primary
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
+                            selected = viewModel.currentTab == index,
+                            onClick = {viewModel.changeTab(index)},
                             text = {
                                 Text(
                                     text = title,
                                     fontSize = 12.sp,
-                                    fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else Color.Gray
+                                    fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else Color.Gray
                                 )
                             }
                         )
@@ -340,7 +338,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
             }
 
             item {
-                when (selectedTabIndex) {
+                when (viewModel.currentTab) {
                     0 -> CollectionsSection(collections = viewModel.collections)
                     1 -> RecentActivitySection(activities = viewModel.recentActivities)
                 }

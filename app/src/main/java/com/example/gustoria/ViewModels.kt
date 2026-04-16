@@ -117,6 +117,9 @@ class OtherProfileViewModel : ViewModel() {
     var isFollowing by mutableStateOf(false)
         private set
 
+    var currentTab by mutableStateOf(0)
+        private set
+
     fun toggleFollow() {
         isFollowing = !isFollowing
         if (isFollowing) {
@@ -132,6 +135,10 @@ class OtherProfileViewModel : ViewModel() {
 
     fun unfollow() {
         user = user.copy(numberOfFollowers = user.numberOfFollowers - 1)
+    }
+
+    fun changeTab (index: Int) {
+        currentTab = index
     }
 }
 
