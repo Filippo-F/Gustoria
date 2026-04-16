@@ -89,7 +89,9 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit) {
             // Back Icon
             IconButton(
                 modifier = Modifier.width(56.dp),
-                onClick = onBack
+                onClick =
+                    if (viewModel.isEditing) { viewModel::cancelEditing }
+                    else { onBack }
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
