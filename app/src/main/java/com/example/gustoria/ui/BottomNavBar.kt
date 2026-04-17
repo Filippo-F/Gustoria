@@ -1,4 +1,4 @@
-package com.example.gustoria
+package com.example.gustoria.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
