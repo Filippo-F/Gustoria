@@ -138,5 +138,24 @@ class OtherProfileViewModel : ViewModel() {
 }
 
 class RecipeViewModel : ViewModel() {
-    // ViewModel logic for Recipe View
+    val recipe = RecipeProposal(
+        title = "Pasta al Pomodoro",
+        image = R.drawable.guest_user_profile_pic, //placeholder per ora
+        cost = "€",
+        difficulty = "Easy",
+        cookingTimeMinutes = 20,
+        servings = 2,
+        ingredients = listOf(
+            Ingredient("Spaghetti", "200g"),
+            Ingredient("Pomodori", "300g"),
+            Ingredient("Aglio", "2 spicchi"),
+            Ingredient("Olio EVO", "3 cucchiai")
+        ),
+        steps = listOf(
+            "Porta a ebollizione l'acqua salata.",
+            "Soffriggi l'aglio in olio per 2 minuti.",
+            "Aggiungi i pomodori e cuoci 10 minuti.",
+            "Scola la pasta al dente e manteca con il sugo."
+        )
+    )
 }
