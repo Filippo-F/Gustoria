@@ -129,6 +129,10 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                     onNicknameChange = viewModel::setNickname,
                     onDescriptionChange = viewModel::setDescription,
                     onPhoneChange = viewModel::setPhoneNumber,
+                    onCookingRoleChange = viewModel::setCookingRole,
+                    onCuisinePreferencesChange = viewModel::setCuisinePreferences,
+                    onDietaryRestrictionsChange = viewModel::setDietaryRestrictions,
+                    onFavoriteIngredientsChange = viewModel::setFavoriteIngredients,
                     onSave = viewModel::validateAndSave,
                     onCancel = viewModel::cancelEditing
                 )
@@ -304,6 +308,10 @@ fun EditProfilePane(
     onNicknameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
+    onCookingRoleChange: (CookingRole?) -> Unit,
+    onCuisinePreferencesChange: (List<String>) -> Unit,
+    onDietaryRestrictionsChange: (List<String>) -> Unit,
+    onFavoriteIngredientsChange: (List<String>) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -337,6 +345,17 @@ fun EditProfilePane(
                 text = user.fullName,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
+        item {
+            OutlinedTextField(
+                value = user.email,
+                onValueChange = {},
+                readOnly = true,
+                enabled = false,
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
             )
         }
 

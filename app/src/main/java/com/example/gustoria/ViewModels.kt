@@ -12,8 +12,6 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-
-
 // Shared user state visible to all ViewModels in this file
 private val loggedInUser = mutableStateOf(
     UserClass(
@@ -88,9 +86,6 @@ class OwnedProfileViewModel : ViewModel() {
 
     // Setters per editableUser
 
-//    fun setFullName(fullName: String) {
-//        editableUser = editableUser.copy(fullName = fullName)
-//    }
     fun setNickname(nickname: String) { editableUser = editableUser.copy(nickname = nickname) }
     fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
     fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
