@@ -39,10 +39,13 @@ import com.example.gustoria.ui.ShareNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+//import androidx.compose.runtime.getValue
+//import androidx.compose.runtime.mutableIntStateOf
+//import androidx.compose.runtime.remember
+//import androidx.compose.runtime.setValue
+import androidx.compose.material3.Scaffold
+import com.example.gustoria.ui.AppBottomNavBar
+import com.example.gustoria.ui.NavDestination
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -50,7 +53,8 @@ fun OtherProfileScreenPortrait() {
     GustoriaTheme(dynamicColor = false) {
         OtherProfileScreen(
             viewModel = viewModel(),
-            onBack = {}
+            onBack = {},
+            onNavigate = {}
         )
     }
 }
@@ -253,94 +257,107 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 }
 
 @Composable
-fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit) {
+fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit = {}) {
     val tabs = listOf("Collections", "Recent Activity")
 
-    Column(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-    ) {
-        // Navigation Bar
-        ShareNavbar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+    Scaffold(
+        bottomBar = {
+            AppBottomNavBar(
+                currentDestination = NavDestination.PROFILE, // o il destination corretto
+                onNavigate = onNavigate
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background),
-            title = "Other Profile",
-            onBack = onBack
-        )
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
         ) {
-            item { ProfileImage(image_url = viewModel.user.profileImageUri) }
+            // Navigation Bar
+            ShareNavbar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(MaterialTheme.colorScheme.background),
+                title = "Other Profile",
+                onBack = onBack
+            )
 
-            item {
-                ProfileInfo(
-                    fullName = viewModel.user.fullName,
-                    nickname = viewModel.user.nickname,
-                    cookingRole = viewModel.user.cookingRole,
-                    description = viewModel.user.description
-                )
-            }
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                item { ProfileImage(image_url = viewModel.user.profileImageUri) }
 
-            item {
-                Row(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Button(
-                        modifier = Modifier.padding(8.dp),
-                        onClick = viewModel::toggleFollow,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                            contentColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary
-                        )
+                item {
+                    ProfileInfo(
+                        fullName = viewModel.user.fullName,
+                        nickname = viewModel.user.nickname,
+                        cookingRole = viewModel.user.cookingRole,
+                        description = viewModel.user.description
+                    )
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text(text = if (viewModel.isFollowing) "Unfollow" else "Follow")
+                        Button(
+                            modifier = Modifier.padding(8.dp),
+                            onClick = viewModel::toggleFollow,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                                contentColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text(text = if (viewModel.isFollowing) "Unfollow" else "Follow")
+                        }
                     }
                 }
-            }
 
-            item {
-                FlowRow(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    maxItemsInEachRow = 3,
-                ) {
-                    ValueBox(viewModel.user.numberOfRecipes, "Recipes")
-                    ValueBox(viewModel.user.numberOfFollowers, "Followers")
-                    ValueBox(viewModel.user.numberOfLikes, "Likes")
-                }
-            }
 
-            // Implementation of the tabs
-            item {
-                SecondaryTabRow(
-                    selectedTabIndex = viewModel.currentTab,
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.primary
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = viewModel.currentTab == index,
-                            onClick = {viewModel.changeTab(index)},
-                            text = {
-                                Text(
-                                    text = title,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else Color.Gray
-                                )
-                            }
-                        )
+                item {
+                    FlowRow(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        maxItemsInEachRow = 3,
+                    ) {
+                        ValueBox(viewModel.user.numberOfRecipes, "Recipes")
+                        ValueBox(viewModel.user.numberOfFollowers, "Followers")
+                        ValueBox(viewModel.user.numberOfLikes, "Likes")
                     }
                 }
-            }
 
-            item {
-                when (viewModel.currentTab) {
-                    0 -> CollectionsSection(collections = viewModel.collections)
-                    1 -> RecentActivitySection(activities = viewModel.recentActivities)
+                // Implementation of the tabs
+                item {
+                    SecondaryTabRow(
+                        selectedTabIndex = viewModel.currentTab,
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = viewModel.currentTab == index,
+                                onClick = { viewModel.changeTab(index) },
+                                text = {
+                                    Text(
+                                        text = title,
+                                        fontSize = 12.sp,
+                                        fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else Color.Gray
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    when (viewModel.currentTab) {
+                        0 -> CollectionsSection(collections = viewModel.collections)
+                        1 -> RecentActivitySection(activities = viewModel.recentActivities)
+                    }
                 }
             }
         }
