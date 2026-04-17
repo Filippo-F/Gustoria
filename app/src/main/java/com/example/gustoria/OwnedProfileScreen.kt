@@ -103,7 +103,16 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
             ) {
                 IconButton(
                     modifier = Modifier.width(56.dp),
-                    onClick = if (viewModel.isEditing) viewModel::cancelEditing else onBack
+                    onClick = {
+                        if (viewModel.isEditing) {
+                            // Back button must persist changes and validate
+                            viewModel.validateAndSave()
+                            // Note: validateAndSave() in the ViewModel already flips isEditing to false
+                            // ONLY if the form is valid. If it's invalid, it stays true and shows errors!
+                        } else {
+                            onBack()
+                        }
+                    }
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }

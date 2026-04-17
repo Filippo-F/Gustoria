@@ -33,6 +33,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -60,7 +66,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
         ) {
-            // TOP BAR con back arrow
+            // TOP BAR with back arrow
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -73,11 +79,28 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                 }
             }
 
-            // INFO (costo, difficoltà, tempo, porzioni)
+            // HERO IMAGE
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Image(
+                    painter = painterResource(id = recipe.image),
+                    contentDescription = "Recipe Image",
+                    contentScale = ContentScale.Crop, // Crops the image to perfectly fill the box
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp) // Gives it a nice, large "Hero" presence
+                        .padding(vertical = 8.dp)
+                        .clip(RoundedCornerShape(16.dp)) // Rounds the corners to match tags
+                )
+            }
+
+            // INFO (cost, difficulty, cooking time, servings)
+            item {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp) // Added to give breathing room if they wrap!
                 ) {
                     RecipeTag("💰 ${recipe.cost}")
                     RecipeTag("📊 ${recipe.difficulty}")
@@ -86,7 +109,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                 }
             }
 
-            // INGREDIENTI
+            // Ingredients
             item {
                 Text(
                     "Ingredienti",
