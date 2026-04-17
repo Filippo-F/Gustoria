@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,6 +29,7 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.statusBarsPadding
 
 enum class Screen {
     MAIN, OWNED_PROFILE, OTHER_PROFILE, RECIPE
@@ -55,15 +55,19 @@ fun AppContent(
 ) {
     var currentScreen by rememberSaveable { mutableStateOf(Screen.MAIN) }
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            when (currentScreen) {
-                Screen.MAIN -> MainScreen(onNavigate = { currentScreen = it })
-                Screen.OWNED_PROFILE -> OwnedProfileScreen(ownedProfileViewModel) { currentScreen = Screen.MAIN }
-                Screen.OTHER_PROFILE -> OtherProfileScreen(otherProfileViewModel) { currentScreen = Screen.MAIN }
-                Screen.RECIPE -> RecipeScreen(recipeViewModel) { currentScreen = Screen.MAIN }
-            }
-        }
+    when (currentScreen) {
+        Screen.MAIN -> MainScreen(onNavigate = { currentScreen = it })
+        Screen.OWNED_PROFILE -> OwnedProfileScreen(
+            viewModel = ownedProfileViewModel,
+            onBack = { currentScreen = Screen.MAIN },
+            onNavigate = { currentScreen = Screen.MAIN }
+        )
+        Screen.OTHER_PROFILE -> OtherProfileScreen(otherProfileViewModel) { currentScreen = Screen.MAIN }
+        Screen.RECIPE -> RecipeScreen(
+            viewModel = recipeViewModel,
+            onBack = { currentScreen = Screen.MAIN },
+            onNavigate = { currentScreen = Screen.MAIN }
+        )
     }
 }
 
@@ -72,6 +76,7 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

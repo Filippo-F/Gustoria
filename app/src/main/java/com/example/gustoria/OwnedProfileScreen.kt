@@ -85,53 +85,37 @@ fun OwnedProfileScreenPreviewLandscape() {
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
     Scaffold(
         bottomBar = {
-            AppBottomNavBar(currentDestination = NavDestination.PROFILE, onNavigate = onNavigate)
+            AppBottomNavBar(
+                currentDestination = NavDestination.PROFILE,
+                onNavigate = onNavigate
+            )
         }
     ) { innerPadding ->
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)) {
-            FlowRow(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                maxItemsInEachRow = 3,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Back Icon
                 IconButton(
                     modifier = Modifier.width(56.dp),
-                    onClick =
-                        if (viewModel.isEditing) {
-                            viewModel::cancelEditing
-                        } else {
-                            onBack
-                        }
+                    onClick = if (viewModel.isEditing) viewModel::cancelEditing else onBack
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
 
-                // Page name
-                Box(
-                    modifier = Modifier.height(56.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("Profile Page", fontSize = 20.sp)
-                }
+                Text("Profile Page", fontSize = 20.sp)
 
                 if (!viewModel.isEditing) {
-                    // Edit Button
                     IconButton(
                         modifier = Modifier.width(56.dp),
                         onClick = { viewModel.startEditing() }
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit"
-                        )
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 } else {
                     Box(modifier = Modifier.width(56.dp))
@@ -289,9 +273,6 @@ fun PresentationPane(user: UserClass) {
     }
 }
 
-/**
- * Helper component for the settings list at the bottom of the profile
- */
 @Composable
 fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
     Card(
