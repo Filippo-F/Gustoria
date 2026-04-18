@@ -77,10 +77,12 @@ fun OwnedProfileScreenPreviewLandscape() {
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
     Scaffold(
         bottomBar = {
-            AppBottomNavBar(
-                currentDestination = NavDestination.PROFILE,
-                onNavigate = onNavigate
-            )
+            Box(modifier = Modifier.navigationBarsPadding()) {
+                AppBottomNavBar(
+                    currentDestination = NavDestination.PROFILE,
+                    onNavigate = onNavigate
+                )
+            }
         }
     ) { innerPadding ->
         Column(modifier = Modifier
