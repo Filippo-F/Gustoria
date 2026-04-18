@@ -1,64 +1,52 @@
 package com.example.gustoria
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.ui.platform.LocalContext
-import android.graphics.Bitmap
 import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
-
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -109,10 +97,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                     modifier = Modifier.width(56.dp),
                     onClick = {
                         if (viewModel.isEditing) {
-                            // Back button must persist changes and validate
                             viewModel.validateAndSave()
-                            // Note: validateAndSave() in the ViewModel already flips isEditing to false
-                            // ONLY if the form is valid. If it's invalid, it stays true and shows errors!
                         } else {
                             onBack()
                         }
@@ -166,7 +151,6 @@ fun PresentationPane(user: UserClass) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            // Profile Image OR Monogram if image is missing
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -179,7 +163,6 @@ fun PresentationPane(user: UserClass) {
         }
 
         item {
-            // Profile Info (Name & Role)
             Column(
                 modifier = Modifier
                     .padding(top = 16.dp)
@@ -192,7 +175,6 @@ fun PresentationPane(user: UserClass) {
                     fontWeight = FontWeight.Bold
                 )
 
-                // Description
                 Text(
                     text = user.description.ifBlank { "No description yet." },
                     color = MaterialTheme.colorScheme.onSurface,
@@ -206,7 +188,7 @@ fun PresentationPane(user: UserClass) {
             }
         }
 
-        // PREFERENCES / TAGS
+        @OptIn(ExperimentalLayoutApi::class)
         item {
             Row(
                 modifier = Modifier
@@ -215,14 +197,12 @@ fun PresentationPane(user: UserClass) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Tag 1
                 Box(modifier = Modifier
                     .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)) {
                     Text("🌿 Vegan Specialist", color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                // Tag 2
                 Box(modifier = Modifier
                     .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)) {
@@ -231,7 +211,7 @@ fun PresentationPane(user: UserClass) {
             }
         }
 
-        // STATS BOXES (Similar to OtherProfile)
+        @OptIn(ExperimentalLayoutApi::class)
         item {
             FlowRow(
                 modifier = Modifier
@@ -240,14 +220,12 @@ fun PresentationPane(user: UserClass) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 maxItemsInEachRow = 3,
             ) {
-                // Placeholder numbers
                 ValueBox(value = user.numberOfRecipes, text = "Recipes")
                 ValueBox(value = user.numberOfFollowers, text = "Followers")
                 ValueBox(value = user.numberOfLikes, text = "Likes")
             }
         }
 
-        // SETTINGS MENU LIST
         item {
             Column(modifier = Modifier
                 .fillMaxWidth()
@@ -261,6 +239,7 @@ fun PresentationPane(user: UserClass) {
         }
     }
 }
+
 @Composable
 fun EditProfilePane(
     user: UserClass,
@@ -276,186 +255,199 @@ fun EditProfilePane(
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
-    // 1. Set up Context and Launchers
-    val context = LocalContext.current // Needed to save the camera file
+    val context = LocalContext.current
+    val showImageMenu = remember { mutableStateOf(false) }
+    val showCameraScreen = remember { mutableStateOf(false) }
 
-    val galleryLauncher = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetContent()) { uri ->
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
         if (uri != null) {
             onImageChange(uri.toString())
         }
     }
 
-    // Saves the picture to a temporary file since the photo taken by the camera is a Bitmap, and an uri is needed for the AsyncImage
-    val cameraLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview()
-    ) { bitmap: Bitmap? ->
-        if (bitmap != null) {
-            val tempFile = File(context.cacheDir, "profile_pic_${System.currentTimeMillis()}.jpg")
-            tempFile.outputStream().use { out ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-            }
-            onImageChange(tempFile.toURI().toString())
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showCameraScreen.value = true
+        } else {
+            Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    val showImageMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        // IMAGE BOX WITH MONOGRAM AND CAMERA ICON ---
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                ImageBoxContent(user)
-
-                // The Camera Button overlapping the image
+    if (showCameraScreen.value) {
+        CameraXScreen(
+            onImageCaptured = { uriString ->
+                onImageChange(uriString)
+                showCameraScreen.value = false
+            },
+            onCancel = { showCameraScreen.value = false }
+        )
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
                 Box(
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    IconButton(
-                        onClick = { showImageMenu.value = true },
+                    ImageBoxContent(user)
+
+                    Box(
+                        modifier = Modifier.size(120.dp)
+                    ) {
+                        IconButton(
+                            onClick = { showImageMenu.value = true },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .background(MaterialTheme.colorScheme.primary, CircleShape)
+                                .size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Change Picture",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showImageMenu.value,
+                            onDismissRequest = { showImageMenu.value = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Select from Gallery") },
+                                onClick = {
+                                    showImageMenu.value = false
+                                    galleryLauncher.launch("image/*")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Take a Picture") },
+                                onClick = {
+                                    showImageMenu.value = false
+                                    val isGranted = ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.CAMERA
+                                    ) == PackageManager.PERMISSION_GRANTED
+
+                                    if (isGranted) {
+                                        showCameraScreen.value = true
+                                    } else {
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = user.fullName,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = user.email,
+                    onValueChange = {},
+                    readOnly = true,
+                    enabled = false,
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = user.nickname,
+                    onValueChange = onNicknameChange,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    label = { Text("Nickname") },
+                    isError = validation.nicknameError.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            if (validation.nicknameError.isNotBlank()) {
+                item {
+                    Text(
+                        text = validation.nicknameError,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .background(MaterialTheme.colorScheme.primary, CircleShape)
-                            .size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CameraAlt,
-                            contentDescription = "Change Picture",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    // The Dropdown Menu
-                    androidx.compose.material3.DropdownMenu(
-                        expanded = showImageMenu.value,
-                        onDismissRequest = { showImageMenu.value = false }
-                    ) {
-                        androidx.compose.material3.DropdownMenuItem(
-                            text = { Text("Select from Gallery") },
-                            onClick = {
-                                showImageMenu.value = false
-                                galleryLauncher.launch("image/*")
-                            }
-                        )
-                        androidx.compose.material3.DropdownMenuItem(
-                            text = { Text("Take a Picture") },
-                            onClick = {
-                                showImageMenu.value = false
-                                cameraLauncher.launch(null)
-                            }
-                        )
-                    }
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
                 }
             }
-        }
 
-        item {
-            Text(
-                text = user.fullName,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
-
-        item {
-            OutlinedTextField(
-                value = user.email,
-                onValueChange = {},
-                readOnly = true,
-                enabled = false,
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            )
-        }
-
-        item {
-            OutlinedTextField(
-                value = user.nickname,
-                onValueChange = onNicknameChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                label = { Text("Nickname") },
-                isError = validation.nicknameError.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        if (validation.nicknameError.isNotBlank()) {
             item {
-                Text(
-                    text = validation.nicknameError,
-                    color = MaterialTheme.colorScheme.error,
+                OutlinedTextField(
+                    value = user.description,
+                    onValueChange = onDescriptionChange,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    label = { Text("Description") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 4.dp)
+                        .padding(top = 12.dp)
                 )
             }
-        }
 
-        item {
-            OutlinedTextField(
-                value = user.description,
-                onValueChange = onDescriptionChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                label = { Text("Description") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-            )
-        }
-
-        item {
-            OutlinedTextField(
-                value = user.phoneNumber,
-                onValueChange = onPhoneChange,
-                label = { Text("Phone Number") },
-                isError = validation.phoneError.isNotBlank(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-            )
-        }
-
-        if (validation.phoneError.isNotBlank()) {
             item {
-                Text(
-                    text = validation.phoneError,
-                    color = MaterialTheme.colorScheme.error,
+                OutlinedTextField(
+                    value = user.phoneNumber,
+                    onValueChange = onPhoneChange,
+                    label = { Text("Phone Number") },
+                    isError = validation.phoneError.isNotBlank(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 4.dp)
+                        .padding(top = 12.dp)
                 )
             }
-        }
 
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onCancel) {
-                    Text("Cancel")
+            if (validation.phoneError.isNotBlank()) {
+                item {
+                    Text(
+                        text = validation.phoneError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
                 }
+            }
 
-                Button(
-                    onClick = onSave,
-                    modifier = Modifier.padding(start = 8.dp)
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text("Save")
+                    TextButton(onClick = onCancel) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = onSave,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text("Save")
+                    }
                 }
             }
         }
@@ -487,7 +479,7 @@ fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageV
 }
 
 @Composable
-fun ImageBoxContent (user: UserClass) {
+fun ImageBoxContent(user: UserClass) {
     if (user.profileImageUri != null) {
         coil.compose.AsyncImage(
             model = user.profileImageUri,
@@ -499,7 +491,6 @@ fun ImageBoxContent (user: UserClass) {
                 .clip(CircleShape)
         )
     } else {
-        // 2-LETTER MONOGRAM
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -520,6 +511,67 @@ fun ImageBoxContent (user: UserClass) {
                 fontSize = 42.sp,
                 fontWeight = FontWeight.Bold
             )
+        }
+    }
+}
+
+@Composable
+fun CameraXScreen(
+    onImageCaptured: (String) -> Unit,
+    onCancel: () -> Unit
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraController = remember { LifecycleCameraController(context) }
+
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+        AndroidView(
+            factory = { ctx ->
+                PreviewView(ctx).apply {
+                    // THIS IS THE EMULATOR BLACK SCREEN FIX!
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                    controller = cameraController
+                    cameraController.bindToLifecycle(lifecycleOwner)
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Button(
+            onClick = {
+                val photoFile = File(context.cacheDir, "profile_pic_${System.currentTimeMillis()}.jpg")
+                val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+                cameraController.takePicture(
+                    outputOptions,
+                    ContextCompat.getMainExecutor(context),
+                    object : ImageCapture.OnImageSavedCallback {
+                        override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                            onImageCaptured(photoFile.toURI().toString())
+                        }
+                        override fun onError(exc: ImageCaptureException) {
+                            println("Photo capture failed: ${exc.message}")
+                        }
+                    }
+                )
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 48.dp)
+        ) {
+            Icon(Icons.Default.CameraAlt, contentDescription = "Take Photo")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Snap")
+        }
+
+        IconButton(
+            onClick = onCancel,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
         }
     }
 }
