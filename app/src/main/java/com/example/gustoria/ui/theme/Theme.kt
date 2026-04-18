@@ -13,35 +13,47 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
+    primary = StitchDarkPrimary,
+    secondary = StitchDarkSecondary,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = StitchPrimary,
-    secondary = StitchSecondary,
-    tertiary = StitchTertiary,
-    background = StitchNeutral,
     onPrimary = Color.White,
-    onSecondary = Color.White,
+    primaryContainer = StitchLightPrimary,
+    onPrimaryContainer = StitchDarkPrimary,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = StitchSecondary,
+    onSecondary = Color.Black,
+    secondaryContainer = StitchLightSecondary,
+    onSecondaryContainer = StitchDarkSecondary,
+
+    tertiary = StitchTertiary,
+    onTertiary = Color.Black,
+    tertiaryContainer = StitchLightTertiary,
+    onTertiaryContainer = StitchDarkTertiary,
+
+
+    background = StitchNeutral,
+    onBackground = Color.Black,
+
+    surface = Color.White,
+    onSurface = Color.Gray,
+    onSurfaceVariant = Color.LightGray,
+
+    outline = Color.LightGray,
+    outlineVariant = Color.LightGray,
+
+    error = Color.Red,
+    errorContainer = Color(0xFFFDECE8),
 )
 
 @Composable
 fun GustoriaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

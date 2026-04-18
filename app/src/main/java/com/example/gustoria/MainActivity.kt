@@ -92,12 +92,12 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
             fontSize = 48.sp,
             fontWeight = FontWeight.ExtraBold,
             letterSpacing = 6.sp,
-            color = Color(0xFFC0422A)
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = "Your culinary world",
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurface,
             letterSpacing = 2.sp,
             modifier = Modifier.padding(bottom = 64.dp, top = 8.dp)
         )

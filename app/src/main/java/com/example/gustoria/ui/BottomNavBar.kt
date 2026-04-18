@@ -23,7 +23,7 @@ fun AppBottomNavBar(
     onNavigate: (NavDestination) -> Unit
 ) {
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp,
         modifier = Modifier.height(72.dp)
     ) {
@@ -73,9 +73,9 @@ private fun RowScope.NavItem(
     isCreate: Boolean,
     onClick: () -> Unit
 ) {
-    val createColor = Color(0xFFB84A2E)   // rosso-arancio
+    val createColor = MaterialTheme.colorScheme.secondary
     val activeColor = MaterialTheme.colorScheme.primary
-    val inactiveColor = Color(0xFF9E9E9E)
+    val inactiveColor = MaterialTheme.colorScheme.onSurface
 
     val iconTint = when {
         isCreate -> createColor

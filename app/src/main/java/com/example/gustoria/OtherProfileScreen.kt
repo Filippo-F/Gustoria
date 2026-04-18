@@ -39,6 +39,7 @@ import com.example.gustoria.ui.ShareNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.HorizontalDivider
 //import androidx.compose.runtime.getValue
 //import androidx.compose.runtime.mutableIntStateOf
 //import androidx.compose.runtime.remember
@@ -82,7 +83,7 @@ fun ProfileImage(image_url: String?) {
             contentScale = ContentScale.Crop, // crops to fill the circle
             modifier = Modifier
                 .size(120.dp)
-                .border(2.dp, Color.LightGray, CircleShape) // width, color, shape
+                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape) // width, color, shape
                 .clip(CircleShape)
         )
     }
@@ -94,9 +95,7 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, d
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-//        // Full Name and Nickname
-//        Text("${fullName} (${nickname})", fontSize = 20.sp)
-
+        // Full name and nickname
         Text(
             text = fullName,
             fontSize = 24.sp,
@@ -112,13 +111,13 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, d
                 }
             },
             fontSize = 14.sp,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         // Description
         Text(
             text = description,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             maxLines = 4,
             overflow = TextOverflow.Ellipsis,
@@ -133,7 +132,7 @@ fun ValueBox (
     text: String,
 ) {
     Box(
-        modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp)).width(100.dp).height(70.dp),
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp)).width(100.dp).height(70.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -141,7 +140,7 @@ fun ValueBox (
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(text = value.toString(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-            Text(text = text.uppercase(), style = MaterialTheme.typography.labelSmall, color = Color.LightGray)
+            Text(text = text.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -154,20 +153,20 @@ fun CollectionCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
             .padding(16.dp),
         contentAlignment = Alignment.BottomStart
     ) {
         Column {
             Text(
                 text = collection.title,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
             Text(
                 text = collection.subtitle,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
                 fontSize = 12.sp
             )
         }
@@ -215,7 +214,7 @@ fun ActivityCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Column {
@@ -225,7 +224,7 @@ fun ActivityCard(
             )
             Text(
                 text = activity.subtitle,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp
             )
         }
@@ -307,8 +306,8 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                             modifier = Modifier.padding(8.dp),
                             onClick = viewModel::toggleFollow,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                                contentColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary
+                                containerColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         ) {
                             Text(text = if (viewModel.isFollowing) "Unfollow" else "Follow")
@@ -334,7 +333,10 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                     SecondaryTabRow(
                         selectedTabIndex = viewModel.currentTab,
                         containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        divider = {
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                        }
                     ) {
                         tabs.forEachIndexed { index, title ->
                             Tab(
@@ -345,7 +347,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                                         text = title,
                                         fontSize = 12.sp,
                                         fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else Color.Gray
+                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             )

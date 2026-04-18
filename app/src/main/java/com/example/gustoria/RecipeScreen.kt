@@ -124,7 +124,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(ingredient.name)
-                    Text(ingredient.quantity, color = Color.Gray)
+                    Text(ingredient.quantity, color = MaterialTheme.colorScheme.onSurface)
                 }
                 HorizontalDivider()
             }
@@ -145,10 +145,10 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                     Box(
                         modifier = Modifier
                             .size(28.dp)
-                            .background(MaterialTheme.colorScheme.primary, CircleShape),
+                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("${index + 1}", color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                     Text(step, modifier = Modifier.weight(1f))
                 }
@@ -161,7 +161,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
 fun RecipeTag(text: String) {
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(text, fontSize = 12.sp)

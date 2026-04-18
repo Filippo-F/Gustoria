@@ -56,13 +56,14 @@ import com.example.gustoria.ui.NavDestination
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.ui.platform.LocalContext
 import android.graphics.Bitmap
+import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
 
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
 fun OwnedProfileScreenPreviewPortrait() {
-    MaterialTheme {
+    GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
             viewModel = viewModel(),
             onBack = {},
@@ -74,7 +75,7 @@ fun OwnedProfileScreenPreviewPortrait() {
 @Preview(name = "Landscape", widthDp = 851, heightDp = 393, showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
 @Composable
 fun OwnedProfileScreenPreviewLandscape() {
-    MaterialTheme {
+    GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
             viewModel = viewModel(),
             onBack = {},
@@ -173,40 +174,7 @@ fun PresentationPane(user: UserClass) {
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (user.profileImageUri != null) {
-                    coil.compose.AsyncImage(
-                        model = user.profileImageUri,
-                        contentDescription = "Profile Picture",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            .clip(CircleShape)
-                    )
-                } else {
-                    // 2-LETTER MONOGRAM: Splits the name at the space and takes 2 initials
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val initials = user.fullName
-                            .split(" ")
-                            .mapNotNull { it.firstOrNull()?.toString() }
-                            .take(2)
-                            .joinToString("")
-                            .uppercase()
-
-                        Text(
-                            text = initials,
-                            color = Color.White,
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                ImageBoxContent(user)
             }
         }
 
@@ -227,7 +195,7 @@ fun PresentationPane(user: UserClass) {
                 // Description
                 Text(
                     text = user.description.ifBlank { "No description yet." },
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
@@ -249,16 +217,16 @@ fun PresentationPane(user: UserClass) {
             ) {
                 // Tag 1
                 Box(modifier = Modifier
-                    .background(Color(0xFFFDECE8), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)) {
-                    Text("🌿 Vegan Specialist", color = Color(0xFFA0522D), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("🌿 Vegan Specialist", color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 // Tag 2
                 Box(modifier = Modifier
-                    .background(Color(0xFFE8F8F5), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)) {
-                    Text("⭐ Top Curator", color = Color(0xFF0E6655), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("⭐ Top Curator", color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -293,31 +261,6 @@ fun PresentationPane(user: UserClass) {
         }
     }
 }
-
-@Composable
-fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .height(56.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDestructive) Color(0xFFFDECE8) else Color.White),
-        border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) Color.Red else Color.LightGray),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) Color.Red else Color.DarkGray)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) Color.Red else Color.Black)
-        }
-    }
-}
-
 @Composable
 fun EditProfilePane(
     user: UserClass,
@@ -372,40 +315,7 @@ fun EditProfilePane(
                     .height(150.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (user.profileImageUri != null) {
-                    coil.compose.AsyncImage(
-                        model = user.profileImageUri,
-                        contentDescription = "Profile Picture",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .border(2.dp, Color.Gray, CircleShape)
-                            .clip(CircleShape)
-                    )
-                } else {
-                    // 2-LETTER MONOGRAM
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val initials = user.fullName
-                            .split(" ")
-                            .mapNotNull { it.firstOrNull()?.toString() }
-                            .take(2)
-                            .joinToString("")
-                            .uppercase()
-
-                        Text(
-                            text = initials,
-                            color = Color.White,
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                ImageBoxContent(user)
 
                 // The Camera Button overlapping the image
                 Box(
@@ -465,7 +375,8 @@ fun EditProfilePane(
                 readOnly = true,
                 enabled = false,
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
         }
 
@@ -547,6 +458,68 @@ fun EditProfilePane(
                     Text("Save")
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .height(56.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isDestructive) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) MaterialTheme.colorScheme.error else Color.DarkGray)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) MaterialTheme.colorScheme.error else Color.Black)
+        }
+    }
+}
+
+@Composable
+fun ImageBoxContent (user: UserClass) {
+    if (user.profileImageUri != null) {
+        coil.compose.AsyncImage(
+            model = user.profileImageUri,
+            contentDescription = "Profile Picture",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(120.dp)
+                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                .clip(CircleShape)
+        )
+    } else {
+        // 2-LETTER MONOGRAM
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            val initials = user.fullName
+                .split(" ")
+                .mapNotNull { it.firstOrNull()?.toString() }
+                .take(2)
+                .joinToString("")
+                .uppercase()
+
+            Text(
+                text = initials,
+                color = Color.White,
+                fontSize = 42.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
