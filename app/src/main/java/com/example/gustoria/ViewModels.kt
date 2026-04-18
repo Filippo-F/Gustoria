@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 data class ProfileValidation(
     val nicknameError: String = "",
     val phoneError: String = "",
+    val emailError: String = "",
     val cookingRoleError: String = "",
     val descriptionError: String = "",
     val isValid: Boolean = true
@@ -61,6 +62,7 @@ class OwnedProfileViewModel : ViewModel() {
     fun validateAndSave() {
         var currentNicknameError = ""
         var currentPhoneError = ""
+        var currentEmailError = ""
         var cookingRoleError = ""
         var descriptionError = ""
 
@@ -73,6 +75,12 @@ class OwnedProfileViewModel : ViewModel() {
             currentPhoneError = "Invalid phone number"
         }
 
+        if (editableUser.email.isBlank()) {
+            currentEmailError = "Email cannot be blank"
+        } else if (!editableUser.email.contains("@")) {
+            currentEmailError = "Email must contain @"
+        }
+
         if (editableUser.cookingRole == null) {
             cookingRoleError = "Please select a role"
         }
@@ -83,12 +91,14 @@ class OwnedProfileViewModel : ViewModel() {
 
         val formIsValid = currentNicknameError.isBlank()
                 && currentPhoneError.isBlank()
+                && currentEmailError.isBlank()
                 && cookingRoleError.isBlank()
                 && descriptionError.isBlank()
 
         validation = ProfileValidation(
             nicknameError = currentNicknameError,
             phoneError = currentPhoneError,
+            emailError = currentEmailError,
             cookingRoleError = cookingRoleError,
             descriptionError = descriptionError,
             isValid = formIsValid
@@ -105,6 +115,8 @@ class OwnedProfileViewModel : ViewModel() {
     fun setNickname(nickname: String) { editableUser = editableUser.copy(nickname = nickname) }
     fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
     fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
+
+    fun setEmail(email: String) { editableUser = editableUser.copy(email = email) }
     fun setCookingRole(role: CookingRole?) { editableUser = editableUser.copy(cookingRole = role) }
     fun setCuisinePreferencesFromText(text: String) {
         editableUser = editableUser.copy(

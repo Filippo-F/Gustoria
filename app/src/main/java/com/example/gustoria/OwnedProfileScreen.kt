@@ -2,6 +2,7 @@ package com.example.gustoria
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,6 +77,8 @@ fun OwnedProfileScreenPreviewLandscape() {
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
+    val configuration = LocalConfiguration.current
+
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
@@ -135,58 +139,101 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                     onFavoriteIngredientsChange = viewModel::setFavoriteIngredientsFromText,
                     onImageChange = viewModel::setProfileImageUri,
                     onSave = viewModel::validateAndSave,
-                    onCancel = viewModel::cancelEditing
+                    onCancel = viewModel::cancelEditing,
+                    onEmailChange = viewModel::setEmail,
                 )
             } else {
-                PresentationPane(user = viewModel.user)
+                PresentationPane(user = viewModel.user,
+                    if (
+                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        ) true else
+                            false
+                )
             }
         }
     }
 }
 
 @Composable
-fun PresentationPane(user: UserClass) {
+fun PresentationPane(user: UserClass, isLandscape: Boolean) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(top = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                ImageBoxContent(user)
-            }
-        }
-
-        item {
-            Column(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "${user.fullName} (${user.nickname})",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = user.description.ifBlank { "No description yet." },
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
+        if (isLandscape) {
+            item {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
-                )
+                        .padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ImageBoxContent(user)
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        Text(
+                            text = "${user.fullName} (${user.nickname})",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            text = user.description.ifBlank { "No description yet." },
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Start,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
+        } else {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ImageBoxContent(user)
+                }
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "${user.fullName} (${user.nickname})",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = user.description.ifBlank { "No description yet." },
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
             }
         }
 
@@ -250,6 +297,7 @@ fun EditProfilePane(
     onNicknameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
     onCookingRoleChange: (CookingRole?) -> Unit,
     onCuisinePreferencesChange: (String) -> Unit,
     onDietaryRestrictionsChange: (String) -> Unit,
@@ -367,13 +415,24 @@ fun EditProfilePane(
             item {
                 OutlinedTextField(
                     value = user.email,
-                    onValueChange = {},
-                    readOnly = true,
-                    enabled = false,
+                    onValueChange = onEmailChange,
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
+                    isError = validation.emailError.isNotBlank(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 )
+            }
+
+            if (validation.emailError.isNotBlank()) {
+                item {
+                    Text(
+                        text = validation.emailError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
+                }
             }
 
             item {

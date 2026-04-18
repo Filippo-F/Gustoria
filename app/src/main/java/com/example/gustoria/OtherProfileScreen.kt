@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -261,10 +262,12 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
 
     Scaffold(
         bottomBar = {
-            AppBottomNavBar(
-                currentDestination = NavDestination.PROFILE, // o il destination corretto
-                onNavigate = onNavigate
-            )
+            Box(modifier = Modifier.navigationBarsPadding()) {
+                AppBottomNavBar(
+                    currentDestination = NavDestination.PROFILE,
+                    onNavigate = onNavigate
+                )
+            }
         }
     ) { innerPadding ->
         Column(

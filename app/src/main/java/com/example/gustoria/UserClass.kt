@@ -14,12 +14,10 @@ enum class CookingRole {
     }
 }
 data class UserClass(
-    //non modificabili
     val fullName: String,
     val email: String,
     val internalID: Int = 101,
 
-    //modificabili
     val nickname: String,
     val phoneNumber: String = "",
     val description: String = "",

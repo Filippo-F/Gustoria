@@ -36,14 +36,24 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import com.example.gustoria.ui.theme.GustoriaTheme
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
 fun RecipeScreenPreviewPortrait() {
-    MaterialTheme {
+    GustoriaTheme(dynamicColor = false) {
+        RecipeScreen(viewModel = viewModel(), onBack = {}, onNavigate = {})
+    }
+}
+
+@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+@Composable
+fun RecipeScreenPreviewLandscape() {
+    GustoriaTheme(dynamicColor = false) {
         RecipeScreen(viewModel = viewModel(), onBack = {}, onNavigate = {})
     }
 }
@@ -54,10 +64,12 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
 
     Scaffold(
         bottomBar = {
-            AppBottomNavBar(
-                currentDestination = NavDestination.EXPLORE,
-                onNavigate = onNavigate
-            )
+            Box(modifier = Modifier.navigationBarsPadding()) {
+                AppBottomNavBar(
+                    currentDestination = NavDestination.PROFILE,
+                    onNavigate = onNavigate
+                )
+            }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -82,7 +94,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
             // HERO IMAGE
             item {
                 Image(
-                    painter = painterResource(id = recipe.image),
+                    painter = painterResource(id = R.drawable.random_food),
                     contentDescription = "Recipe Image",
                     contentScale = ContentScale.Crop, // Crops the image to perfectly fill the box
                     modifier = Modifier
