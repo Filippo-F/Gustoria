@@ -432,6 +432,42 @@ fun EditProfilePane(
             }
 
             item {
+                OutlinedTextField(
+                    value = user.cuisinePreferences.joinToString(", "),
+                    onValueChange = onCuisinePreferencesChange,
+                    label = { Text("Cuisine Preferences") },
+                    supportingText = { Text("Separate values with commas") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = user.dietaryRestrictions.joinToString(", "),
+                    onValueChange = onDietaryRestrictionsChange,
+                    label = { Text("Dietary Restrictions") },
+                    supportingText = { Text("Separate values with commas") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = user.favoriteIngredients.joinToString(", "),
+                    onValueChange = onFavoriteIngredientsChange,
+                    label = { Text("Favorite Ingredients") },
+                    supportingText = { Text("Separate values with commas") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                )
+            }
+
+            item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
