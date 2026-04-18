@@ -1,6 +1,5 @@
 package com.example.gustoria
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,6 +53,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.ui.platform.LocalContext
+import android.graphics.Bitmap
+import java.io.File
+
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -142,6 +145,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                     onCuisinePreferencesChange = viewModel::setCuisinePreferences,
                     onDietaryRestrictionsChange = viewModel::setDietaryRestrictions,
                     onFavoriteIngredientsChange = viewModel::setFavoriteIngredients,
+                    onImageChange = viewModel::setProfileImageUri,
                     onSave = viewModel::validateAndSave,
                     onCancel = viewModel::cancelEditing
                 )
@@ -169,12 +173,9 @@ fun PresentationPane(user: UserClass) {
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // TODO: Replace with actual image URI check from UserClass
-                val hasImage = true
-
-                if (hasImage) {
-                    Image(
-                        painter = painterResource(id = R.drawable.guest_user_profile_pic), // Placeholder
+                if (user.profileImageUri != null) {
+                    coil.compose.AsyncImage(
+                        model = user.profileImageUri,
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -183,7 +184,7 @@ fun PresentationPane(user: UserClass) {
                             .clip(CircleShape)
                     )
                 } else {
-                    // MONOGRAM
+                    // 2-LETTER MONOGRAM: Splits the name at the space and takes 2 initials
                     Box(
                         modifier = Modifier
                             .size(120.dp)
@@ -191,10 +192,17 @@ fun PresentationPane(user: UserClass) {
                             .background(MaterialTheme.colorScheme.primary),
                         contentAlignment = Alignment.Center
                     ) {
+                        val initials = user.fullName
+                            .split(" ")
+                            .mapNotNull { it.firstOrNull()?.toString() }
+                            .take(2)
+                            .joinToString("")
+                            .uppercase()
+
                         Text(
-                            text = user.fullName.take(1).uppercase(), // Takes first letter
+                            text = initials,
                             color = Color.White,
-                            fontSize = 48.sp,
+                            fontSize = 42.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -321,15 +329,42 @@ fun EditProfilePane(
     onCuisinePreferencesChange: (List<String>) -> Unit,
     onDietaryRestrictionsChange: (List<String>) -> Unit,
     onFavoriteIngredientsChange: (List<String>) -> Unit,
+    onImageChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
+    // 1. Set up Context and Launchers
+    val context = LocalContext.current // Needed to save the camera file
+
+    val galleryLauncher = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            onImageChange(uri.toString())
+        }
+    }
+
+    // Saves the picture to a temporary file since the photo taken by the camera is a Bitmap, and an uri is needed for the AsyncImage
+    val cameraLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        if (bitmap != null) {
+            val tempFile = File(context.cacheDir, "profile_pic_${System.currentTimeMillis()}.jpg")
+            tempFile.outputStream().use { out ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            }
+            onImageChange(tempFile.toURI().toString())
+        }
+    }
+
+    val showImageMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // IMAGE BOX WITH MONOGRAM AND CAMERA ICON ---
         item {
             Box(
                 modifier = Modifier
@@ -337,15 +372,81 @@ fun EditProfilePane(
                     .height(150.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.guest_user_profile_pic),
-                    contentDescription = "Profile Picture",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(120.dp)
-                        .border(2.dp, Color.Gray, CircleShape)
-                        .clip(CircleShape)
-                )
+                if (user.profileImageUri != null) {
+                    coil.compose.AsyncImage(
+                        model = user.profileImageUri,
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .border(2.dp, Color.Gray, CircleShape)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    // 2-LETTER MONOGRAM
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val initials = user.fullName
+                            .split(" ")
+                            .mapNotNull { it.firstOrNull()?.toString() }
+                            .take(2)
+                            .joinToString("")
+                            .uppercase()
+
+                        Text(
+                            text = initials,
+                            color = Color.White,
+                            fontSize = 42.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // The Camera Button overlapping the image
+                Box(
+                    modifier = Modifier.size(120.dp)
+                ) {
+                    IconButton(
+                        onClick = { showImageMenu.value = true },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "Change Picture",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    // The Dropdown Menu
+                    androidx.compose.material3.DropdownMenu(
+                        expanded = showImageMenu.value,
+                        onDismissRequest = { showImageMenu.value = false }
+                    ) {
+                        androidx.compose.material3.DropdownMenuItem(
+                            text = { Text("Select from Gallery") },
+                            onClick = {
+                                showImageMenu.value = false
+                                galleryLauncher.launch("image/*")
+                            }
+                        )
+                        androidx.compose.material3.DropdownMenuItem(
+                            text = { Text("Take a Picture") },
+                            onClick = {
+                                showImageMenu.value = false
+                                cameraLauncher.launch(null)
+                            }
+                        )
+                    }
+                }
             }
         }
 

@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 data class ProfileValidation(
-    // TODO: inserire errori campi editabili
+    // TODO: Insert error editable fields
     val nicknameError: String = "",
     val phoneError: String = "",
     val isValid: Boolean = true
@@ -36,7 +36,7 @@ class OwnedProfileViewModel : ViewModel() {
     var user by loggedInUser
         private set
 
-    var editableUser by mutableStateOf(user) // bozza mentre sto modificando
+    var editableUser by mutableStateOf(user) // draft while modifying
         private set
 
     var validation by mutableStateOf(ProfileValidation())
@@ -45,13 +45,13 @@ class OwnedProfileViewModel : ViewModel() {
     var isEditing by mutableStateOf(false)
         private set
 
-    fun startEditing() { // quando premo EDIT
+    fun startEditing() { // Click on edit
         editableUser = user
         validation = ProfileValidation()
         isEditing = true
     }
 
-    fun cancelEditing() { // scarto modifiche
+    fun cancelEditing() { // Delete changes
         editableUser = user
         validation = ProfileValidation()
         isEditing = false
@@ -93,6 +93,9 @@ class OwnedProfileViewModel : ViewModel() {
     fun setCuisinePreferences(list: List<String>) { editableUser = editableUser.copy(cuisinePreferences = list) }
     fun setDietaryRestrictions(list: List<String>) { editableUser = editableUser.copy(dietaryRestrictions = list) }
     fun setFavoriteIngredients(list: List<String>) { editableUser = editableUser.copy(favoriteIngredients = list) }
+    // Setters per editableUser
+    fun setProfileImageUri(uri: String?) { editableUser = editableUser.copy(profileImageUri = uri) }
+
 }
 
 class OtherProfileViewModel : ViewModel() {
@@ -147,15 +150,15 @@ class RecipeViewModel : ViewModel() {
         servings = 2,
         ingredients = listOf(
             Ingredient("Spaghetti", "200g"),
-            Ingredient("Pomodori", "300g"),
-            Ingredient("Aglio", "2 spicchi"),
-            Ingredient("Olio EVO", "3 cucchiai")
+            Ingredient("Tomatoes", "300g"),
+            Ingredient("Garlic", "2 cloves"),
+            Ingredient("Oil EVO", "3 Spoons")
         ),
         steps = listOf(
-            "Porta a ebollizione l'acqua salata.",
-            "Soffriggi l'aglio in olio per 2 minuti.",
-            "Aggiungi i pomodori e cuoci 10 minuti.",
-            "Scola la pasta al dente e manteca con il sugo."
+            "Bring salted water to a boil.",
+            "Sauté the garlic in oil for 2 minutes.",
+            "Add the tomatoes and cook for 10 minutes.",
+            "Drain the pasta al dente and toss with the sauce."
         )
     )
 }
