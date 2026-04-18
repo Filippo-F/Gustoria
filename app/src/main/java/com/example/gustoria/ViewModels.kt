@@ -6,9 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 data class ProfileValidation(
-    // TODO: Insert error editable fields
     val nicknameError: String = "",
     val phoneError: String = "",
+    val cookingRoleError: String = "",
+    val descriptionError: String = "",
     val isValid: Boolean = true
 )
 
@@ -60,6 +61,8 @@ class OwnedProfileViewModel : ViewModel() {
     fun validateAndSave() {
         var currentNicknameError = ""
         var currentPhoneError = ""
+        var cookingRoleError = ""
+        var descriptionError = ""
 
         if (editableUser.nickname.isBlank()) {
             currentNicknameError = "Nickname cannot be blank"
@@ -70,11 +73,24 @@ class OwnedProfileViewModel : ViewModel() {
             currentPhoneError = "Invalid phone number"
         }
 
-        val formIsValid = currentNicknameError.isBlank() && currentPhoneError.isBlank()
+        if (editableUser.cookingRole == null) {
+            cookingRoleError = "Please select a role"
+        }
+
+        if (editableUser.description.length > 150) {
+            descriptionError = "Too long"
+        }
+
+        val formIsValid = currentNicknameError.isBlank()
+                && currentPhoneError.isBlank()
+                && cookingRoleError.isBlank()
+                && descriptionError.isBlank()
 
         validation = ProfileValidation(
             nicknameError = currentNicknameError,
             phoneError = currentPhoneError,
+            cookingRoleError = cookingRoleError,
+            descriptionError = descriptionError,
             isValid = formIsValid
         )
 

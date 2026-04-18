@@ -242,6 +242,7 @@ fun PresentationPane(user: UserClass) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfilePane(
     user: UserClass,
@@ -260,6 +261,8 @@ fun EditProfilePane(
     val context = LocalContext.current
     val showImageMenu = remember { mutableStateOf(false) }
     val showCameraScreen = remember { mutableStateOf(false) }
+
+    var expanded by remember { mutableStateOf(false) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -408,6 +411,18 @@ fun EditProfilePane(
                 )
             }
 
+            if (validation.descriptionError.isNotBlank()) {
+                item {
+                    Text(
+                        text = validation.descriptionError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
+                }
+            }
+
             item {
                 OutlinedTextField(
                     value = user.phoneNumber,
@@ -425,6 +440,52 @@ fun EditProfilePane(
                 item {
                     Text(
                         text = validation.phoneError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
+                }
+            }
+
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = user.cookingRole?.displayName() ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Cooking Role") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        CookingRole.values().forEach { role ->
+                            DropdownMenuItem(
+                                text = { Text(role.displayName()) },
+                                onClick = {
+                                    onCookingRoleChange(role)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (validation.cookingRoleError.isNotBlank()) {
+                item {
+                    Text(
+                        text = validation.cookingRoleError,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier
                             .fillMaxWidth()
