@@ -90,9 +90,30 @@ class OwnedProfileViewModel : ViewModel() {
     fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
     fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
     fun setCookingRole(role: CookingRole?) { editableUser = editableUser.copy(cookingRole = role) }
-    fun setCuisinePreferences(list: List<String>) { editableUser = editableUser.copy(cuisinePreferences = list) }
-    fun setDietaryRestrictions(list: List<String>) { editableUser = editableUser.copy(dietaryRestrictions = list) }
-    fun setFavoriteIngredients(list: List<String>) { editableUser = editableUser.copy(favoriteIngredients = list) }
+    fun setCuisinePreferencesFromText(text: String) {
+        editableUser = editableUser.copy(
+            cuisinePreferences = text.toTagList()
+        )
+    }
+
+    fun setDietaryRestrictionsFromText(text: String) {
+        editableUser = editableUser.copy(
+            dietaryRestrictions = text.toTagList()
+        )
+    }
+
+    fun setFavoriteIngredientsFromText(text: String) {
+        editableUser = editableUser.copy(
+            favoriteIngredients = text.toTagList()
+        )
+    }
+
+    private fun String.toTagList(): List<String> {
+        return split(",")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+    }
+
     // Setters per editableUser
     fun setProfileImageUri(uri: String?) { editableUser = editableUser.copy(profileImageUri = uri) }
 
