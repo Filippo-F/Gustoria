@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import com.example.gustoria.ui.ThreeItemTopNavbar
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -78,7 +79,6 @@ fun OwnedProfileScreenPreviewLandscape() {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
     val configuration = LocalConfiguration.current
@@ -96,39 +96,22 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)) {
-            Row(
+            ThreeItemTopNavbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    modifier = Modifier.width(56.dp),
-                    onClick = {
-                        if (viewModel.isEditing) {
-                            viewModel.validateAndSave()
-                        } else {
-                            onBack()
-                        }
+                title = "Profile",
+                onBack = {
+                    if (viewModel.isEditing) {
+                        viewModel.validateAndSave()
+                    } else {
+                        onBack()
                     }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-
-                Text("Profile Page", fontSize = 20.sp)
-
-                if (!viewModel.isEditing) {
-                    IconButton(
-                        modifier = Modifier.width(56.dp),
-                        onClick = { viewModel.startEditing() }
-                    ) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
-                    }
-                } else {
-                    Box(modifier = Modifier.width(56.dp))
-                }
-            }
+                },
+                extraIcon = if (!viewModel.isEditing) Icons.Default.Edit else null,
+                extraIconDescription = "Edit Profile",
+                onClickExtra = { viewModel.startEditing() }
+            )
 
             if (viewModel.isEditing) {
                 EditProfilePane(
@@ -241,7 +224,6 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
             }
         }
 
-        @OptIn(ExperimentalLayoutApi::class)
         item {
             Row(
                 modifier = Modifier
@@ -264,7 +246,6 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
             }
         }
 
-        @OptIn(ExperimentalLayoutApi::class)
         item {
             FlowRow(
                 modifier = Modifier
@@ -292,8 +273,6 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfilePane(
     user: UserClass,

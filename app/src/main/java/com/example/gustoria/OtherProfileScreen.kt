@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.ui.ShareNavbar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
+import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
@@ -277,13 +278,16 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                 .background(MaterialTheme.colorScheme.background),
         ) {
             // Navigation Bar
-            ShareNavbar(
+            ThreeItemTopNavbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .background(MaterialTheme.colorScheme.background),
                 title = "Other Profile",
-                onBack = onBack
+                onBack = onBack,
+                extraIcon = Icons.Default.Share,
+                extraIconDescription = "Share",
+                onClickExtra = {}
             )
 
             LazyColumn(

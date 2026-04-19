@@ -36,10 +36,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.material.icons.filled.Favorite
+import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 
 @Preview(name = "Portrait", showSystemUi = true)
@@ -72,100 +75,107 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
+        Column(
+            Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .background(MaterialTheme.colorScheme.background),
         ) {
-            // TOP BAR with back arrow
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                    Text(recipe.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                }
-            }
+            // Top Navbar
+            ThreeItemTopNavbar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                title = recipe.title,
+                onBack = onBack,
+                extraIcon = Icons.Default.Favorite,
+                extraIconDescription = "Favorite",
+                onClickExtra = {}
+            )
 
-            // HERO IMAGE
-            item {
-                Image(
-                    painter = painterResource(id = R.drawable.random_food),
-                    contentDescription = "Recipe Image",
-                    contentScale = ContentScale.Crop, // Crops the image to perfectly fill the box
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp) // Gives it a nice, large "Hero" presence
-                        .padding(vertical = 8.dp)
-                        .clip(RoundedCornerShape(16.dp)) // Rounds the corners to match tags
-                )
-            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+            ) {
 
-            // INFO (cost, difficulty, cooking time, servings)
-            item {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp) // Added to give breathing room if they wrap!
-                ) {
-                    RecipeTag("💰 ${recipe.cost}")
-                    RecipeTag("📊 ${recipe.difficulty}")
-                    RecipeTag("⏱ ${recipe.cookingTimeMinutes} min")
-                    RecipeTag("🍽 ${recipe.servings} porzioni")
-                }
-            }
-
-            // Ingredients
-            item {
-                Text(
-                    "Ingredienti",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
-            }
-            items(recipe.ingredients) { ingredient ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(ingredient.name)
-                    Text(ingredient.quantity, color = MaterialTheme.colorScheme.onSurface)
-                }
-                HorizontalDivider()
-            }
-
-            item {
-                Text(
-                    "Preparazione",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
-            }
-            itemsIndexed(recipe.steps) { index, step ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Box(
+                // HERO IMAGE
+                item {
+                    Image(
+                        painter = painterResource(id = recipe.image),
+                        contentDescription = "Recipe Image",
+                        contentScale = ContentScale.Crop, // Crops the image to perfectly fill the box
                         modifier = Modifier
-                            .size(28.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .height(220.dp) // Gives it a nice, large "Hero" presence
+                            .padding(vertical = 8.dp)
+                            .clip(RoundedCornerShape(16.dp)) // Rounds the corners to match tags
+                    )
+                }
+
+                // INFO (cost, difficulty, cooking time, servings)
+                item {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp) // Added to give breathing room if they wrap!
                     ) {
-                        Text("${index + 1}", color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        RecipeTag("💰 ${recipe.cost}")
+                        RecipeTag("📊 ${recipe.difficulty}")
+                        RecipeTag("⏱ ${recipe.cookingTimeMinutes} min")
+                        RecipeTag("🍽 ${recipe.servings} porzioni")
                     }
-                    Text(step, modifier = Modifier.weight(1f))
+                }
+
+                // Ingredients
+                item {
+                    Text(
+                        "Ingredienti",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
+                }
+                items(recipe.ingredients) { ingredient ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(ingredient.name)
+                        Text(ingredient.quantity, color = MaterialTheme.colorScheme.onSurface)
+                    }
+                    HorizontalDivider()
+                }
+
+                item {
+                    Text(
+                        "Preparazione",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
+                }
+                itemsIndexed(recipe.steps) { index, step ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "${index + 1}", color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                        Text(step, modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
+
     }
 }
 

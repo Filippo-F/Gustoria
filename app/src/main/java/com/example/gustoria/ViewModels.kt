@@ -192,7 +192,7 @@ class OtherProfileViewModel : ViewModel() {
 class RecipeViewModel : ViewModel() {
     val recipe = RecipeProposal(
         title = "Pasta al Pomodoro",
-        image = R.drawable.guest_user_profile_pic, //placeholder per ora
+        image = R.drawable.random_food, //placeholder per ora
         cost = "€",
         difficulty = "Easy",
         cookingTimeMinutes = 20,

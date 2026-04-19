@@ -2,29 +2,36 @@ package com.example.gustoria.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ShareNavbar (modifier: Modifier, title: String, onBack: () -> Unit) {
-    FlowRow(
+fun ThreeItemTopNavbar (
+    modifier: Modifier,
+    title: String,
+    onBack: () -> Unit,
+    extraIcon: ImageVector? = null,
+    extraIconDescription: String? = null,
+    onClickExtra: () -> Unit = {}
+) {
+    Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
-        maxItemsInEachRow = 3,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // Back Icon
         IconButton(
@@ -38,21 +45,26 @@ fun ShareNavbar (modifier: Modifier, title: String, onBack: () -> Unit) {
         }
 
         // Page name
-        Box(
-            modifier = Modifier.height(56.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(title, fontSize = 20.sp)
-        }
+        Text(
+            text = title,
+            fontSize = 20.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
+        )
 
-        IconButton(
-            modifier = Modifier.size(56.dp),
-            onClick = onBack
-        ) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share"
-            )
+        if (extraIcon != null) {
+            IconButton(
+                modifier = Modifier.size(56.dp),
+                onClick = onClickExtra
+            ) {
+                Icon(
+                    imageVector = extraIcon,
+                    contentDescription = extraIconDescription
+                )
+            }
+        } else {
+            Box(modifier = Modifier.size(56.dp))
         }
     }
 }
