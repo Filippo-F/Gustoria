@@ -239,9 +239,9 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Box(modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)) {
-                    Text("⭐ Top Curator", color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("⭐ Top Curator", color = MaterialTheme.colorScheme.onTertiaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -674,7 +674,6 @@ fun CameraXScreen(
         AndroidView(
             factory = { ctx ->
                 PreviewView(ctx).apply {
-                    // THIS IS THE EMULATOR BLACK SCREEN FIX!
                     implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                     controller = cameraController
                     cameraController.bindToLifecycle(lifecycleOwner)

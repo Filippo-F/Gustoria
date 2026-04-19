@@ -40,10 +40,6 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.HorizontalDivider
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableIntStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.runtime.setValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TabRowDefaults
 import com.example.gustoria.ui.AppBottomNavBar

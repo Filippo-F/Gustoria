@@ -120,7 +120,7 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
 fun BasicButton(displayText: String, modifier: Modifier = Modifier, icon: ImageVector? = null, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
     ) {
         if (icon != null) {
             Icon(

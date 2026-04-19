@@ -346,10 +346,6 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                     )
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(32.dp))
-            }
         }
     }
 }

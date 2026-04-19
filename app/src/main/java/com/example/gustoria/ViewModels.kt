@@ -14,7 +14,7 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-// Shared user state visible to all ViewModels in this file
+// Data class variables visible to all ViewModels
 private val loggedInUser = mutableStateOf(
     UserClass(
         fullName = "Mario Rossi",
