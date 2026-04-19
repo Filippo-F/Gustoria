@@ -70,23 +70,50 @@ class OwnedProfileViewModel : ViewModel() {
             currentNicknameError = "Nickname cannot be blank"
         }
 
-        val phone = editableUser.phoneNumber.orEmpty()
-        if (phone.isBlank() || (phone.isNotBlank() && phone.length < 6)) {
-            currentPhoneError = "Invalid phone number"
+        val phone = editableUser.phoneNumber.orEmpty().trim().replace(" ", "")
+        if (phone.isBlank()) {
+            currentPhoneError = "Phone number cannot be blank"
+        } else if (phone.length < 7 || phone.length > 15) {
+            currentPhoneError = "Phone number length is invalid"
+        } else {
+            val isValid = phone.withIndex().all { (index, char) ->
+                if (index == 0 && char == '+') true
+                else char.isDigit()
+            }
+
+            if (!isValid) {
+                currentPhoneError = "Phone number must contain only digits"
+            }
         }
 
-        if (editableUser.email.isBlank()) {
+        val email = editableUser.email.trim()
+        if (email.isBlank()) {
             currentEmailError = "Email cannot be blank"
-        } else if (!editableUser.email.contains("@")) {
+        } else if (!email.contains("@")) {
             currentEmailError = "Email must contain @"
+        } else if (email.count { it == '@' } != 1) {
+            currentEmailError = "Email must contain only one @"
+        } else {
+            val parts = email.split("@")
+            val localPart = parts[0]
+            val domainPart = parts[1]
+
+            if (localPart.isBlank()) {
+                currentEmailError = "Invalid email format"
+            } else if (!domainPart.contains(".")) {
+                currentEmailError = "Domain must contain a dot"
+            } else if (domainPart.startsWith(".") || domainPart.endsWith(".")) {
+                currentEmailError = "Invalid domain format"
+            }
         }
 
         if (editableUser.cookingRole == null) {
             cookingRoleError = "Please select a role"
         }
 
-        if (editableUser.description.length > 150) {
-            descriptionError = "Too long"
+        val description = editableUser.description.orEmpty().trim()
+        if (description.length > 150) {
+            descriptionError = "Maximum 150 characters"
         }
 
         val formIsValid = currentNicknameError.isBlank()
