@@ -47,6 +47,7 @@ import androidx.compose.material3.HorizontalDivider
 //import androidx.compose.runtime.remember
 //import androidx.compose.runtime.setValue
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TabRowDefaults
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
 
@@ -340,9 +341,15 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                     SecondaryTabRow(
                         selectedTabIndex = viewModel.currentTab,
                         containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.secondary,
                         divider = {
                             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                        },
+                        indicator = {
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(viewModel.currentTab),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                     ) {
                         tabs.forEachIndexed { index, title ->
@@ -354,7 +361,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                                         text = title,
                                         fontSize = 12.sp,
                                         fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             )

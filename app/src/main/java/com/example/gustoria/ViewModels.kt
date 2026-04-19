@@ -34,6 +34,31 @@ private val loggedInUser = mutableStateOf(
     )
 )
 
+private val viewRecipe = mutableStateOf(
+    RecipeProposal(
+        title = "Napoletana's Spaghetti",
+        cost = "€",
+        difficulty = "Easy",
+        cookingTimeMinutes = 20,
+        servings = 2,
+        rating = 4.5f,
+        reviews = 100,
+        ingredients = listOf(
+            Ingredient("Spaghetti", "200g"),
+            Ingredient("Tomatoes", "300g"),
+            Ingredient("Garlic", "2 cloves"),
+            Ingredient("Oil EVO", "3 Spoons")
+        ),
+        steps = listOf(
+            "Bring salted water to a boil.",
+            "Sauté the garlic in oil for 2 minutes.",
+            "Add the tomatoes and cook for 10 minutes.",
+            "Drain the pasta al dente and toss with the sauce."
+        ),
+        description = "Pasta al pomodoro is an iconic Italian dish consisting of pasta—traditionally spaghetti—tossed in a simple, fresh tomato sauce, olive oil, garlic, and basil."
+    )
+)
+
 class OwnedProfileViewModel : ViewModel() {
     var user by loggedInUser
         private set
@@ -217,24 +242,19 @@ class OtherProfileViewModel : ViewModel() {
 }
 
 class RecipeViewModel : ViewModel() {
-    val recipe = RecipeProposal(
-        title = "Pasta al Pomodoro",
-        image = R.drawable.random_food, //placeholder per ora
-        cost = "€",
-        difficulty = "Easy",
-        cookingTimeMinutes = 20,
-        servings = 2,
-        ingredients = listOf(
-            Ingredient("Spaghetti", "200g"),
-            Ingredient("Tomatoes", "300g"),
-            Ingredient("Garlic", "2 cloves"),
-            Ingredient("Oil EVO", "3 Spoons")
-        ),
-        steps = listOf(
-            "Bring salted water to a boil.",
-            "Sauté the garlic in oil for 2 minutes.",
-            "Add the tomatoes and cook for 10 minutes.",
-            "Drain the pasta al dente and toss with the sauce."
-        )
-    )
+    var recipe by viewRecipe
+
+    var isFavorite by mutableStateOf(false)
+        private set
+
+    var isMade by mutableStateOf(false)
+        private set
+
+    fun toggleFavorite() {
+        isFavorite = !isFavorite
+    }
+
+    fun toggleMade() {
+        isMade = !isMade
+    }
 }
