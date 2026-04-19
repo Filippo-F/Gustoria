@@ -1,6 +1,5 @@
 package com.example.gustoria
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +47,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
+import androidx.compose.ui.graphics.Color
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -74,20 +73,44 @@ fun OtherProfileScreenLandscape() {
 }
 
 @Composable
-fun ProfileImage(image_url: String?) {
+fun ProfileImage(image_url: String?, fullName: String) {
     Box(
         modifier = Modifier.fillMaxWidth().height(150.dp),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.guest_user_profile_pic),
-            contentDescription = "Profile Picture",
-            contentScale = ContentScale.Crop, // crops to fill the circle
-            modifier = Modifier
-                .size(120.dp)
-                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape) // width, color, shape
-                .clip(CircleShape)
-        )
+        if (image_url != null) {
+            coil.compose.AsyncImage(
+                model = image_url,
+                contentDescription = "Profile Picture",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(120.dp)
+                    .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .clip(CircleShape)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                val initials = fullName
+                    .split(" ")
+                    .mapNotNull { it.firstOrNull()?.toString() }
+                    .take(2)
+                    .joinToString("")
+                    .uppercase()
+
+                Text(
+                    text = initials,
+                    color = Color.White,
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
@@ -293,7 +316,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                item { ProfileImage(image_url = viewModel.user.profileImageUri) }
+                item { ProfileImage(image_url = viewModel.user.profileImageUri, fullName = viewModel.user.fullName) }
 
                 item {
                     ProfileInfo(
