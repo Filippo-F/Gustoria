@@ -49,6 +49,10 @@ import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
 import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 
 @Preview(name = "Portrait", showSystemUi = true)
 @Composable
@@ -508,25 +512,30 @@ fun EditProfilePane(
             }
 
             item {
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = user.cookingRole?.displayName() ?: "",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Cooking Role") },
                         trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            IconButton(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    imageVector = if (expanded)
+                                        Icons.Default.KeyboardArrowUp
+                                    else
+                                        Icons.Default.KeyboardArrowDown,
+                                    contentDescription = null
+                                )
+                            }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     )
 
-                    ExposedDropdownMenu(
+                    DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         CookingRole.values().forEach { role ->
                             DropdownMenuItem(
