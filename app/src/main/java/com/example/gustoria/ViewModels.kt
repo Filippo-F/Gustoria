@@ -36,7 +36,7 @@ private val loggedInUser = mutableStateOf(
 
 private val viewRecipe = mutableStateOf(
     RecipeProposal(
-        title = "Napoletana's Spaghetti",
+        title = "Tomato Spaghetti",
         cost = "€",
         difficulty = "Easy",
         cookingTimeMinutes = 20,
@@ -50,10 +50,10 @@ private val viewRecipe = mutableStateOf(
             Ingredient("Oil EVO", "3 Spoons")
         ),
         steps = listOf(
-            "Bring salted water to a boil.",
+            "Bring a large pot of salted water to a boil",
             "Sauté the garlic in oil for 2 minutes.",
             "Add the tomatoes and cook for 10 minutes.",
-            "Drain the pasta al dente and toss with the sauce."
+            "Drain the pasta al dente, then toss with the sauce."
         ),
         description = "Pasta al pomodoro is an iconic Italian dish consisting of pasta—traditionally spaghetti—tossed in a simple, fresh tomato sauce, olive oil, garlic, and basil."
     )
