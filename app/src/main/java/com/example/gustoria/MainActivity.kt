@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Alignment
@@ -86,7 +85,7 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        // Titolo
+        // Title
         Text(
             text = "GUSTORIA",
             fontSize = 48.sp,
@@ -102,13 +101,12 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
             modifier = Modifier.padding(bottom = 64.dp, top = 8.dp)
         )
 
-        // bottoni
         BasicButton(
             displayText = "Owned Profile",
             icon = Icons.Default.Person,
             onClick = { onNavigate(Screen.OWNED_PROFILE) }
         )
-        //BasicButton(displayText = "OWNED User Profile", onClick = { onNavigate(Screen.OWNED_PROFILE) })
+
         Spacer(Modifier.height(20.dp))
         BasicButton(displayText = "OTHER User Profile", onClick = { onNavigate(Screen.OTHER_PROFILE) })
         Spacer(Modifier.height(20.dp))

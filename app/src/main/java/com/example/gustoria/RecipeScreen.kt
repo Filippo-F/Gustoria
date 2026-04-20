@@ -232,7 +232,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                         )
                     }
 
-                    // Create Your Own Button
+                    // Create Your Own Recipe Button
                     Button(
                         onClick = {  },
                         colors = ButtonDefaults.buttonColors(
