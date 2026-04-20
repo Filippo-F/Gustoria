@@ -55,6 +55,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.tooling.preview.Devices
 import com.example.gustoria.ui.ThreeItemTopNavbar
+import android.util.Log
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -611,9 +612,9 @@ fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageV
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) MaterialTheme.colorScheme.error else Color.DarkGray)
+            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) MaterialTheme.colorScheme.error else Color.Black)
+            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
         }
     }
 }
@@ -640,6 +641,7 @@ fun ImageBoxContent(user: UserClass) {
         ) {
             val initials = user.fullName
                 .split(" ")
+                .filter { it.isNotBlank() }
                 .mapNotNull { it.firstOrNull()?.toString() }
                 .take(2)
                 .joinToString("")
@@ -647,7 +649,7 @@ fun ImageBoxContent(user: UserClass) {
 
             Text(
                 text = initials,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 42.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -689,7 +691,7 @@ fun CameraXScreen(
                             onImageCaptured(photoFile.toURI().toString())
                         }
                         override fun onError(exc: ImageCaptureException) {
-                            println("Photo capture failed: ${exc.message}")
+                            Log.e("CameraX", "Photo capture failed: ${exc.message}")
                         }
                     }
                 )
