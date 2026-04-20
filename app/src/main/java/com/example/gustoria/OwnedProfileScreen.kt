@@ -128,7 +128,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
             } else {
                 PresentationPane(
                     user = viewModel.user,
-                    if ( configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ) true else false
+                    isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
                 )
             }
         }
@@ -510,7 +510,7 @@ fun EditProfilePane(
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        CookingRole.values().forEach { role ->
+                        CookingRole.entries.forEach { role ->
                             DropdownMenuItem(
                                 text = { Text(role.displayName()) },
                                 onClick = {

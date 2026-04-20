@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.SignalCellularAlt
 import androidx.compose.material.icons.filled.Star
@@ -225,7 +224,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = if (viewModel.isMade) "Made it!" else "I've made this",
+                            text = if (viewModel.isMade) "Cooked!" else "Mark as cooked?",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = if (viewModel.isMade) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.7f)

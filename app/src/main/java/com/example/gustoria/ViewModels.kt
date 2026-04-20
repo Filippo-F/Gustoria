@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableIntStateOf
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -95,10 +96,10 @@ class OwnedProfileViewModel : ViewModel() {
             currentNicknameError = "Nickname cannot be blank"
         }
 
-        val phone = editableUser.phoneNumber.orEmpty().trim().replace(" ", "")
+        val phone = editableUser.phoneNumber.trim().replace(" ", "")   // ".orEmpty" not needed since "string" is a non-nullable type
         if (phone.isBlank()) {
             currentPhoneError = "Phone number cannot be blank"
-        } else if (phone.length < 7 || phone.length > 15) {
+        } else if (phone.length !in 7..15) {  // Kotlin equivalent for "if (phone.length < 7 || phone.length > 15)"
             currentPhoneError = "Phone number length is invalid"
         } else {
             val isValid = phone.withIndex().all { (index, char) ->
@@ -136,7 +137,7 @@ class OwnedProfileViewModel : ViewModel() {
             cookingRoleError = "Please select a role"
         }
 
-        val description = editableUser.description.orEmpty().trim()
+        val description = editableUser.description.trim() // ".orEmpty" not needed since "string" is a non-nullable type
         if (description.length > 150) {
             descriptionError = "Maximum 150 characters"
         }
@@ -214,7 +215,7 @@ class OtherProfileViewModel : ViewModel() {
     var isFollowing by mutableStateOf(false)
         private set
 
-    var currentTab by mutableStateOf(0)
+    var currentTab by mutableIntStateOf(0)
         private set
 
     fun toggleFollow() {

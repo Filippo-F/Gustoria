@@ -67,14 +67,14 @@ fun OtherProfileScreenPreview() {
 }
 
 @Composable
-fun ProfileImage(image_url: String?, fullName: String) {
+fun ProfileImage(imageUrl: String?, fullName: String) {
     Box(
         modifier = Modifier.fillMaxWidth().height(150.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (image_url != null) {
+        if (imageUrl != null) {
             coil.compose.AsyncImage(
-                model = image_url,
+                model = imageUrl,
                 contentDescription = "Profile Picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -311,7 +311,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                item { ProfileImage(image_url = viewModel.user.profileImageUri, fullName = viewModel.user.fullName) }
+                item { ProfileImage(imageUrl = viewModel.user.profileImageUri, fullName = viewModel.user.fullName) }
 
                 item {
                     ProfileInfo(
