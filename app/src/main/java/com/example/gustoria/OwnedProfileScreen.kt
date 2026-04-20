@@ -53,23 +53,18 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.tooling.preview.Devices
 import com.example.gustoria.ui.ThreeItemTopNavbar
 
-@Preview(name = "Portrait", showSystemUi = true)
+@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
+@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
+@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
+@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
+@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET) // Crucial for expanded layouts
+@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
+@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
 @Composable
-fun OwnedProfileScreenPreviewPortrait() {
-    GustoriaTheme(dynamicColor = false) {
-        OwnedProfileScreen(
-            viewModel = viewModel(),
-            onBack = {},
-            onNavigate = {}
-        )
-    }
-}
-
-@Preview(name = "Landscape", widthDp = 851, heightDp = 393, showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
-@Composable
-fun OwnedProfileScreenPreviewLandscape() {
+fun OwnedProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
             viewModel = viewModel(),

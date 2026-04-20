@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,17 +61,15 @@ import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
 import com.example.gustoria.ui.theme.GustoriaTheme
 
-@Preview(name = "Portrait", showSystemUi = true)
-@Composable
-fun RecipeScreenPreviewPortrait() {
-    GustoriaTheme(dynamicColor = false) {
-        RecipeScreen(viewModel = viewModel(), onBack = {}, onNavigate = {})
-    }
-}
-
+@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
+@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
+@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
+@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
+@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET) // Crucial for expanded layouts
+@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
 @Composable
-fun RecipeScreenPreviewLandscape() {
+fun RecipeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(viewModel = viewModel(), onBack = {}, onNavigate = {})
     }
