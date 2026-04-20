@@ -59,17 +59,17 @@ fun AppContent(
         Screen.OWNED_PROFILE -> OwnedProfileScreen(
             viewModel = ownedProfileViewModel,
             onBack = { currentScreen = Screen.MAIN },
-            onNavigate = { currentScreen = Screen.MAIN }
+            onNavigate = {}
         )
         Screen.OTHER_PROFILE -> OtherProfileScreen(
             viewModel = otherProfileViewModel,
             onBack = { currentScreen = Screen.MAIN },
-            onNavigate = { currentScreen = Screen.MAIN }
+            onNavigate = {}
         )
         Screen.RECIPE -> RecipeScreen(
             viewModel = recipeViewModel,
             onBack = { currentScreen = Screen.MAIN },
-            onNavigate = { currentScreen = Screen.MAIN }
+            onNavigate = {}
         )
     }
 }
