@@ -85,8 +85,6 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        // Titolo
         Text(
             text = "GUSTORIA",
             fontSize = 48.sp,
@@ -101,14 +99,11 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
             letterSpacing = 2.sp,
             modifier = Modifier.padding(bottom = 64.dp, top = 8.dp)
         )
-
-        // bottoni
         BasicButton(
             displayText = "Owned Profile",
             icon = Icons.Default.Person,
             onClick = { onNavigate(Screen.OWNED_PROFILE) }
         )
-        //BasicButton(displayText = "OWNED User Profile", onClick = { onNavigate(Screen.OWNED_PROFILE) })
         Spacer(Modifier.height(20.dp))
         BasicButton(displayText = "OTHER User Profile", onClick = { onNavigate(Screen.OTHER_PROFILE) })
         Spacer(Modifier.height(20.dp))
@@ -120,7 +115,7 @@ fun MainScreen(onNavigate: (Screen) -> Unit) {
 fun BasicButton(displayText: String, modifier: Modifier = Modifier, icon: ImageVector? = null, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
     ) {
         if (icon != null) {
             Icon(

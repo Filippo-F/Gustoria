@@ -162,14 +162,13 @@ class OwnedProfileViewModel : ViewModel() {
         }
     }
 
-    // Setters per editableUser
-
+    // Setters for editableUser
     fun setNickname(nickname: String) { editableUser = editableUser.copy(nickname = nickname) }
     fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
     fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
-
     fun setEmail(email: String) { editableUser = editableUser.copy(email = email) }
     fun setCookingRole(role: CookingRole?) { editableUser = editableUser.copy(cookingRole = role) }
+
     fun setCuisinePreferencesFromText(text: String) {
         editableUser = editableUser.copy(
             cuisinePreferences = text.toTagList()
@@ -194,7 +193,6 @@ class OwnedProfileViewModel : ViewModel() {
             .filter { it.isNotBlank() }
     }
 
-    // Setters per editableUser
     fun setProfileImageUri(uri: String?) { editableUser = editableUser.copy(profileImageUri = uri) }
 
 }

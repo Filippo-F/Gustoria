@@ -33,7 +33,7 @@ fun ThreeItemTopNavbar (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Back Icon
+        // "Back" Icon
         IconButton(
             modifier = Modifier.size(56.dp),
             onClick = onBack

@@ -54,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Devices
 @Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
 @Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+
 @Composable
 fun OtherProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
@@ -113,13 +114,14 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, d
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Full name and nickname
+        // Full name
         Text(
             text = fullName,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
+        // Nickname
         Text(
             text = buildString {
                 append(nickname)
@@ -338,7 +340,6 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                     }
                 }
 
-
                 item {
                     FlowRow(
                         modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -351,7 +352,7 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                     }
                 }
 
-                // Implementation of the tabs
+                // Tabs
                 item {
                     SecondaryTabRow(
                         selectedTabIndex = viewModel.currentTab,

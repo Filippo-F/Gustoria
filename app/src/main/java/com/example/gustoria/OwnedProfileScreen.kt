@@ -63,6 +63,7 @@ import com.example.gustoria.ui.ThreeItemTopNavbar
 @Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
 @Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+
 @Composable
 fun OwnedProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
@@ -125,11 +126,9 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                     onEmailChange = viewModel::setEmail,
                 )
             } else {
-                PresentationPane(user = viewModel.user,
-                    if (
-                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                        ) true else
-                            false
+                PresentationPane(
+                    user = viewModel.user,
+                    if ( configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ) true else false
                 )
             }
         }
@@ -247,7 +246,7 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                     .padding(top = 24.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                maxItemsInEachRow = 3,
+                maxItemsInEachRow = 3
             ) {
                 ValueBox(value = user.numberOfRecipes, text = "Recipes")
                 ValueBox(value = user.numberOfFollowers, text = "Followers")
@@ -268,6 +267,7 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
         }
     }
 }
+
 @Composable
 fun EditProfilePane(
     user: UserClass,
@@ -287,7 +287,6 @@ fun EditProfilePane(
     val context = LocalContext.current
     val showImageMenu = remember { mutableStateOf(false) }
     val showCameraScreen = remember { mutableStateOf(false) }
-
     var expanded by remember { mutableStateOf(false) }
 
     val galleryLauncher = rememberLauncherForActivityResult(

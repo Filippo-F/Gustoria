@@ -13,6 +13,7 @@ enum class CookingRole {
         PROFESSIONAL_CHEF -> "Professional Chef"
     }
 }
+
 data class UserClass(
     val fullName: String,
     val email: String,
@@ -21,7 +22,7 @@ data class UserClass(
     val nickname: String,
     val phoneNumber: String = "",
     val description: String = "",
-    val profileImageUri: String? = null, //per ora
+    val profileImageUri: String? = null,
     val cookingRole: CookingRole? = null,
 
     val cuisinePreferences: List<String> = emptyList(),

@@ -68,6 +68,7 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 @Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
 @Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+
 @Composable
 fun RecipeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
@@ -121,7 +122,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                             )
                     )
 
-                    // Back Button
+                    // "Back" Button
                     IconButton(
                         onClick = onBack,
                         modifier = Modifier
@@ -136,7 +137,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                         )
                     }
 
-                    // Favorite Button
+                    // "Favorite" Button
                     IconButton(
                         onClick = { viewModel.toggleFavorite() },
                         modifier = Modifier
@@ -231,7 +232,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                         )
                     }
 
-                    // Create Your Own Button
+                    // "Create Your Own" Button
                     Button(
                         onClick = {  },
                         colors = ButtonDefaults.buttonColors(
@@ -255,7 +256,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, onBack: () -> Unit = {}, onNavigate
                 }
             }
 
-            //Description
+            // Description
             item {
                 Text(
                     recipe.description,
