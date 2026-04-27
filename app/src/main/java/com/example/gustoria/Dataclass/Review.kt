@@ -1,13 +1,16 @@
 package com.example.gustoria.Dataclass
 
-import java.util.Optional
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 data class Review (
-    val authorName: String,
-    val authorNickname: String,
-    val description: String,
-    val rating: Float,
-    val likes: Int,
-    val photoUri: Optional<String>,
-    val timestamp: String,
+    val id: String = Uuid.random().toString(),
+    val authorName: String = "",
+    val authorNickname: String = "",
+    val description: String = "",
+    val rating: Float = 0f,
+    val likes: Int = 0,
+    val photoUri: String? = null,
+    val timestamp: String = "",
 )
