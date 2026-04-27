@@ -6,6 +6,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 data class Recipe(
     val id: String = Uuid.random().toString(),
+    val ownerId: String = Uuid.random().toString(),
     val name: String = "",
     val imageUri: String? = null,
     val cost: String = "Undefined", // es. "€", "€€"

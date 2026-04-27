@@ -1,0 +1,24 @@
+package com.example.gustoria.domain
+
+import com.example.gustoria.Dataclass.Review
+import kotlinx.coroutines.flow.Flow
+
+interface ReviewRepoInterface {
+    // Get all review on the platform for a specific recipe
+    fun getReviewsByRecipe(recipeId: String): Flow<List<Review>>
+
+    // Get all reviews written by a specific user
+    fun getReviewsByUser(userId: String): Flow<List<Review>>
+
+    // Get a specific review by its ID
+    fun getReviewById(reviewId: String): Flow<Review?>
+
+    // Add a review to a recipe
+    suspend fun addReview(review: Review)
+
+    // Update an existing review
+    suspend fun updateReview(reviewId: String, review: Review)
+
+    // Delete a review from a recipe
+    suspend fun deleteReview(reviewId: String, review: Review)
+}

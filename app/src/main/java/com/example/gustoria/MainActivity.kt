@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.gustoria.ui.theme.GustoriaTheme
+import io.paperdb.Paper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        Paper.init(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
