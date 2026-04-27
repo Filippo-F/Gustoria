@@ -20,5 +20,5 @@ interface RecipeRepoInterface {
     suspend fun updateRecipe(recipeId: String, recipe: Recipe)
 
     // Delete a recipe from the platform
-    suspend fun deleteRecipe(recipeId: String, recipe: Recipe)
+    suspend fun deleteRecipe(recipeId: String)
 }

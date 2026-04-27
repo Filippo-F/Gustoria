@@ -187,8 +187,8 @@ class PaperRecipeRepo : RecipeRepoInterface {
         scope.launch {
             if (book.allKeys.isEmpty()) {
                 _placeholderRecipes.forEach { book.write(it.id, it) }
-                _refreshTrigger.value = System.currentTimeMillis()
             }
+            _refreshTrigger.value = System.currentTimeMillis() // emit once, after seeding
         }
     }
 
@@ -216,7 +216,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         _refreshTrigger.value = System.currentTimeMillis()
     }
 
-    override suspend fun deleteRecipe(recipeId: String, recipe: Recipe) = withContext(Dispatchers.IO) {
+    override suspend fun deleteRecipe(recipeId: String) = withContext(Dispatchers.IO) {
         book.delete(recipeId)
         _refreshTrigger.value = System.currentTimeMillis()
     }
