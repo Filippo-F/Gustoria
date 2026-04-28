@@ -20,5 +20,5 @@ interface ReviewRepoInterface {
     suspend fun updateReview(reviewId: String, review: Review)
 
     // Delete a review from a recipe
-    suspend fun deleteReview(reviewId: String, review: Review)
+    suspend fun deleteReview(reviewId: String)
 }

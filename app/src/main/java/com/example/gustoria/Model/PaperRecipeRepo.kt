@@ -26,10 +26,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 20,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Spaghetti", 350),
-                Ingredient("Guanciale", 450),
-                Ingredient("Eggs", 150),
-                Ingredient("Pecorino Romano", 400)
+                Ingredient("Spaghetti", 200, "g", 700),
+                Ingredient("Guanciale", 100, "g", 450),
+                Ingredient("Eggs", 4, "pcs", 280),
+                Ingredient("Pecorino Romano", 50, "g", 190)
             ),
             steps = listOf("Boil water", "Fry guanciale", "Mix eggs and cheese", "Combine all"),
             description = "Classic Roman pasta dish."
@@ -42,10 +42,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 90,
             servings = 4,
             ingredients = listOf(
-                Ingredient("Flour", 360),
-                Ingredient("Tomato Sauce", 40),
-                Ingredient("Mozzarella", 250),
-                Ingredient("Basil", 20)
+                Ingredient("Flour", 500, "g", 1700),
+                Ingredient("Tomato Sauce", 200, "ml", 50),
+                Ingredient("Mozzarella", 250, "g", 600),
+                Ingredient("Basil", 5, "leaves", 1)
             ),
             steps = listOf("Prepare dough", "Let it rise", "Add toppings", "Bake at high temp"),
             description = "The queen of Italian pizzas."
@@ -58,10 +58,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 120,
             servings = 6,
             ingredients = listOf(
-                Ingredient("Lasagna sheets", 300),
-                Ingredient("Ragù sauce", 200),
-                Ingredient("Béchamel", 150),
-                Ingredient("Parmesan", 400)
+                Ingredient("Lasagna sheets", 250, "g", 800),
+                Ingredient("Ragù sauce", 500, "ml", 600),
+                Ingredient("Béchamel", 400, "ml", 500),
+                Ingredient("Parmesan", 100, "g", 400)
             ),
             steps = listOf("Make ragù", "Layer ingredients", "Bake until golden"),
             description = "Hearty layers of pasta and meat sauce."
@@ -74,10 +74,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 30,
             servings = 3,
             ingredients = listOf(
-                Ingredient("Arborio Rice", 330),
-                Ingredient("Saffron", 10),
-                Ingredient("Broth", 20),
-                Ingredient("Butter", 700)
+                Ingredient("Arborio Rice", 300, "g", 1000),
+                Ingredient("Saffron", 1, "tsp", 5),
+                Ingredient("Broth", 1, "l", 20),
+                Ingredient("Butter", 50, "g", 350)
             ),
             steps = listOf("Toast rice", "Add broth gradually", "Stir in saffron", "Mantecare with butter"),
             description = "Golden saffron risotto."
@@ -90,10 +90,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 45,
             servings = 8,
             ingredients = listOf(
-                Ingredient("Savoiardi", 300),
-                Ingredient("Mascarpone", 450),
-                Ingredient("Coffee", 5),
-                Ingredient("Cocoa powder", 350)
+                Ingredient("Savoiardi", 200, "g", 700),
+                Ingredient("Mascarpone", 500, "g", 1900),
+                Ingredient("Coffee", 250, "ml", 5),
+                Ingredient("Cocoa powder", 20, "g", 80)
             ),
             steps = listOf("Brew coffee", "Whip mascarpone with eggs", "Dip biscuits", "Layer and chill"),
             description = "The most famous Italian dessert."
@@ -106,10 +106,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 60,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Sushi Rice", 130),
-                Ingredient("Nori", 30),
-                Ingredient("Salmon", 200),
-                Ingredient("Avocado", 160)
+                Ingredient("Sushi Rice", 200, "g", 260),
+                Ingredient("Nori", 2, "sheets", 10),
+                Ingredient("Salmon", 150, "g", 300),
+                Ingredient("Avocado", 1, "pc", 240)
             ),
             steps = listOf("Cook rice", "Season with vinegar", "Roll with fillings", "Slice"),
             description = "Fresh salmon and avocado rolls."
@@ -122,10 +122,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 15,
             servings = 1,
             ingredients = listOf(
-                Ingredient("Ground Beef", 250),
-                Ingredient("Burger Bun", 280),
-                Ingredient("Cheddar", 400),
-                Ingredient("Lettuce", 15)
+                Ingredient("Ground Beef", 200, "g", 500),
+                Ingredient("Burger Bun", 1, "pc", 150),
+                Ingredient("Cheddar", 1, "slice", 100),
+                Ingredient("Lettuce", 2, "leaves", 5)
             ),
             steps = listOf("Shape patty", "Grill patty", "Toast bun", "Assemble"),
             description = "Juicy homemade burger."
@@ -138,10 +138,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 20,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Romaine Lettuce", 15),
-                Ingredient("Chicken Breast", 165),
-                Ingredient("Croutons", 400),
-                Ingredient("Caesar Dressing", 450)
+                Ingredient("Romaine Lettuce", 1, "head", 30),
+                Ingredient("Chicken Breast", 200, "g", 330),
+                Ingredient("Croutons", 50, "g", 200),
+                Ingredient("Caesar Dressing", 4, "tbsp", 300)
             ),
             steps = listOf("Grill chicken", "Chop lettuce", "Toss with dressing", "Add croutons"),
             description = "Classic salad with creamy dressing."
@@ -154,10 +154,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 30,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Rice Noodles", 350),
-                Ingredient("Shrimp", 99),
-                Ingredient("Peanuts", 567),
-                Ingredient("Bean Sprouts", 30)
+                Ingredient("Rice Noodles", 200, "g", 700),
+                Ingredient("Shrimp", 150, "g", 150),
+                Ingredient("Peanuts", 30, "g", 170),
+                Ingredient("Bean Sprouts", 50, "g", 15)
             ),
             steps = listOf("Soak noodles", "Stir-fry shrimp", "Add noodles and sauce", "Top with peanuts"),
             description = "Popular Thai street food."
@@ -170,10 +170,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 75,
             servings = 4,
             ingredients = listOf(
-                Ingredient("Onions", 40),
-                Ingredient("Beef Broth", 20),
-                Ingredient("Baguette", 250),
-                Ingredient("Gruyère Cheese", 410)
+                Ingredient("Onions", 500, "g", 200),
+                Ingredient("Beef Broth", 1, "l", 50),
+                Ingredient("Baguette", 1, "pc", 250),
+                Ingredient("Gruyère Cheese", 100, "g", 400)
             ),
             steps = listOf("Caramelize onions", "Add broth and simmer", "Top with bread and cheese", "Broil"),
             description = "Rich onion soup topped with melted cheese."
