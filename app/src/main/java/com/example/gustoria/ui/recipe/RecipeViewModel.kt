@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.model.PaperRecipeRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +17,7 @@ import kotlin.uuid.Uuid
 private const val CURRENT_LOGGED_IN_USER_ID = "101"
 
 class RecipeViewModel(
-    private val recipeRepository: PaperRecipeRepo
+    private val recipeRepository: RecipeRepoInterface // TODO: da verificare
 ) : ViewModel() {
 
     val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
@@ -78,7 +77,7 @@ class RecipeViewModel(
 
     companion object {
         fun provideFactory(
-            recipeRepository: PaperRecipeRepo
+            recipeRepository: RecipeRepoInterface // TODO: da verificare
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")

@@ -17,7 +17,7 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import io.paperdb.Paper
 
 class MainActivity : ComponentActivity() {
-    private val recipeRepository = PaperRecipeRepo()
+    private lateinit var recipeRepository: PaperRecipeRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +64,9 @@ fun GustoriaApp(
         }
 
         MainScreen.RECIPES_LIST -> {
-            Text("Create Recipe Screen - TODO")
+            RecipeScreen(
+                recipeRepository = recipeRepository
+            )
         }
 
         MainScreen.MY_RECIPES -> {
