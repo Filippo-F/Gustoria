@@ -1,6 +1,6 @@
 package com.example.gustoria.model
 
-import com.example.gustoria.Dataclass.Ingredient
+import com.example.gustoria.Dataclass.RecipeIngredient
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import io.paperdb.Paper
@@ -8,9 +8,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -26,10 +28,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 20,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Spaghetti", 200, "g", 700),
-                Ingredient("Guanciale", 100, "g", 450),
-                Ingredient("Eggs", 4, "pcs", 280),
-                Ingredient("Pecorino Romano", 50, "g", 190)
+                RecipeIngredient("Spaghetti", 200, "g"),
+                RecipeIngredient("Guanciale", 100, "g"),
+                RecipeIngredient("Eggs", 4, "pcs"),
+                RecipeIngredient("Pecorino Romano", 50, "g")
             ),
             steps = listOf("Boil water", "Fry guanciale", "Mix eggs and cheese", "Combine all"),
             description = "Classic Roman pasta dish."
@@ -42,10 +44,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 90,
             servings = 4,
             ingredients = listOf(
-                Ingredient("Flour", 500, "g", 1700),
-                Ingredient("Tomato Sauce", 200, "ml", 50),
-                Ingredient("Mozzarella", 250, "g", 600),
-                Ingredient("Basil", 5, "leaves", 1)
+                RecipeIngredient("Flour", 500, "g"),
+                RecipeIngredient("Tomato Sauce", 200, "ml"),
+                RecipeIngredient("Mozzarella", 250, "g"),
+                RecipeIngredient("Basil", 5, "leaves")
             ),
             steps = listOf("Prepare dough", "Let it rise", "Add toppings", "Bake at high temp"),
             description = "The queen of Italian pizzas."
@@ -58,10 +60,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 120,
             servings = 6,
             ingredients = listOf(
-                Ingredient("Lasagna sheets", 250, "g", 800),
-                Ingredient("Ragù sauce", 500, "ml", 600),
-                Ingredient("Béchamel", 400, "ml", 500),
-                Ingredient("Parmesan", 100, "g", 400)
+                RecipeIngredient("Lasagna sheets", 250, "g"),
+                RecipeIngredient("Ragù sauce", 500, "ml"),
+                RecipeIngredient("Béchamel", 400, "ml"),
+                RecipeIngredient("Parmesan", 100, "g")
             ),
             steps = listOf("Make ragù", "Layer ingredients", "Bake until golden"),
             description = "Hearty layers of pasta and meat sauce."
@@ -74,10 +76,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 30,
             servings = 3,
             ingredients = listOf(
-                Ingredient("Arborio Rice", 300, "g", 1000),
-                Ingredient("Saffron", 1, "tsp", 5),
-                Ingredient("Broth", 1, "l", 20),
-                Ingredient("Butter", 50, "g", 350)
+                RecipeIngredient("Arborio Rice", 300, "g"),
+                RecipeIngredient("Saffron", 1, "tsp"),
+                RecipeIngredient("Broth", 1, "l"),
+                RecipeIngredient("Butter", 50, "g")
             ),
             steps = listOf("Toast rice", "Add broth gradually", "Stir in saffron", "Mantecare with butter"),
             description = "Golden saffron risotto."
@@ -90,10 +92,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 45,
             servings = 8,
             ingredients = listOf(
-                Ingredient("Savoiardi", 200, "g", 700),
-                Ingredient("Mascarpone", 500, "g", 1900),
-                Ingredient("Coffee", 250, "ml", 5),
-                Ingredient("Cocoa powder", 20, "g", 80)
+                RecipeIngredient("Savoiardi", 200, "g"),
+                RecipeIngredient("Mascarpone", 500, "g"),
+                RecipeIngredient("Coffee", 250, "ml"),
+                RecipeIngredient("Cocoa powder", 20, "g")
             ),
             steps = listOf("Brew coffee", "Whip mascarpone with eggs", "Dip biscuits", "Layer and chill"),
             description = "The most famous Italian dessert."
@@ -106,10 +108,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 60,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Sushi Rice", 200, "g", 260),
-                Ingredient("Nori", 2, "sheets", 10),
-                Ingredient("Salmon", 150, "g", 300),
-                Ingredient("Avocado", 1, "pc", 240)
+                RecipeIngredient("Sushi Rice", 200, "g"),
+                RecipeIngredient("Nori", 2, "sheets"),
+                RecipeIngredient("Salmon", 150, "g"),
+                RecipeIngredient("Avocado", 1, "pc")
             ),
             steps = listOf("Cook rice", "Season with vinegar", "Roll with fillings", "Slice"),
             description = "Fresh salmon and avocado rolls."
@@ -122,10 +124,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 15,
             servings = 1,
             ingredients = listOf(
-                Ingredient("Ground Beef", 200, "g", 500),
-                Ingredient("Burger Bun", 1, "pc", 150),
-                Ingredient("Cheddar", 1, "slice", 100),
-                Ingredient("Lettuce", 2, "leaves", 5)
+                RecipeIngredient("Ground Beef", 200, "g"),
+                RecipeIngredient("Burger Bun", 1, "pc"),
+                RecipeIngredient("Cheddar", 1, "slice"),
+                RecipeIngredient("Lettuce", 2, "leaves")
             ),
             steps = listOf("Shape patty", "Grill patty", "Toast bun", "Assemble"),
             description = "Juicy homemade burger."
@@ -138,10 +140,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 20,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Romaine Lettuce", 1, "head", 30),
-                Ingredient("Chicken Breast", 200, "g", 330),
-                Ingredient("Croutons", 50, "g", 200),
-                Ingredient("Caesar Dressing", 4, "tbsp", 300)
+                RecipeIngredient("Romaine Lettuce", 1, "head"),
+                RecipeIngredient("Chicken Breast", 200, "g"),
+                RecipeIngredient("Croutons", 50, "g"),
+                RecipeIngredient("Caesar Dressing", 4, "tbsp")
             ),
             steps = listOf("Grill chicken", "Chop lettuce", "Toss with dressing", "Add croutons"),
             description = "Classic salad with creamy dressing."
@@ -154,10 +156,10 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 30,
             servings = 2,
             ingredients = listOf(
-                Ingredient("Rice Noodles", 200, "g", 700),
-                Ingredient("Shrimp", 150, "g", 150),
-                Ingredient("Peanuts", 30, "g", 170),
-                Ingredient("Bean Sprouts", 50, "g", 15)
+                RecipeIngredient("Rice Noodles", 200, "g"),
+                RecipeIngredient("Shrimp", 150, "g"),
+                RecipeIngredient("Peanuts", 30, "g"),
+                RecipeIngredient("Bean Sprouts", 50, "g")
             ),
             steps = listOf("Soak noodles", "Stir-fry shrimp", "Add noodles and sauce", "Top with peanuts"),
             description = "Popular Thai street food."
@@ -170,54 +172,72 @@ class PaperRecipeRepo : RecipeRepoInterface {
             cookingTimeMinutes = 75,
             servings = 4,
             ingredients = listOf(
-                Ingredient("Onions", 500, "g", 200),
-                Ingredient("Beef Broth", 1, "l", 50),
-                Ingredient("Baguette", 1, "pc", 250),
-                Ingredient("Gruyère Cheese", 100, "g", 400)
+                RecipeIngredient("Onions", 500, "g"),
+                RecipeIngredient("Beef Broth", 1, "l"),
+                RecipeIngredient("Baguette", 1, "pc"),
+                RecipeIngredient("Gruyère Cheese", 100, "g")
             ),
             steps = listOf("Caramelize onions", "Add broth and simmer", "Top with bread and cheese", "Broil"),
             description = "Rich onion soup topped with melted cheese."
         )
     )
-    private val book = Paper.book("recipes")
+    private val recipeBook = Paper.book("recipes")
+
+    // In memory state
+    private val _recipes = MutableStateFlow<List<Recipe>>(
+        recipeBook.allKeys.mapNotNull { key ->
+            recipeBook.read<Recipe>(key)
+        }
+    )
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val _refreshTrigger = MutableStateFlow(System.currentTimeMillis())
 
     init {
         scope.launch {
-            if (book.allKeys.isEmpty()) {
-                _placeholderRecipes.forEach { book.write(it.id, it) }
+            if (recipeBook.allKeys.isEmpty()) {
+                _placeholderRecipes.forEach { recipeBook.write(it.id, it) }
             }
-            _refreshTrigger.value = System.currentTimeMillis() // emit once, after seeding
         }
     }
 
-    override fun getAllRecipes(): Flow<List<Recipe>> = _refreshTrigger.map {
-        book.allKeys.mapNotNull { key -> book.read<Recipe>(key) }
-    }.flowOn(Dispatchers.IO)
+    override fun getAllRecipes(): StateFlow<List<Recipe>> {
+        return _recipes.asStateFlow()
+    }
 
-    override fun getRecipeById(recipeId: String): Flow<Recipe?> = _refreshTrigger.map {
-        book.read<Recipe>(recipeId)
-    }.flowOn(Dispatchers.IO)
+    override fun getRecipeById(recipeId: String): Flow<Recipe?> =
+        _recipes
+        .map { list ->
+            list.find { it.id == recipeId }
+        }
+        .flowOn(Dispatchers.IO)
 
-    override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = _refreshTrigger.map {
-        book.allKeys.mapNotNull { key ->
-            book.read<Recipe>(key)
-        }.filter { it.ownerId == ownerId }
-    }.flowOn(Dispatchers.IO)
+    override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> =
+        _recipes
+        .map { list ->
+            list.filter { it.ownerId == ownerId }
+        }
+        .flowOn(Dispatchers.IO)
 
     override suspend fun addRecipe(recipe: Recipe) = withContext(Dispatchers.IO) {
-        book.write(recipe.id, recipe)
-        _refreshTrigger.value = System.currentTimeMillis()
+        recipeBook.write<Recipe>(recipe.id, recipe)
+        _recipes.update { currentList -> currentList + recipe }
     }
 
     override suspend fun updateRecipe(recipeId: String, recipe: Recipe) = withContext(Dispatchers.IO) {
-        book.write(recipeId, recipe)
-        _refreshTrigger.value = System.currentTimeMillis()
+        recipeBook.write(recipeId, recipe)
+        _recipes.update { currentList ->
+            currentList.map {
+                if (it.id == recipeId)
+                    recipe
+                else
+                    it
+            }
+        }
     }
 
     override suspend fun deleteRecipe(recipeId: String) = withContext(Dispatchers.IO) {
-        book.delete(recipeId)
-        _refreshTrigger.value = System.currentTimeMillis()
+        recipeBook.delete(recipeId)
+        _recipes.update { currentList ->
+            currentList.filter { it.id != recipeId }
+        }
     }
 }
