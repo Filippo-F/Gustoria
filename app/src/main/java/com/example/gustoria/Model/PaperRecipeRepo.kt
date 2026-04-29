@@ -1,5 +1,6 @@
 package com.example.gustoria.model
 
+import androidx.compose.runtime.currentComposer
 import com.example.gustoria.Dataclass.Ingredient
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -8,9 +9,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -180,44 +185,62 @@ class PaperRecipeRepo : RecipeRepoInterface {
         )
     )
     private val book = Paper.book("recipes")
+
+    // In memory state
+    private val _recipes = MutableStateFlow<List<Recipe>>(
+        book.allKeys.mapNotNull { key ->
+            book.read<Recipe>(key)
+        }
+    )
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val _refreshTrigger = MutableStateFlow(System.currentTimeMillis())
 
     init {
         scope.launch {
             if (book.allKeys.isEmpty()) {
                 _placeholderRecipes.forEach { book.write(it.id, it) }
             }
-            _refreshTrigger.value = System.currentTimeMillis() // emit once, after seeding
         }
     }
 
-    override fun getAllRecipes(): Flow<List<Recipe>> = _refreshTrigger.map {
-        book.allKeys.mapNotNull { key -> book.read<Recipe>(key) }
-    }.flowOn(Dispatchers.IO)
-
-    override fun getRecipeById(recipeId: String): Flow<Recipe?> = _refreshTrigger.map {
-        book.read<Recipe>(recipeId)
-    }.flowOn(Dispatchers.IO)
-
-    override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = _refreshTrigger.map {
-        book.allKeys.mapNotNull { key ->
-            book.read<Recipe>(key)
-        }.filter { it.ownerId == ownerId }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun addRecipe(recipe: Recipe) = withContext(Dispatchers.IO) {
-        book.write(recipe.id, recipe)
-        _refreshTrigger.value = System.currentTimeMillis()
+    override fun getAllRecipes(): StateFlow<List<Recipe>> {
+        return _recipes.asStateFlow()
     }
 
-    override suspend fun updateRecipe(recipeId: String, recipe: Recipe) = withContext(Dispatchers.IO) {
+    override fun getRecipeById(recipeId: String): Flow<Recipe?> =
+        _recipes
+        .map { list ->
+            list.find { it.id == recipeId }
+        }
+        .flowOn(Dispatchers.IO)
+
+    override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> =
+        _recipes
+        .map { list ->
+            list.filter { it.ownerId == ownerId }
+        }
+        .flowOn(Dispatchers.IO)
+
+    override suspend fun addRecipe(recipe: Recipe) {
+        book.write<Recipe>(recipe.id, recipe)
+        _recipes.update { currentList -> currentList + recipe }
+    }
+
+    override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {
         book.write(recipeId, recipe)
-        _refreshTrigger.value = System.currentTimeMillis()
+        _recipes.update { currentList ->
+            currentList.map {
+                if (it.id == recipeId)
+                    recipe
+                else
+                    it
+            }
+        }
     }
 
-    override suspend fun deleteRecipe(recipeId: String) = withContext(Dispatchers.IO) {
+    override suspend fun deleteRecipe(recipeId: String) {
         book.delete(recipeId)
-        _refreshTrigger.value = System.currentTimeMillis()
+        _recipes.update { currentList ->
+            currentList.filter { it.id != recipeId }
+        }
     }
 }
