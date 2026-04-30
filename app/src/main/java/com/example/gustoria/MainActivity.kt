@@ -142,13 +142,8 @@ fun MainMenuScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Gustoria",
+            text = "GUSTORIA",
             style = MaterialTheme.typography.headlineLarge
-        )
-
-        Text(
-            text = "Logged in as user ${SessionManager.CURRENT_LOGGED_IN_USER_ID}",
-            style = MaterialTheme.typography.labelMedium
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -160,13 +155,13 @@ fun MainMenuScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(onClick = onMyRecipesClick, modifier = Modifier.fillMaxWidth()) {
-            Text("My Recipe Proposals")
+            Text("My Recipes")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(onClick = onCreateRecipeClick, modifier = Modifier.fillMaxWidth()) {
-            Text("Create New Recipe Proposal")
+            Text("Create New Recipe")
         }
     }
 }

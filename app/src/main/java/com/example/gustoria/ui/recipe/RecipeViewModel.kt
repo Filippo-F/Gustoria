@@ -24,7 +24,7 @@ class RecipeViewModel(
     val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
 
@@ -35,7 +35,7 @@ class RecipeViewModel(
         combine(recipes, _filters) { list, filters -> list.applyFilters(filters) }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.WhileSubscribed(5_000), // o Eagerly?
                 initialValue = emptyList()
             )
 
@@ -44,7 +44,7 @@ class RecipeViewModel(
         combine(recipes, _selectedRecipeId) { list, id -> list.find { it.id == id } }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.Eagerly,
                 initialValue = null
             )
 
@@ -76,9 +76,6 @@ class RecipeViewModel(
             else it.selectedDifficulties + difficulty
             it.copy(selectedDifficulties = newSet)
         }
-
-    fun setServingsRange(min: Int?, max: Int?) =
-        _filters.update { it.copy(minServings = min, maxServings = max) }
 
     fun setMaxCookingTime(minutes: Int?) =
         _filters.update { it.copy(maxCookingTimeMinutes = minutes) }

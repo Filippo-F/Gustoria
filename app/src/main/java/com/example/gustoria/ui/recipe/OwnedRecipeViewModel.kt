@@ -1,7 +1,6 @@
 package com.example.gustoria.ui.recipe
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.SessionManager
@@ -9,75 +8,113 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import androidx.lifecycle.ViewModelProvider
 
 class OwnedRecipeViewModel(
-    private val recipeRepository: RecipeRepoInterface
+    private val repo: RecipeRepoInterface
 ) : ViewModel() {
 
-    private val ownerId: String = SessionManager.CURRENT_LOGGED_IN_USER_ID
+    private val userId = SessionManager.CURRENT_LOGGED_IN_USER_ID
 
-    val ownedRecipes: StateFlow<List<Recipe>> =
-        recipeRepository.getRecipeByOwner(ownerId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
+    val nameQuery = MutableStateFlow("")
+    val ingredientQuery = MutableStateFlow("")
+    val costs = MutableStateFlow<Set<String>>(emptySet())
+    val difficulties = MutableStateFlow<Set<String>>(emptySet())
 
-    private val _filters = MutableStateFlow(RecipeFilters())
-    val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
+    private val myRecipes: StateFlow<List<Recipe>> =
+        repo.getRecipeByOwner(userId)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val filteredRecipes: StateFlow<List<Recipe>> =
-        combine(ownedRecipes, _filters) { list, filters -> list.applyFilters(filters) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
-
-    fun updateNameQuery(query: String) =
-        _filters.update { it.copy(nameQuery = query) }
-
-    fun updateIngredientQuery(query: String) =
-        _filters.update { it.copy(ingredientQuery = query) }
-
-    fun toggleCost(cost: String) =
-        _filters.update {
-            val newSet = if (cost in it.selectedCosts) it.selectedCosts - cost
-            else it.selectedCosts + cost
-            it.copy(selectedCosts = newSet)
+    val recipesToShow: StateFlow<List<Recipe>> = combine(
+        myRecipes, nameQuery, ingredientQuery, costs, difficulties
+    ) { list, name, ing, c, d ->
+        val result = mutableListOf<Recipe>()
+        for (recipe in list) {
+            if (matches(recipe, name, ing, c, d)) {
+                result.add(recipe)
+            }
         }
+        result
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun toggleDifficulty(difficulty: String) =
-        _filters.update {
-            val newSet = if (difficulty in it.selectedDifficulties) it.selectedDifficulties - difficulty
-            else it.selectedDifficulties + difficulty
-            it.copy(selectedDifficulties = newSet)
+    private fun matches(
+        r: Recipe,
+        name: String,
+        ing: String,
+        costs: Set<String>,
+        diffs: Set<String>
+    ): Boolean {
+        if (name.isNotBlank()) {
+            if (!r.name.contains(name, ignoreCase = true)) return false
         }
-
-    fun clearFilters() {
-        _filters.value = RecipeFilters()
+        if (ing.isNotBlank()) {
+            var found = false
+            for (i in r.ingredients) {
+                if (i.name.contains(ing, ignoreCase = true)) {
+                    found = true
+                    break
+                }
+            }
+            if (!found) return false
+        }
+        if (costs.isNotEmpty()) {
+            if (r.cost !in costs) return false
+        }
+        if (diffs.isNotEmpty()) {
+            if (r.difficulty !in diffs) return false
+        }
+        return true
     }
 
-    fun deleteRecipe(recipeId: String) {
+    fun setNameQuery(q: String) {
+        nameQuery.value = q
+    }
+
+    fun setIngredientQuery(q: String) {
+        ingredientQuery.value = q
+    }
+
+    fun toggleCost(c: String) {
+        val current = costs.value
+        if (c in current) {
+            costs.value = current - c
+        } else {
+            costs.value = current + c
+        }
+    }
+
+    fun toggleDifficulty(d: String) {
+        val current = difficulties.value
+        if (d in current) {
+            difficulties.value = current - d
+        } else {
+            difficulties.value = current + d
+        }
+    }
+
+    fun resetFilters() {
+        nameQuery.value = ""
+        ingredientQuery.value = ""
+        costs.value = emptySet()
+        difficulties.value = emptySet()
+    }
+
+    fun delete(id: String) {
         viewModelScope.launch {
-            recipeRepository.deleteRecipe(recipeId)
+            repo.deleteRecipe(id)
         }
     }
 
+    //da rivedere campanion object
     companion object {
-        fun provideFactory(
-            recipeRepository: RecipeRepoInterface
-        ): ViewModelProvider.Factory =
+        fun factory(repo: RecipeRepoInterface): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    OwnedRecipeViewModel(recipeRepository) as T
+                    OwnedRecipeViewModel(repo) as T
             }
     }
 }
