@@ -1,0 +1,348 @@
+package com.example.gustoria.ui.recipe
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.domain.RecipeRepoInterface
+
+@Composable
+fun RecipeScreen(
+    recipeRepository: RecipeRepoInterface,
+    onEditRecipe: (String) -> Unit,
+    viewModel: RecipeViewModel = viewModel(
+        factory = RecipeViewModel.provideFactory(recipeRepository)
+    )
+) {
+    val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
+    val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+    val filters by viewModel.filters.collectAsStateWithLifecycle()
+
+    if (selectedRecipe == null) {
+        RecipeListContent(
+            recipes = filteredRecipes,
+            filters = filters,
+            onRecipeClick = viewModel::selectRecipe,
+            onNameQueryChange = viewModel::updateNameQuery,
+            onIngredientQueryChange = viewModel::updateIngredientQuery,
+            onToggleCost = viewModel::toggleCost,
+            onToggleDifficulty = viewModel::toggleDifficulty,
+            onClearFilters = viewModel::clearFilters
+        )
+    } else {
+        RecipeDetailsContent(
+            recipe = selectedRecipe!!,
+            isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
+            onBackClick = { viewModel.selectRecipe(null) },
+            onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
+            onDuplicateClick = { viewModel.duplicateRecipe(selectedRecipe!!) },
+            onEditClick = { onEditRecipe(selectedRecipe!!.id) }
+        )
+    }
+}
+
+
+@Composable
+private fun RecipeListContent(
+    recipes: List<Recipe>,
+    filters: RecipeFilters,
+    onRecipeClick: (String) -> Unit,
+    onNameQueryChange: (String) -> Unit,
+    onIngredientQueryChange: (String) -> Unit,
+    onToggleCost: (String) -> Unit,
+    onToggleDifficulty: (String) -> Unit,
+    onClearFilters: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+
+        Text(
+            text = "Recipes",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        // 1. Search by name
+        OutlinedTextField(
+            value = filters.nameQuery,
+            onValueChange = onNameQueryChange,
+            label = { Text("Search by name") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // 2. by ingredient
+        OutlinedTextField(
+            value = filters.ingredientQuery,
+            onValueChange = onIngredientQueryChange,
+            label = { Text("Filter by ingredient") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // 3. Cost filter
+        Text("Cost", style = MaterialTheme.typography.labelMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ALL_COSTS.forEach { cost ->
+                FilterChip(
+                    selected = cost in filters.selectedCosts,
+                    onClick = { onToggleCost(cost) },
+                    label = { Text(cost) }
+                )
+            }
+        }
+
+        // 4. Difficulty filter
+        Text("Difficulty", style = MaterialTheme.typography.labelMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ALL_DIFFICULTIES.forEach { diff ->
+                FilterChip(
+                    selected = diff in filters.selectedDifficulties,
+                    onClick = { onToggleDifficulty(diff) },
+                    label = { Text(diff) }
+                )
+            }
+        }
+
+        if (!filters.isEmpty) {
+            TextButton(onClick = onClearFilters) {
+                Text("Clear filters")
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        if (recipes.isEmpty()) {
+            Text(
+                "No recipes match the current filters.",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+        } else {
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(recipes, key = { it.id }) { recipe ->
+                    RecipeGridCard(
+                        recipe = recipe,
+                        onClick = { onRecipeClick(recipe.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecipeGridCard(
+    recipe: Recipe,
+    onClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = recipe.name.ifBlank { "Untitled recipe" },
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "${recipe.cost} • ${recipe.difficulty}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "${recipe.cookingTimeMinutes} min · ${recipe.servings} serv.",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+
+@Composable
+fun RecipeDetailsContent(
+    recipe: Recipe,
+    isOwner: Boolean,
+    onBackClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onDuplicateClick: () -> Unit,
+    onEditClick: () -> Unit
+) {
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        OutlinedButton(onClick = onBackClick) { Text("Back") }
+
+        Text(
+            text = recipe.name.ifBlank { "Untitled recipe" },
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+
+        if (recipe.description.isNotBlank()) {
+            Text(
+                text = recipe.description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+        Text("Cost: ${recipe.cost}")
+        Text("Difficulty: ${recipe.difficulty}")
+        Text("Cooking time: ${recipe.cookingTimeMinutes} min")
+        Text("Servings: ${recipe.servings}")
+        if (recipe.rating > 0f) {
+            Text("Rating: ${"%.1f".format(recipe.rating)}")
+        }
+
+        Text(
+            text = "Ingredients",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        )
+        if (recipe.ingredients.isEmpty()) {
+            Text("No ingredients listed.", style = MaterialTheme.typography.bodySmall)
+        } else {
+            recipe.ingredients.forEach { ingredient ->
+                // FIX: RecipeIngredient has name/quantity/unit, NOT kcalPer100g.
+                Text("• ${ingredient.name} – ${ingredient.quantity} ${ingredient.unit}")
+            }
+        }
+
+        Text(
+            text = "Steps",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        )
+        if (recipe.steps.isEmpty()) {
+            Text("No steps provided.", style = MaterialTheme.typography.bodySmall)
+        } else {
+            recipe.steps.forEachIndexed { index, step ->
+                Text("${index + 1}. $step")
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // duplicate
+        Button(
+            onClick = onDuplicateClick,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Duplicate this recipe") }
+
+        // Edit / Delete only if user owns the recipe
+        if (isOwner) {
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onEditClick,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Edit recipe") }
+
+            Spacer(Modifier.height(8.dp))
+            Button(
+                onClick = { showDeleteDialog = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Delete recipe") }
+        }
+    }
+
+    if (showDeleteDialog) {
+        DeleteConfirmationDialog(
+            recipeName = recipe.name,
+            onConfirm = {
+                showDeleteDialog = false
+                onDeleteClick()
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    recipeName: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete recipe") },
+        text = {
+            Text(
+                text = if (recipeName.isBlank())
+                    "Are you sure you want to delete this recipe? This action cannot be undone."
+                else
+                    "Are you sure you want to delete \"$recipeName\"? This action cannot be undone."
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
