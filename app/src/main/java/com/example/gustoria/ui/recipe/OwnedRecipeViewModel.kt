@@ -14,48 +14,31 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-class RecipeViewModel(
+class OwnedRecipeViewModel(
     private val recipeRepository: RecipeRepoInterface
 ) : ViewModel() {
 
-    val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+    private val ownerId: String = SessionManager.CURRENT_LOGGED_IN_USER_ID
 
-    private val _filters = MutableStateFlow(RecipeFilters())
-    val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
-
-    val filteredRecipes: StateFlow<List<Recipe>> =
-        combine(recipes, _filters) { list, filters -> list.applyFilters(filters) }
+    val ownedRecipes: StateFlow<List<Recipe>> =
+        recipeRepository.getRecipeByOwner(ownerId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptyList()
             )
 
-    private val _selectedRecipeId = MutableStateFlow<String?>(null)
-    val selectedRecipe: StateFlow<Recipe?> =
-        combine(recipes, _selectedRecipeId) { list, id -> list.find { it.id == id } }
+    private val _filters = MutableStateFlow(RecipeFilters())
+    val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
+
+    val filteredRecipes: StateFlow<List<Recipe>> =
+        combine(ownedRecipes, _filters) { list, filters -> list.applyFilters(filters) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = null
+                initialValue = emptyList()
             )
-
-
-    fun isOwnedByCurrentUser(recipe: Recipe): Boolean =
-        recipe.ownerId == SessionManager.CURRENT_LOGGED_IN_USER_ID
-
-    fun selectRecipe(recipeId: String?) {
-        _selectedRecipeId.value = recipeId
-    }
-
 
     fun updateNameQuery(query: String) =
         _filters.update { it.copy(nameQuery = query) }
@@ -77,34 +60,13 @@ class RecipeViewModel(
             it.copy(selectedDifficulties = newSet)
         }
 
-    fun setServingsRange(min: Int?, max: Int?) =
-        _filters.update { it.copy(minServings = min, maxServings = max) }
-
-    fun setMaxCookingTime(minutes: Int?) =
-        _filters.update { it.copy(maxCookingTimeMinutes = minutes) }
-
     fun clearFilters() {
         _filters.value = RecipeFilters()
     }
 
-
     fun deleteRecipe(recipeId: String) {
         viewModelScope.launch {
             recipeRepository.deleteRecipe(recipeId)
-            selectRecipe(null)
-        }
-    }
-
-
-    @OptIn(ExperimentalUuidApi::class)
-    fun duplicateRecipe(recipe: Recipe) {
-        viewModelScope.launch {
-            val copy = recipe.copy(
-                id = Uuid.random().toString(),
-                ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
-                name = "${recipe.name} (Copy)"
-            )
-            recipeRepository.addRecipe(copy)
         }
     }
 
@@ -115,7 +77,7 @@ class RecipeViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    RecipeViewModel(recipeRepository) as T
+                    OwnedRecipeViewModel(recipeRepository) as T
             }
     }
 }
