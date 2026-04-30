@@ -15,7 +15,7 @@ data class Recipe(
     val servings: Int = 1,
     val rating: Float = 0f,
     val reviews: List<Review> = emptyList(),
-    val ingredients: List<Ingredient> = emptyList(),
+    val ingredients: List<RecipeIngredient> = emptyList(),
     val steps: List<String> = emptyList(),
     val description: String = ""
 )
