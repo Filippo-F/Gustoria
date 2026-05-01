@@ -63,22 +63,14 @@ class RecipeViewModel(
     fun updateIngredientQuery(query: String) =
         _filters.update { it.copy(ingredientQuery = query) }
 
-    fun toggleCost(cost: String) =
-        _filters.update {
-            val newSet = if (cost in it.selectedCosts) it.selectedCosts - cost
-            else it.selectedCosts + cost
-            it.copy(selectedCosts = newSet)
-        }
-
     fun toggleDifficulty(difficulty: String) =
         _filters.update {
             val newSet = if (difficulty in it.selectedDifficulties) it.selectedDifficulties - difficulty
             else it.selectedDifficulties + difficulty
             it.copy(selectedDifficulties = newSet)
         }
-
-    fun setMaxCookingTime(minutes: Int?) =
-        _filters.update { it.copy(maxCookingTimeMinutes = minutes) }
+    fun updateCostRange(min: Int, max: Int) =
+        _filters.update { it.copy(costMin = min, costMax = max) }
 
     fun clearFilters() {
         _filters.value = RecipeFilters()

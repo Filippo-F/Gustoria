@@ -13,21 +13,31 @@ import com.example.gustoria.Dataclass.Recipe
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",
-    val selectedCosts: Set<String> = emptySet(),
+    val costMin: Int = 1,   // 1=€, 2=€€, 3=€€€
+    val costMax: Int = 3,
     val selectedDifficulties: Set<String> = emptySet(),
-    val maxCookingTimeMinutes: Int? = null
+    val minServings: Int? = null,
+    val selectedTags: Set<String> = emptySet()
 ) {
-    val isEmpty: Boolean
-        get() = nameQuery.isBlank() &&
-                ingredientQuery.isBlank() &&
-                selectedCosts.isEmpty() &&
+    val isEmpty: Boolean get() =
+        nameQuery.isBlank() && ingredientQuery.isBlank() &&
+                costMin == 1 && costMax == 3 &&
                 selectedDifficulties.isEmpty() &&
-                maxCookingTimeMinutes == null
+                minServings == null &&
+                selectedTags.isEmpty()
 }
+
+private fun String.toEuroLevel(): Int = when (this) {
+    "€"   -> 1
+    "€€"  -> 2
+    "€€€" -> 3
+    else  -> 0
+}
+
 
 val ALL_COSTS: List<String> = listOf("€", "€€", "€€€")
 
-val ALL_DIFFICULTIES: List<String> = listOf("Low", "Medium", "High")
+val ALL_DIFFICULTIES: List<String> = listOf("Easy", "Medium", "Hard")
 
 
 fun List<Recipe>.applyFilters(filters: RecipeFilters): List<Recipe> {
@@ -39,13 +49,14 @@ fun List<Recipe>.applyFilters(filters: RecipeFilters): List<Recipe> {
                 recipe.ingredients.any {
                     it.name.contains(filters.ingredientQuery, ignoreCase = true)
                 }
-        val costOk = filters.selectedCosts.isEmpty() ||
-                recipe.cost in filters.selectedCosts
+        val euro = recipe.cost.toEuroLevel()
+        val costOk = euro in filters.costMin..filters.costMax
         val difficultyOk = filters.selectedDifficulties.isEmpty() ||
                 recipe.difficulty in filters.selectedDifficulties
-        val timeOk = filters.maxCookingTimeMinutes
-            ?.let { recipe.cookingTimeMinutes <= it } ?: true
+        val servingsOk = filters.minServings?.let { recipe.servings >= it } ?: true
+        val tagsOk = filters.selectedTags.isEmpty() ||
+                (recipe.tags.intersect(filters.selectedTags)).isNotEmpty()
 
-        nameOk && ingredientOk && costOk && difficultyOk && timeOk
+        nameOk && ingredientOk && costOk && difficultyOk && servingsOk && tagsOk
     }
 }
