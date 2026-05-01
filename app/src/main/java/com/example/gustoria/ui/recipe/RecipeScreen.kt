@@ -32,11 +32,52 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.ui.theme.GustoriaTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+
+@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
+@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
+@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
+@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
+@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
+@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
+@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+@Composable
+fun RecipeScreenPreview() {
+    val fakeRepo = object : RecipeRepoInterface {
+        override fun getAllRecipes(): Flow<List<Recipe>> = flowOf(emptyList())
+        override fun getRecipeById(recipeId: String): Flow<Recipe?> = flowOf(
+            Recipe(
+                name = "Pasta al Pomodoro",
+                description = "A classic Italian pasta dish with fresh tomatoes and basil.",
+                cost = "€",
+                difficulty = "Low",
+                cookingTimeMinutes = 15,
+                servings = 2,
+                steps = listOf("Boil water", "Cook pasta", "Prepare sauce", "Mix and serve")
+            )
+        )
+        override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = flowOf(emptyList())
+        override suspend fun addRecipe(recipe: Recipe) {}
+        override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {}
+        override suspend fun deleteRecipe(recipeId: String) {}
+    }
+
+    GustoriaTheme(dynamicColor = false) {
+        RecipeScreen(
+            recipeRepository = fakeRepo,
+            onEditRecipe = {}
+        )
+    }
+}
 
 @Composable
 fun RecipeScreen(
