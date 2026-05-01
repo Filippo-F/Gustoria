@@ -21,6 +21,7 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import com.example.gustoria.ui.ThreeItemTopNavbar
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -75,7 +76,7 @@ fun EditRecipeScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val isEditMode = vm.isEditMode
 
-    // If we are uploading info onto DB, show a loading indicator
+    // If we are uploading info onto DB, show loading indicator
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -83,18 +84,24 @@ fun EditRecipeScreen(
         return
     }
 
-    // ScrollState to allow the user to scroll down the screen
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = if (isEditMode) "Edit Recipe" else "Create New Recipe",
-            style = MaterialTheme.typography.headlineMedium
+    // ScrollState to allow user to scroll down
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        ThreeItemTopNavbar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            title = if (isEditMode) "Edit Recipe" else "Create New Recipe",
+            onBack = onCancel
         )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
         // Name
         OutlinedTextField(

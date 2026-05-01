@@ -32,16 +32,63 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
+import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.remember
+import com.example.gustoria.ui.theme.GustoriaTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import com.example.gustoria.ui.ThreeItemTopNavbar
+
+@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
+@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
+@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
+@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
+@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
+@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
+@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+@Composable
+fun RecipeScreenPreview() {
+    val fakeRepo = object : RecipeRepoInterface {
+        override fun getAllRecipes(): Flow<List<Recipe>> = flowOf(emptyList())
+        override fun getRecipeById(recipeId: String): Flow<Recipe?> = flowOf(
+            Recipe(
+                name = "Pasta al Pomodoro",
+                description = "A classic Italian pasta dish with fresh tomatoes and basil.",
+                cost = "€",
+                difficulty = "Easy",
+                cookingTimeMinutes = 15,
+                servings = 2,
+                steps = listOf("Boil water", "Cook pasta", "Prepare sauce", "Mix and serve")
+            )
+        )
+        override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = flowOf(emptyList())
+        override suspend fun addRecipe(recipe: Recipe) {}
+        override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {}
+        override suspend fun deleteRecipe(recipeId: String) {}
+    }
+
+    GustoriaTheme(dynamicColor = false) {
+        RecipeScreen(
+            recipeRepository = fakeRepo,
+            onEditRecipe = {},
+            onBack = {}
+        )
+    }
+}
 
 @Composable
 fun RecipeScreen(
     recipeRepository: RecipeRepoInterface,
     onEditRecipe: (String) -> Unit,
+    onBack: () -> Unit,
     viewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModel.provideFactory(recipeRepository)
     )
@@ -54,10 +101,11 @@ fun RecipeScreen(
         RecipeListContent(
             recipes = filteredRecipes,
             filters = filters,
+            onBack = onBack,
             onRecipeClick = viewModel::selectRecipe,
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
-            onToggleCost = viewModel::toggleCost,
+            onCostRangeChange = viewModel::updateCostRange,
             onToggleDifficulty = viewModel::toggleDifficulty,
             onClearFilters = viewModel::clearFilters
         )
@@ -73,111 +121,130 @@ fun RecipeScreen(
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RecipeListContent(
     recipes: List<Recipe>,
     filters: RecipeFilters,
+    onBack: () -> Unit,
     onRecipeClick: (String) -> Unit,
     onNameQueryChange: (String) -> Unit,
     onIngredientQueryChange: (String) -> Unit,
-    onToggleCost: (String) -> Unit,
+    onCostRangeChange: (Int, Int) -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onClearFilters: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-        Text(
+        ThreeItemTopNavbar(
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            title = "Recipes",
+            onBack = onBack
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+
+            /*Text(
             text = "Recipes",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 12.dp)
-        )
+        )*/
 
-        // 1. Search by name
-        OutlinedTextField(
-            value = filters.nameQuery,
-            onValueChange = onNameQueryChange,
-            label = { Text("Search by name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        // 2. by ingredient
-        OutlinedTextField(
-            value = filters.ingredientQuery,
-            onValueChange = onIngredientQueryChange,
-            label = { Text("Filter by ingredient") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        // 3. Cost filter
-        Text("Cost", style = MaterialTheme.typography.labelMedium)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            ALL_COSTS.forEach { cost ->
-                FilterChip(
-                    selected = cost in filters.selectedCosts,
-                    onClick = { onToggleCost(cost) },
-                    label = { Text(cost) }
-                )
-            }
-        }
-
-        // 4. Difficulty filter
-        Text("Difficulty", style = MaterialTheme.typography.labelMedium)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            ALL_DIFFICULTIES.forEach { diff ->
-                FilterChip(
-                    selected = diff in filters.selectedDifficulties,
-                    onClick = { onToggleDifficulty(diff) },
-                    label = { Text(diff) }
-                )
-            }
-        }
-
-        if (!filters.isEmpty) {
-            TextButton(onClick = onClearFilters) {
-                Text("Clear filters")
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        if (recipes.isEmpty()) {
-            Text(
-                "No recipes match the current filters.",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 24.dp)
+            // 1. Search by name
+            OutlinedTextField(
+                value = filters.nameQuery,
+                onValueChange = onNameQueryChange,
+                label = { Text("Search by name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
             )
-        } else {
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
+            Spacer(Modifier.height(8.dp))
+
+            // 2. by ingredient
+            OutlinedTextField(
+                value = filters.ingredientQuery,
+                onValueChange = onIngredientQueryChange,
+                label = { Text("Filter by ingredient") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // 3. Cost filter
+            Text("Cost range", style = MaterialTheme.typography.labelMedium)
+
+            var range by remember(filters.costMin, filters.costMax) {
+                mutableStateOf(filters.costMin.toFloat()..filters.costMax.toFloat())
+            }
+
+            Text(
+                text = "${"€".repeat(range.start.toInt())} – ${"€".repeat(range.endInclusive.toInt())}"
+            )
+
+            RangeSlider(
+                value = range,
+                onValueChange = { range = it },
+                onValueChangeFinished = {
+                    onCostRangeChange(range.start.toInt(), range.endInclusive.toInt())
+                },
+                valueRange = 1f..3f,
+                steps = 1
+            )
+
+            // 4. Difficulty filter
+            Text("Difficulty", style = MaterialTheme.typography.labelMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(recipes, key = { it.id }) { recipe ->
-                    RecipeGridCard(
-                        recipe = recipe,
-                        onClick = { onRecipeClick(recipe.id) }
+                ALL_DIFFICULTIES.forEach { diff ->
+                    FilterChip(
+                        selected = diff in filters.selectedDifficulties,
+                        onClick = { onToggleDifficulty(diff) },
+                        label = { Text(diff) }
                     )
+                }
+            }
+
+            if (!filters.isEmpty) {
+                TextButton(onClick = onClearFilters) {
+                    Text("Clear filters")
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            if (recipes.isEmpty()) {
+                Text(
+                    "No recipes match the current filters.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
+            } else {
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(recipes, key = { it.id }) { recipe ->
+                        RecipeGridCard(
+                            recipe = recipe,
+                            onClick = { onRecipeClick(recipe.id) }
+                        )
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
 private fun RecipeGridCard(
     recipe: Recipe,

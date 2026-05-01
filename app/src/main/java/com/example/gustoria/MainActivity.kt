@@ -84,7 +84,8 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                 onEditRecipe = { id ->
                     editingRecipeId = id
                     currentScreen = MainScreen.EDIT_RECIPE
-                }
+                },
+                onBack = { currentScreen = MainScreen.HOME }
             )
         }
 
@@ -98,7 +99,8 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                 onEditRecipe = { id ->
                     editingRecipeId = id
                     currentScreen = MainScreen.EDIT_RECIPE
-                }
+                },
+                onBack = { currentScreen = MainScreen.HOME }
             )
         }
 

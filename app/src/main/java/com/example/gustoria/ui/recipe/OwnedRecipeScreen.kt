@@ -36,6 +36,7 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import com.example.gustoria.ui.ThreeItemTopNavbar
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -79,6 +80,7 @@ fun OwnedRecipeScreen(
     recipeRepository: RecipeRepoInterface,
     onCreateNewRecipe: () -> Unit,
     onEditRecipe: (String) -> Unit,
+    onBack: () -> Unit,
     vm: OwnedRecipeViewModel = viewModel(
         factory = OwnedRecipeViewModel.factory(recipeRepository)
     )
@@ -93,13 +95,20 @@ fun OwnedRecipeScreen(
     var idToDelete by remember { mutableStateOf("") }
     var nameToDelete by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        ThreeItemTopNavbar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            title = "My Recipes",
+            onBack = onBack
+        )
+
+        Column(modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-    ) {
-        Text("My Recipes", style = MaterialTheme.typography.headlineSmall)
-
+        ) {
         Spacer(Modifier.height(8.dp))
 
         Button(onClick = onCreateNewRecipe, modifier = Modifier.fillMaxWidth()) {
