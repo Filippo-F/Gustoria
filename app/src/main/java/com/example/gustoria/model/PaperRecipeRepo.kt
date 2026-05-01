@@ -1,7 +1,7 @@
 package com.example.gustoria.model
 
-import com.example.gustoria.dataclass.RecipeIngredient
-import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.Dataclass.RecipeIngredient
+import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import io.paperdb.Paper
 import kotlinx.coroutines.CoroutineScope

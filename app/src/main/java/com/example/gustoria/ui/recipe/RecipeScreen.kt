@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.ExperimentalMaterial3Api

@@ -1,6 +1,6 @@
 package com.example.gustoria.domain
 
-import com.example.gustoria.dataclass.Review
+import com.example.gustoria.Dataclass.Review
 import kotlinx.coroutines.flow.Flow
 
 interface ReviewRepoInterface {

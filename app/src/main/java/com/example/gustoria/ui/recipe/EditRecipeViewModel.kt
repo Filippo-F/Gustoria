@@ -3,8 +3,8 @@ package com.example.gustoria.ui.recipe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.dataclass.RecipeIngredient
+import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.Dataclass.RecipeIngredient
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow
