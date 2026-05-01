@@ -195,6 +195,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         scope.launch {
             if (recipeBook.allKeys.isEmpty()) {
                 _placeholderRecipes.forEach { recipeBook.write(it.id, it) }
+                _recipes.update { _placeholderRecipes }
             }
         }
     }
