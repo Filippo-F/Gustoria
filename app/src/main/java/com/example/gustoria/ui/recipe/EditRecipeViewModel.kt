@@ -1,12 +1,19 @@
 package com.example.gustoria.ui.recipe
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.Dataclass.RecipeIngredient
+import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class EditRecipeUiState(
     val name: String = "",
@@ -22,20 +29,170 @@ data class EditRecipeUiState(
     val isLoading: Boolean = true
 )
 
-private const val ERR_NAME = "name"
-private const val ERR_DESCRIPTION = "description"
-private const val ERR_TIME = "cookingTime"
-private const val ERR_SERVINGS = "servings"
-private const val ERR_INGREDIENTS = "ingredients"
-private const val ERR_STEPS = "steps"
-
 class EditRecipeViewModel(
     private val recipeRepository: RecipeRepoInterface,
-    private val recipeId: String? // null => create mode
+    private val recipeId: String? // null => we are in create mode
 ) : ViewModel() {
 
     val isEditMode: Boolean get() = recipeId != null
 
-    private val _state = MutableStateFlow(EditRecipeUiState(isLoading = isEditMode))
+    private val _state = MutableStateFlow(EditRecipeUiState(isLoading = true))  // We set "isLoading" to true by default to show the loading screen immediately when screen is opened
     val state: StateFlow<EditRecipeUiState> = _state.asStateFlow()
+
+    // Save original recipe in case we are in edit mode to keep track of changes
+    private var originalRecipe: Recipe? = null
+
+    init {
+        if (isEditMode && recipeId != null) {
+            // Insert data (edit mode)
+            viewModelScope.launch {
+                recipeRepository.getRecipeById(recipeId).collect { recipe ->
+                    if (recipe != null) {
+                        originalRecipe = recipe
+                        _state.update {
+                            it.copy(
+                                name = recipe.name,
+                                description = recipe.description,
+                                cost = recipe.cost,
+                                difficulty = recipe.difficulty,
+                                cookingTimeMinutesText = recipe.cookingTimeMinutes.toString(),
+                                servingsText = recipe.servings.toString(),
+                                imageUri = recipe.imageUri ?: "",
+                                ingredients = if (recipe.ingredients.isEmpty()) listOf(RecipeIngredient()) else recipe.ingredients,
+                                steps = if (recipe.steps.isEmpty()) listOf("") else recipe.steps,
+                                isLoading = false
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            // New recipe creation (create mode), let's just stop the loading indicator
+            _state.update { it.copy(isLoading = false) }
+        }
+    }
+
+    // Fields update
+    fun updateName(name: String) = _state.update { it.copy(name = name) }
+    fun updateDescription(desc: String) = _state.update { it.copy(description = desc) }
+    fun updateCost(cost: String) = _state.update { it.copy(cost = cost) }
+    fun updateDifficulty(diff: String) = _state.update { it.copy(difficulty = diff) }
+    fun updateCookingTime(time: String) = _state.update { it.copy(cookingTimeMinutesText = time) }
+    fun updateServings(servings: String) = _state.update { it.copy(servingsText = servings) }
+
+    // Ingredients (dynamic list) update functions
+    fun addIngredient() = _state.update {
+        it.copy(ingredients = it.ingredients + RecipeIngredient())
+    }
+
+    fun removeIngredient(index: Int) = _state.update {
+        val newList = it.ingredients.toMutableList().apply { removeAt(index) }
+        it.copy(ingredients = if (newList.isEmpty()) listOf(RecipeIngredient()) else newList)
+    }
+
+    fun updateIngredientName(index: Int, name: String) = _state.update {
+        val newList = it.ingredients.toMutableList()
+        newList[index] = newList[index].copy(name = name)
+        it.copy(ingredients = newList)
+    }
+
+    fun updateIngredientQuantity(index: Int, qtyStr: String) = _state.update {
+        val qty = qtyStr.toIntOrNull() ?: 0
+        val newList = it.ingredients.toMutableList()
+        newList[index] = newList[index].copy(quantity = qty)
+        it.copy(ingredients = newList)
+    }
+
+    fun updateIngredientUnit(index: Int, unit: String) = _state.update {
+        val newList = it.ingredients.toMutableList()
+        newList[index] = newList[index].copy(unit = unit)
+        it.copy(ingredients = newList)
+    }
+
+    // Steps (dynamic list) update functions
+    fun addStep() = _state.update {
+        it.copy(steps = it.steps + "")
+    }
+
+    fun removeStep(index: Int) = _state.update {
+        val newList = it.steps.toMutableList().apply { removeAt(index) }
+        it.copy(steps = if (newList.isEmpty()) listOf("") else newList)
+    }
+
+    fun updateStep(index: Int, step: String) = _state.update {
+        val newList = it.steps.toMutableList()
+        newList[index] = step
+        it.copy(steps = newList)
+    }
+
+    // Validation and Saving
+    @OptIn(ExperimentalUuidApi::class)
+    fun saveRecipe(onSuccess: () -> Unit) {
+        val currentState = _state.value
+        val errors = mutableMapOf<String, String>()
+
+        // Validation
+        if (currentState.name.isBlank()) errors["name"] = "Recipe name cannot be empty"
+
+        val cookingTime = currentState.cookingTimeMinutesText.toIntOrNull()
+        if (cookingTime == null || cookingTime < 0) errors["cookingTime"] = "Enter a valid time"
+
+        val servings = currentState.servingsText.toIntOrNull()
+        if (servings == null || servings <= 0) errors["servings"] = "Enter a valid serving size"
+
+        val validIngredients = currentState.ingredients.filter { it.name.isNotBlank() }
+        if (validIngredients.isEmpty()) errors["ingredients"] = "Add at least one valid ingredient"
+
+        val validSteps = currentState.steps.filter { it.isNotBlank() }
+        if (validSteps.isEmpty()) errors["steps"] = "Add at least one step"
+
+        // If there are errors show them and stop saving
+        if (errors.isNotEmpty()) {
+            _state.update { it.copy(errors = errors) }
+            return
+        }
+
+        // Saving in DB
+        viewModelScope.launch {
+            val baseRecipe = originalRecipe ?: Recipe(
+                id = Uuid.random().toString(),
+                ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID // Assign recipe to connected user
+            )
+
+            val updatedRecipe = baseRecipe.copy(
+                name = currentState.name,
+                description = currentState.description,
+                cost = currentState.cost,
+                difficulty = currentState.difficulty,
+                cookingTimeMinutes = cookingTime!!,
+                servings = servings!!,
+                ingredients = validIngredients,
+                steps = validSteps,
+                // Image placeholder:
+                imageUri = currentState.imageUri.ifBlank { "file:///android_asset/placeholder.jpg" }
+            )
+
+            if (isEditMode) {
+                recipeRepository.updateRecipe(updatedRecipe.id, updatedRecipe)
+            } else {
+                recipeRepository.addRecipe(updatedRecipe)
+            }
+
+            // Report to UI to go back (close screen)
+            onSuccess()
+        }
+    }
+
+    // Factory used to create the ViewModel
+    companion object {
+        fun factory(
+            recipeRepository: RecipeRepoInterface,
+            recipeId: String?
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return EditRecipeViewModel(recipeRepository, recipeId) as T
+            }
+        }
+    }
 }
