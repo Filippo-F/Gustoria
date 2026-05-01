@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
+import com.example.gustoria.ui.ThreeItemTopNavbar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,6 +105,7 @@ fun EditRecipeScreen(
 
     var showCameraScreen by remember { mutableStateOf(false) }
     var showImageMenu by remember { mutableStateOf(false) }
+    var showTopMenu by remember { mutableStateOf(false) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -139,19 +142,63 @@ fun EditRecipeScreen(
         return
     }
 
-    // ScrollState to allow the user to scroll down the screen
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = if (isEditMode) "Edit Recipe" else "Create New Recipe",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary
-        )
+    Scaffold(
+        topBar = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                ThreeItemTopNavbar(
+                    title = if (isEditMode) "Edit Recipe" else "Create New Recipe",
+                    onBack = {
+                        vm.revertChanges()
+                        onCancel()
+                    },
+                    extraIcon = Icons.Default.MoreVert,
+                    extraIconDescription = "More Options",
+                    onClickExtra = { showTopMenu = true },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Box(modifier = Modifier.align(Alignment.TopEnd)) {
+                    DropdownMenu(
+                        expanded = showTopMenu,
+                        onDismissRequest = { showTopMenu = false }
+                    ) {
+                        if (isEditMode) {
+                            DropdownMenuItem(
+                                text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
+                                onClick = {
+                                    showTopMenu = false
+                                    vm.deleteRecipe(onSuccess = onCancel)
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+                        } else {
+                            DropdownMenuItem(
+                                text = { Text("Clear Form") },
+                                onClick = {
+                                    showTopMenu = false
+                                    vm.revertChanges()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        // ScrollState to allow the user to scroll down the screen
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
         // Image Preview and URL field
         Box(
@@ -165,7 +212,7 @@ fun EditRecipeScreen(
                 contentDescription = "Recipe Image Preview",
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
             )
@@ -452,5 +499,6 @@ fun EditRecipeScreen(
             }
         }
         Spacer(Modifier.height(32.dp)) // Extra padding for bottom scrolling
+    }
     }
 }

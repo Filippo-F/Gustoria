@@ -222,6 +222,15 @@ class EditRecipeViewModel(
         }
     }
 
+    fun deleteRecipe(onSuccess: () -> Unit) {
+        if (recipeId != null) {
+            viewModelScope.launch {
+                recipeRepository.deleteRecipe(recipeId)
+                onSuccess()
+            }
+        }
+    }
+
     // Factory used to create the ViewModel
     companion object {
         fun factory(
