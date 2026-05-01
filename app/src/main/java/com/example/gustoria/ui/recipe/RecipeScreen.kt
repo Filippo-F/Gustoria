@@ -37,9 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
-import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.remember
 
 @Composable
 fun RecipeScreen(
@@ -60,7 +57,7 @@ fun RecipeScreen(
             onRecipeClick = viewModel::selectRecipe,
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
-            onCostRangeChange = viewModel::updateCostRange,
+            onToggleCost = viewModel::toggleCost,
             onToggleDifficulty = viewModel::toggleDifficulty,
             onClearFilters = viewModel::clearFilters
         )
@@ -76,7 +73,7 @@ fun RecipeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun RecipeListContent(
     recipes: List<Recipe>,
@@ -84,7 +81,7 @@ private fun RecipeListContent(
     onRecipeClick: (String) -> Unit,
     onNameQueryChange: (String) -> Unit,
     onIngredientQueryChange: (String) -> Unit,
-    onCostRangeChange: (Int, Int) -> Unit,
+    onToggleCost: (String) -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onClearFilters: () -> Unit
 ) {
@@ -119,25 +116,19 @@ private fun RecipeListContent(
         Spacer(Modifier.height(8.dp))
 
         // 3. Cost filter
-        Text("Cost range", style = MaterialTheme.typography.labelMedium)
-
-        var range by remember(filters.costMin, filters.costMax) {
-            mutableStateOf(filters.costMin.toFloat()..filters.costMax.toFloat())
+        Text("Cost", style = MaterialTheme.typography.labelMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ALL_COSTS.forEach { cost ->
+                FilterChip(
+                    selected = cost in filters.selectedCosts,
+                    onClick = { onToggleCost(cost) },
+                    label = { Text(cost) }
+                )
+            }
         }
-
-        Text(
-            text = "${"€".repeat(range.start.toInt())} – ${"€".repeat(range.endInclusive.toInt())}"
-        )
-
-        RangeSlider(
-            value = range,
-            onValueChange = { range = it },
-            onValueChangeFinished = {
-                onCostRangeChange(range.start.toInt(), range.endInclusive.toInt())
-            },
-            valueRange = 1f..3f,
-            steps = 1
-        )
 
         // 4. Difficulty filter
         Text("Difficulty", style = MaterialTheme.typography.labelMedium)
