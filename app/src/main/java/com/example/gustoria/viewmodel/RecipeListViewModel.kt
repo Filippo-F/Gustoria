@@ -2,7 +2,7 @@ package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.model.PaperRecipeRepo
 import kotlinx.coroutines.flow.MutableStateFlow

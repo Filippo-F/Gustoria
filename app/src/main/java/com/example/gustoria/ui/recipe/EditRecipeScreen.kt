@@ -1,23 +1,43 @@
 package com.example.gustoria.ui.recipe
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.Dataclass.Recipe
+import coil.compose.AsyncImage
+import com.example.gustoria.R
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.theme.GustoriaTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -74,6 +94,42 @@ fun EditRecipeScreen(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val isEditMode = vm.isEditMode
+    val context = LocalContext.current
+
+    BackHandler {
+        vm.revertChanges()
+        onCancel()
+    }
+
+    var showCameraScreen by remember { mutableStateOf(false) }
+    var showImageMenu by remember { mutableStateOf(false) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { vm.updateImageUri(it.toString()) }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showCameraScreen = true
+        } else {
+            Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (showCameraScreen) {
+        CameraXScreen(
+            onImageCaptured = { uri ->
+                vm.updateImageUri(uri)
+                showCameraScreen = false
+            },
+            onCancel = { showCameraScreen = false }
+        )
+        return
+    }
 
     // If we are uploading info onto DB, show a loading indicator
     if (state.isLoading) {
@@ -93,8 +149,76 @@ fun EditRecipeScreen(
     ) {
         Text(
             text = if (isEditMode) "Edit Recipe" else "Create New Recipe",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary
         )
+
+        // Image Preview and URL field
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = if (state.imageUri.isNotBlank()) state.imageUri else R.drawable.no_image,
+                contentDescription = "Recipe Image Preview",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                IconButton(
+                    onClick = { showImageMenu = true },
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Change Picture",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showImageMenu,
+                    onDismissRequest = { showImageMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Select from Gallery") },
+                        onClick = {
+                            showImageMenu = false
+                            galleryLauncher.launch("image/*")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Take a Picture") },
+                        onClick = {
+                            showImageMenu = false
+                            val isGranted = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+
+                            if (isGranted) {
+                                showCameraScreen = true
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        }
+                    )
+                }
+            }
+        }
 
         // Name
         OutlinedTextField(
@@ -104,15 +228,24 @@ fun EditRecipeScreen(
             isError = state.errors.containsKey("name"),
             supportingText = { state.errors["name"]?.let { Text(it) } },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
         )
 
+        // Description
         OutlinedTextField(
             value = state.description,
             onValueChange = vm::updateDescription,
             label = { Text("Description") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
         )
 
         // Cost and difficulty
@@ -122,7 +255,12 @@ fun EditRecipeScreen(
                 FilterChip(
                     selected = state.cost == c,
                     onClick = { vm.updateCost(c) },
-                    label = { Text(c) }
+                    label = { Text(c) },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
                 )
             }
         }
@@ -133,7 +271,12 @@ fun EditRecipeScreen(
                 FilterChip(
                     selected = state.difficulty == d,
                     onClick = { vm.updateDifficulty(d) },
-                    label = { Text(d) }
+                    label = { Text(d) },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
                 )
             }
         }
@@ -147,24 +290,36 @@ fun EditRecipeScreen(
                 isError = state.errors.containsKey("cookingTime"),
                 supportingText = { state.errors["cookingTime"]?.let { Text(it) } },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
             )
 
             OutlinedTextField(
                 value = state.servingsText,
                 onValueChange = vm::updateServings,
                 label = { Text("Servings *") },
-                isError = state.errors.containsKey("servings"),
+                isError = state.errors.containsKey("servings") && state.servingsText.isBlank(),
                 supportingText = { state.errors["servings"]?.let { Text(it) } },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
             )
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         // Ingredients (dynamic list):
-        Text("Ingredients", style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = "Ingredients",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
         state.errors["ingredients"]?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
 
         state.ingredients.forEachIndexed { index, ingredient ->
@@ -177,52 +332,105 @@ fun EditRecipeScreen(
                     value = ingredient.name,
                     onValueChange = { vm.updateIngredientName(index, it) },
                     label = { Text("Name") },
-                    modifier = Modifier.weight(2f)
+                    isError = ingredient.name.isBlank() && state.errors.containsKey("ingredients"),
+                    modifier = Modifier.weight(2f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    )
                 )
                 OutlinedTextField(
                     value = if (ingredient.quantity == 0) "" else ingredient.quantity.toString(),
                     onValueChange = { vm.updateIngredientQuantity(index, it) },
                     label = { Text("Qty") },
+                    isError = ingredient.quantity <= 0 && state.errors.containsKey("ingredients"),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    )
                 )
                 OutlinedTextField(
                     value = ingredient.unit,
                     onValueChange = { vm.updateIngredientUnit(index, it) },
                     label = { Text("Unit") },
-                    modifier = Modifier.weight(1f)
+                    isError = ingredient.unit.isBlank() && state.errors.containsKey("ingredients"),
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    )
                 )
                 IconButton(onClick = { vm.removeIngredient(index) }) {
                     Icon(Icons.Default.Delete, contentDescription = "Remove Ingredient", tint = MaterialTheme.colorScheme.error)
                 }
             }
         }
-        TextButton(onClick = vm::addIngredient) { Text("+ Add Ingredient") }
+        TextButton(
+            onClick = vm::addIngredient,
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null)
+            Spacer(Modifier.width(4.dp))
+            Text("Add Ingredient")
+        }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 8.dp),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
 
         // Steps/Instructions (dynamic list):
-        Text("Preparation Steps", style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = "Preparation Steps",
+            style = MaterialTheme.typography.titleMedium,
+        )
         state.errors["steps"]?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
 
         state.steps.forEachIndexed { index, step ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = (index + 1).toString(),
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
                 OutlinedTextField(
                     value = step,
                     onValueChange = { vm.updateStep(index, it) },
-                    label = { Text("Step ${index + 1}") },
-                    modifier = Modifier.weight(1f)
+                    isError = step.isBlank() && state.errors.containsKey("steps"),
+                    placeholder = { Text("Describe this step...") },
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    )
                 )
                 IconButton(onClick = { vm.removeStep(index) }) {
                     Icon(Icons.Default.Delete, contentDescription = "Remove Step", tint = MaterialTheme.colorScheme.error)
                 }
             }
         }
-        TextButton(onClick = vm::addStep) { Text("+ Add Step") }
+        TextButton(
+            onClick = vm::addStep,
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null)
+            Spacer(Modifier.width(4.dp))
+            Text("Add Step")
+        }
 
         Spacer(Modifier.height(16.dp))
 
@@ -232,7 +440,10 @@ fun EditRecipeScreen(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onCancel) {
+            TextButton(onClick = {
+                vm.revertChanges()
+                onCancel()
+            }) {
                 Text("Cancel")
             }
             Spacer(Modifier.width(16.dp))
@@ -240,6 +451,6 @@ fun EditRecipeScreen(
                 Text("Save Recipe")
             }
         }
-        Spacer(Modifier.height(32.dp)) // Extra padding scrolling
+        Spacer(Modifier.height(32.dp)) // Extra padding for bottom scrolling
     }
 }

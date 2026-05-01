@@ -1,4 +1,4 @@
-package com.example.gustoria.Dataclass
+package com.example.gustoria.dataclass
 
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

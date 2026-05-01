@@ -1,4 +1,4 @@
-package com.example.gustoria.Dataclass
+package com.example.gustoria.dataclass
 
 data class RecipeIngredient(
     val name: String = "",

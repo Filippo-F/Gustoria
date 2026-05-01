@@ -1,6 +1,6 @@
 package com.example.gustoria.ui.recipe
 
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 
 /*
  "at least 4 filtering elements":

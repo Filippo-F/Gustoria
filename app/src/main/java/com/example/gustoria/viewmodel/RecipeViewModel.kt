@@ -1,11 +1,13 @@
-package com.example.gustoria.ui.recipe
+package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.ui.recipe.RecipeFilters
+import com.example.gustoria.ui.recipe.applyFilters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package com.example.gustoria.domain
 
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import kotlinx.coroutines.flow.Flow
 
 interface RecipeRepoInterface {
