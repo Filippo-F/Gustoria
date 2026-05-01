@@ -10,6 +10,7 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -46,7 +47,7 @@ class EditRecipeViewModel(
         if (isEditMode && recipeId != null) {
             // Insert data (edit mode)
             viewModelScope.launch {
-                recipeRepository.getRecipeById(recipeId).collect { recipe ->
+                recipeRepository.getRecipeById(recipeId).take(1).collect { recipe ->
                     if (recipe != null) {
                         originalRecipe = recipe
                         _state.update {
@@ -63,12 +64,44 @@ class EditRecipeViewModel(
                                 isLoading = false
                             )
                         }
+                    } else {
+                        _state.update { it.copy(isLoading = false) }
                     }
                 }
             }
         } else {
             // New recipe creation (create mode), let's just stop the loading indicator
             _state.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun revertChanges() {
+        val recipe = originalRecipe
+        if (recipe != null) {
+            _state.update {
+                it.copy(
+                    name = recipe.name,
+                    description = recipe.description,
+                    cost = recipe.cost,
+                    difficulty = recipe.difficulty,
+                    cookingTimeMinutesText = recipe.cookingTimeMinutes.toString(),
+                    servingsText = recipe.servings.toString(),
+                    imageUri = recipe.imageUri ?: "",
+                    ingredients = if (recipe.ingredients.isEmpty()) listOf(RecipeIngredient()) else recipe.ingredients,
+                    steps = if (recipe.steps.isEmpty()) listOf("") else recipe.steps,
+                    errors = emptyMap(),
+                    isLoading = false
+                )
+            }
+        } else {
+            // Reset to default create state
+            _state.update {
+                EditRecipeUiState(
+                    isLoading = false,
+                    ingredients = listOf(RecipeIngredient()),
+                    steps = listOf("")
+                )
+            }
         }
     }
 
@@ -79,6 +112,7 @@ class EditRecipeViewModel(
     fun updateDifficulty(diff: String) = _state.update { it.copy(difficulty = diff) }
     fun updateCookingTime(time: String) = _state.update { it.copy(cookingTimeMinutesText = time) }
     fun updateServings(servings: String) = _state.update { it.copy(servingsText = servings) }
+    fun updateImageUri(uri: String) = _state.update { it.copy(imageUri = uri) }
 
     // Ingredients (dynamic list) update functions
     fun addIngredient() = _state.update {
@@ -140,11 +174,17 @@ class EditRecipeViewModel(
         val servings = currentState.servingsText.toIntOrNull()
         if (servings == null || servings <= 0) errors["servings"] = "Enter a valid serving size"
 
-        val validIngredients = currentState.ingredients.filter { it.name.isNotBlank() }
-        if (validIngredients.isEmpty()) errors["ingredients"] = "Add at least one valid ingredient"
+        if (currentState.ingredients.isEmpty()) {
+            errors["ingredients"] = "Add at least one ingredient"
+        } else if (currentState.ingredients.any { it.name.isBlank() || it.unit.isBlank() || it.quantity <= 0 }) {
+            errors["ingredients"] = "All ingredient fields must be filled or removed"
+        }
 
-        val validSteps = currentState.steps.filter { it.isNotBlank() }
-        if (validSteps.isEmpty()) errors["steps"] = "Add at least one step"
+        if (currentState.steps.isEmpty()) {
+            errors["steps"] = "Add at least one step"
+        } else if (currentState.steps.any { it.isBlank() }) {
+            errors["steps"] = "All steps must be filled or removed"
+        }
 
         // If there are errors show them and stop saving
         if (errors.isNotEmpty()) {
@@ -166,10 +206,9 @@ class EditRecipeViewModel(
                 difficulty = currentState.difficulty,
                 cookingTimeMinutes = cookingTime!!,
                 servings = servings!!,
-                ingredients = validIngredients,
-                steps = validSteps,
-                // Image placeholder:
-                imageUri = currentState.imageUri.ifBlank { "file:///android_asset/placeholder.jpg" }
+                ingredients = currentState.ingredients,
+                steps = currentState.steps,
+                imageUri = currentState.imageUri.ifBlank { null }
             )
 
             if (isEditMode) {
