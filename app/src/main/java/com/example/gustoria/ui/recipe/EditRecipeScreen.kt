@@ -107,7 +107,6 @@ fun EditRecipeScreen(
             singleLine = true
         )
 
-        // Description
         OutlinedTextField(
             value = state.description,
             onValueChange = vm::updateDescription,
@@ -241,6 +240,6 @@ fun EditRecipeScreen(
                 Text("Save Recipe")
             }
         }
-        Spacer(Modifier.height(32.dp)) // Extra padding for bottom scrolling
+        Spacer(Modifier.height(32.dp)) // Extra padding scrolling
     }
 }

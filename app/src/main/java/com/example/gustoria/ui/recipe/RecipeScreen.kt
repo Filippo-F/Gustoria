@@ -293,7 +293,6 @@ fun RecipeDetailsContent(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedButton(onClick = onBackClick) { Text("Back") }
 
         Text(
             text = recipe.name.ifBlank { "Untitled recipe" },

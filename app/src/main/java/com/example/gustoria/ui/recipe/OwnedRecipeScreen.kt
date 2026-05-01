@@ -70,7 +70,8 @@ fun OwnedRecipeScreenPreview() {
         OwnedRecipeScreen(
             recipeRepository = fakeRepo,
             onCreateNewRecipe = {},
-            onEditRecipe = {}
+            onEditRecipe = {},
+            onBack = {}
         )
     }
 }
@@ -105,104 +106,106 @@ fun OwnedRecipeScreen(
             onBack = onBack
         )
 
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-        Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-        Button(onClick = onCreateNewRecipe, modifier = Modifier.fillMaxWidth()) {
-            Text("New Recipe")
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = vm::setNameQuery,
-            label = { Text("Search by name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = ingredient,
-            onValueChange = vm::setIngredientQuery,
-            label = { Text("Search by ingredient") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Text("Cost", style = MaterialTheme.typography.labelMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("€", "€€", "€€€").forEach { c ->
-                FilterChip(
-                    selected = c in costs,
-                    onClick = { vm.toggleCost(c) },
-                    label = { Text(c) }
-                )
+            Button(onClick = onCreateNewRecipe, modifier = Modifier.fillMaxWidth()) {
+                Text("New Recipe")
             }
-        }
 
-        Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(12.dp))
 
-        Text("Difficulty", style = MaterialTheme.typography.labelMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("Easy", "Medium", "Hard").forEach { d ->
-                FilterChip(
-                    selected = d in difficulties,
-                    onClick = { vm.toggleDifficulty(d) },
-                    label = { Text(d) }
-                )
+            OutlinedTextField(
+                value = name,
+                onValueChange = vm::setNameQuery,
+                label = { Text("Search by name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = ingredient,
+                onValueChange = vm::setIngredientQuery,
+                label = { Text("Search by ingredient") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text("Cost", style = MaterialTheme.typography.labelMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("€", "€€", "€€€").forEach { c ->
+                    FilterChip(
+                        selected = c in costs,
+                        onClick = { vm.toggleCost(c) },
+                        label = { Text(c) }
+                    )
+                }
             }
-        }
 
-        TextButton(onClick = vm::resetFilters) {
-            Text("Reset filters")
-        }
+            Spacer(Modifier.height(4.dp))
 
-        Spacer(Modifier.height(8.dp))
+            Text("Difficulty", style = MaterialTheme.typography.labelMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("Easy", "Medium", "Hard").forEach { d ->
+                    FilterChip(
+                        selected = d in difficulties,
+                        onClick = { vm.toggleDifficulty(d) },
+                        label = { Text(d) }
+                    )
+                }
+            }
 
-        if (recipes.isEmpty()) {
-            Text("No recipes found")
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(recipes) { r ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onEditRecipe(r.id) }
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(r.name, style = MaterialTheme.typography.titleMedium)
-                            Text("${r.cost} - ${r.difficulty} - ${r.cookingTimeMinutes} min")
-                            Text("Servings: ${r.servings}")
+            TextButton(onClick = vm::resetFilters) {
+                Text("Reset filters")
+            }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                OutlinedButton(
-                                    onClick = { onEditRecipe(r.id) },
-                                    modifier = Modifier.weight(1f)
+            Spacer(Modifier.height(8.dp))
+
+            if (recipes.isEmpty()) {
+                Text("No recipes found")
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(recipes) { r ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onEditRecipe(r.id) }
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(r.name, style = MaterialTheme.typography.titleMedium)
+                                Text("${r.cost} - ${r.difficulty} - ${r.cookingTimeMinutes} min")
+                                Text("Servings: ${r.servings}")
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Edit")
-                                }
-                                Button(
-                                    onClick = {
-                                        idToDelete = r.id
-                                        nameToDelete = r.name
-                                        showDeleteDialog = true
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text("Delete")
+                                    OutlinedButton(
+                                        onClick = { onEditRecipe(r.id) },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Edit")
+                                    }
+                                    Button(
+                                        onClick = {
+                                            idToDelete = r.id
+                                            nameToDelete = r.name
+                                            showDeleteDialog = true
+                                        },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Delete")
+                                    }
                                 }
                             }
                         }
@@ -210,26 +213,26 @@ fun OwnedRecipeScreen(
                 }
             }
         }
-    }
 
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete recipe") },
-            text = { Text("Delete \"$nameToDelete\"?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    vm.delete(idToDelete)
-                    showDeleteDialog = false
-                }) {
-                    Text("Delete")
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Delete recipe") },
+                text = { Text("Delete \"$nameToDelete\"?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        vm.delete(idToDelete)
+                        showDeleteDialog = false
+                    }) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel")
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+            )
+        }
     }
 }
