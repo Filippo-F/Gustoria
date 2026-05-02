@@ -53,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import com.example.gustoria.R
 import android.widget.Toast
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.platform.LocalContext
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
@@ -114,7 +115,7 @@ fun RecipeScreen(
             onRecipeClick = viewModel::selectRecipe,
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
-            onCostRangeChange = viewModel::updateCostRange,
+            onToggleCost = viewModel::toggleCost,
             onToggleDifficulty = viewModel::toggleDifficulty,
             onClearFilters = viewModel::clearFilters
         )
@@ -139,7 +140,7 @@ private fun RecipeListContent(
     onRecipeClick: (String) -> Unit,
     onNameQueryChange: (String) -> Unit,
     onIngredientQueryChange: (String) -> Unit,
-    onCostRangeChange: (Int, Int) -> Unit,
+    onToggleCost: (String) -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onClearFilters: () -> Unit
 ) {
@@ -186,25 +187,19 @@ private fun RecipeListContent(
             Spacer(Modifier.height(8.dp))
 
             // 3. Cost filter
-            Text("Cost range", style = MaterialTheme.typography.labelMedium)
-
-            var range by remember(filters.costMin, filters.costMax) {
-                mutableStateOf(filters.costMin.toFloat()..filters.costMax.toFloat())
+            Text("Cost", style = MaterialTheme.typography.labelMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ALL_COSTS.forEach { c ->
+                    FilterChip(
+                        selected = c in filters.selectedCosts,
+                        onClick = { onToggleCost(c) },
+                        label = { Text(c) }
+                    )
+                }
             }
-
-            Text(
-                text = "${"€".repeat(range.start.toInt())} – ${"€".repeat(range.endInclusive.toInt())}"
-            )
-
-            RangeSlider(
-                value = range,
-                onValueChange = { range = it },
-                onValueChangeFinished = {
-                    onCostRangeChange(range.start.toInt(), range.endInclusive.toInt())
-                },
-                valueRange = 1f..3f,
-                steps = 1
-            )
 
             // 4. Difficulty filter
             Text("Difficulty", style = MaterialTheme.typography.labelMedium)
