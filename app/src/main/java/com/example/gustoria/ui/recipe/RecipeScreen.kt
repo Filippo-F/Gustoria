@@ -52,6 +52,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import com.example.gustoria.R
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -304,6 +306,7 @@ fun RecipeDetailsContent(
     onEditClick: () -> Unit
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -381,7 +384,10 @@ fun RecipeDetailsContent(
 
             // duplicate
             Button(
-                onClick = onDuplicateClick,
+                onClick = {
+                    onDuplicateClick()
+                    Toast.makeText(context, "Recipe copied to My Recipes!", Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Duplicate this recipe") }
 
