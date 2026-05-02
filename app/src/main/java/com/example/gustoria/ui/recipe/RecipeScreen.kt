@@ -60,6 +60,7 @@ import com.example.gustoria.R
 @Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
 @Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+
 @Composable
 fun RecipeScreenPreview() {
     val fakeRepo = object : RecipeRepoInterface {

@@ -1,4 +1,4 @@
-package com.example.gustoria.ui.recipe
+package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,6 +7,8 @@ import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.Dataclass.RecipeIngredient
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.ui.recipe.ALL_COSTS
+import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

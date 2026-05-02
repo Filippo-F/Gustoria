@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
+import com.example.gustoria.viewmodel.EditRecipeViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.flowOf
 @Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
 @Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
 @Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+
 @Composable
 fun EditRecipeScreenPreview() {
     val fakeRepo = object : RecipeRepoInterface {
