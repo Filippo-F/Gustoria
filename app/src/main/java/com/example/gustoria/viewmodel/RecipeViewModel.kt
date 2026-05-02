@@ -72,12 +72,8 @@ class RecipeViewModel(
             it.copy(selectedDifficulties = newSet)
         }
 
-    fun toggleCost(cost: String) =
-        _filters.update {
-            val newSet = if (cost in it.selectedCosts) it.selectedCosts - cost
-            else it.selectedDifficulties + cost
-            it.copy(selectedCosts = newSet)
-        }
+    fun updateCostRange(min: Int, max: Int) =
+        _filters.update { it.copy(costMin = min, costMax = max) }
 
     fun clearFilters() {
         _filters.value = RecipeFilters()

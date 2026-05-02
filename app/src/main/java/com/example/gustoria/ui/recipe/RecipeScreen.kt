@@ -120,7 +120,7 @@ fun RecipeScreen(
             onRecipeClick = viewModel::selectRecipe,
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
-            onToggleCost = viewModel::toggleCost,
+            onCostRangeChange = viewModel::updateCostRange,
             onToggleDifficulty = viewModel::toggleDifficulty,
             onClearFilters = viewModel::clearFilters
         )
@@ -145,7 +145,7 @@ private fun RecipeListContent(
     onRecipeClick: (String) -> Unit,
     onNameQueryChange: (String) -> Unit,
     onIngredientQueryChange: (String) -> Unit,
-    onToggleCost: (String) -> Unit,
+    onCostRangeChange: (Int, Int) -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onClearFilters: () -> Unit
 ) {
@@ -192,19 +192,25 @@ private fun RecipeListContent(
             Spacer(Modifier.height(8.dp))
 
             // 3. Cost filter
-            Text("Cost", style = MaterialTheme.typography.labelMedium)
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ALL_COSTS.forEach { c ->
-                    FilterChip(
-                        selected = c in filters.selectedCosts,
-                        onClick = { onToggleCost(c) },
-                        label = { Text(c) }
-                    )
-                }
+            Text("Cost range", style = MaterialTheme.typography.labelMedium)
+
+            var range by remember(filters.costMin, filters.costMax) {
+                mutableStateOf(filters.costMin.toFloat()..filters.costMax.toFloat())
             }
+
+            Text(
+                text = "${"€".repeat(range.start.toInt())} – ${"€".repeat(range.endInclusive.toInt())}"
+            )
+
+            RangeSlider(
+                value = range,
+                onValueChange = { range = it },
+                onValueChangeFinished = {
+                    onCostRangeChange(range.start.toInt(), range.endInclusive.toInt())
+                },
+                valueRange = 1f..3f,
+                steps = 1
+            )
 
             // 4. Difficulty filter
             Text("Difficulty", style = MaterialTheme.typography.labelMedium)
