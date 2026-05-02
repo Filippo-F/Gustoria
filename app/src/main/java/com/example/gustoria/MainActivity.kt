@@ -29,6 +29,10 @@ import com.example.gustoria.ui.recipe.OwnedRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
 import com.example.gustoria.ui.theme.GustoriaTheme
 import io.paperdb.Paper
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Scaffold
+import com.example.gustoria.ui.AppBottomNavBar
+import com.example.gustoria.ui.NavDestination
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -66,66 +70,97 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
         editingRecipeId = null
     }
 
-    when (currentScreen) {
-        MainScreen.HOME -> {
-            MainMenuScreen(
-                onRecipesListClick = { currentScreen = MainScreen.RECIPES_LIST },
-                onMyRecipesClick = { currentScreen = MainScreen.MY_RECIPES },
-                onCreateRecipeClick = {
-                    editingRecipeId = null
-                    currentScreen = MainScreen.CREATE_RECIPE
+    val currentDestination = when (currentScreen) {
+        MainScreen.RECIPES_LIST   -> NavDestination.EXPLORE
+        MainScreen.MY_RECIPES     -> NavDestination.PROFILE
+        MainScreen.CREATE_RECIPE,
+        MainScreen.EDIT_RECIPE    -> NavDestination.CREATE
+        else                      -> NavDestination.EXPLORE
+    }
+
+    Scaffold(
+        bottomBar = {
+            if (currentScreen != MainScreen.HOME) {
+                AppBottomNavBar(
+                    currentDestination = currentDestination,
+                    onNavigate = { dest ->
+                        when (dest) {
+                            NavDestination.EXPLORE -> currentScreen = MainScreen.RECIPES_LIST
+                            NavDestination.CREATE  -> {
+                                editingRecipeId = null
+                                currentScreen = MainScreen.CREATE_RECIPE
+                            }
+                            NavDestination.PROFILE -> currentScreen = MainScreen.MY_RECIPES
+                        }
+                    }
+                )
+            }
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when (currentScreen) {
+                MainScreen.HOME -> {
+                    MainMenuScreen(
+                        onRecipesListClick = { currentScreen = MainScreen.RECIPES_LIST },
+                        onMyRecipesClick = { currentScreen = MainScreen.MY_RECIPES },
+                        onCreateRecipeClick = {
+                            editingRecipeId = null
+                            currentScreen = MainScreen.CREATE_RECIPE
+                        }
+                    )
                 }
-            )
-        }
 
-        MainScreen.RECIPES_LIST -> {
-            RecipeScreen(
-                recipeRepository = recipeRepository,
-                onEditRecipe = { id ->
-                    editingRecipeId = id
-                    currentScreen = MainScreen.EDIT_RECIPE
-                },
-                onBack = { currentScreen = MainScreen.HOME }
-            )
-        }
-
-        MainScreen.MY_RECIPES -> {
-            OwnedRecipeScreen(
-                recipeRepository = recipeRepository,
-                onCreateNewRecipe = {
-                    editingRecipeId = null
-                    currentScreen = MainScreen.CREATE_RECIPE
-                },
-                onEditRecipe = { id ->
-                    editingRecipeId = id
-                    currentScreen = MainScreen.EDIT_RECIPE
-                },
-                onBack = { currentScreen = MainScreen.HOME }
-            )
-        }
-
-        MainScreen.CREATE_RECIPE -> {
-            EditRecipeScreen(
-                recipeRepository = recipeRepository,
-                recipeId = null,
-                onSaved = { currentScreen = MainScreen.MY_RECIPES },
-                onCancel = { currentScreen = MainScreen.HOME }
-            )
-        }
-
-        MainScreen.EDIT_RECIPE -> {
-            EditRecipeScreen(
-                recipeRepository = recipeRepository,
-                recipeId = editingRecipeId,
-                onSaved = {
-                    editingRecipeId = null
-                    currentScreen = MainScreen.MY_RECIPES
-                },
-                onCancel = {
-                    editingRecipeId = null
-                    currentScreen = MainScreen.MY_RECIPES
+                MainScreen.RECIPES_LIST -> {
+                    RecipeScreen(
+                        recipeRepository = recipeRepository,
+                        onEditRecipe = { id ->
+                            editingRecipeId = id
+                            currentScreen = MainScreen.EDIT_RECIPE
+                        },
+                        onBack = { currentScreen = MainScreen.HOME }
+                    )
                 }
-            )
+
+                MainScreen.MY_RECIPES -> {
+                    OwnedRecipeScreen(
+                        recipeRepository = recipeRepository,
+                        onCreateNewRecipe = {
+                            editingRecipeId = null
+                            currentScreen = MainScreen.CREATE_RECIPE
+                        },
+                        onEditRecipe = { id ->
+                            editingRecipeId = id
+                            currentScreen = MainScreen.EDIT_RECIPE
+                        },
+                        onBack = { currentScreen = MainScreen.HOME }
+                    )
+                }
+
+                MainScreen.CREATE_RECIPE -> {
+                    EditRecipeScreen(
+                        recipeRepository = recipeRepository,
+                        recipeId = null,
+                        onSaved = { currentScreen = MainScreen.MY_RECIPES },
+                        onCancel = { currentScreen = MainScreen.HOME }
+                    )
+                }
+
+                MainScreen.EDIT_RECIPE -> {
+                    EditRecipeScreen(
+                        recipeRepository = recipeRepository,
+                        recipeId = editingRecipeId,
+                        onSaved = {
+                            editingRecipeId = null
+                            currentScreen = MainScreen.MY_RECIPES
+                        },
+                        onCancel = {
+                            editingRecipeId = null
+                            currentScreen = MainScreen.MY_RECIPES
+                        }
+                    )
+                }
+
+            }
         }
     }
 }
