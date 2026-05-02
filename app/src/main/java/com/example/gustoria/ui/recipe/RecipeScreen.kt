@@ -47,6 +47,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.RecipeViewModel
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.example.gustoria.R
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -258,6 +263,20 @@ private fun RecipeGridCard(
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
+            AsyncImage(
+                model = recipe.imageUri,
+                contentDescription = "Image of ${recipe.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                // If link is null or broken, use "no_image"
+                fallback = painterResource(id = R.drawable.no_image),
+                error = painterResource(id = R.drawable.no_image)
+            )
+            Spacer(Modifier.height(8.dp))
+
             Text(
                 text = recipe.name.ifBlank { "Untitled recipe" },
                 style = MaterialTheme.typography.titleMedium,
@@ -275,8 +294,6 @@ private fun RecipeGridCard(
         }
     }
 }
-
-
 @Composable
 fun RecipeDetailsContent(
     recipe: Recipe,
@@ -302,6 +319,19 @@ fun RecipeDetailsContent(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            // Image
+            if (!recipe.imageUri.isNullOrBlank()) {
+                AsyncImage(
+                    model = recipe.imageUri,
+                    contentDescription = "Hero Image for ${recipe.name}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(Modifier.height(16.dp))
+            }
 
             if (recipe.description.isNotBlank()) {
                 Text(
