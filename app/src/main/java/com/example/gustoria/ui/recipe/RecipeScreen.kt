@@ -1,5 +1,6 @@
 package com.example.gustoria.ui.recipe
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -107,6 +108,10 @@ fun RecipeScreen(
     val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
 
+    BackHandler(enabled = selectedRecipe != null) {
+        viewModel.selectRecipe(null)
+    }
+
     if (selectedRecipe == null) {
         RecipeListContent(
             recipes = filteredRecipes,
@@ -120,7 +125,7 @@ fun RecipeScreen(
             onClearFilters = viewModel::clearFilters
         )
     } else {
-        RecipeDetailsContent(
+        RecipeDetailsScreen(
             recipe = selectedRecipe!!,
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
             onBackClick = { viewModel.selectRecipe(null) },
@@ -292,196 +297,4 @@ private fun RecipeGridCard(
         }
     }
 }
-@Composable
-fun RecipeDetailsContent(
-    recipe: Recipe,
-    isOwner: Boolean,
-    onBackClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onDuplicateClick: () -> Unit,
-    onEditClick: () -> Unit
-) {
-    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-    var showDuplicateDialog by rememberSaveable { mutableStateOf(false) }
-    val context = LocalContext.current
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        ThreeItemTopNavbar(
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            title = recipe.name.ifBlank { "Recipe" },
-            onBack = onBackClick
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Image
-            if (!recipe.imageUri.isNullOrBlank()) {
-                AsyncImage(
-                    model = recipe.imageUri,
-                    contentDescription = "Hero Image for ${recipe.name}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(Modifier.height(16.dp))
-            }
-
-            if (recipe.description.isNotBlank()) {
-                Text(
-                    text = recipe.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Spacer(Modifier.height(12.dp))
-            Text("Cost: ${recipe.cost}")
-            Text("Difficulty: ${recipe.difficulty}")
-            Text("Cooking time: ${recipe.cookingTimeMinutes} min")
-            Text("Servings: ${recipe.servings}")
-            if (recipe.rating > 0f) {
-                Text("Rating: ${"%.1f".format(recipe.rating)}")
-            }
-
-            Text(
-                text = "Ingredients",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-            )
-            if (recipe.ingredients.isEmpty()) {
-                Text("No ingredients listed.", style = MaterialTheme.typography.bodySmall)
-            } else {
-                recipe.ingredients.forEach { ingredient ->
-                    // FIX: RecipeIngredient has name/quantity/unit, NOT kcalPer100g.
-                    Text("• ${ingredient.name} – ${ingredient.quantity} ${ingredient.unit}")
-                }
-            }
-
-            Text(
-                text = "Steps",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-            )
-            if (recipe.steps.isEmpty()) {
-                Text("No steps provided.", style = MaterialTheme.typography.bodySmall)
-            } else {
-                recipe.steps.forEachIndexed { index, step ->
-                    Text("${index + 1}. $step")
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            // duplicate
-            Button(
-                onClick = { showDuplicateDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) { Text("Duplicate this recipe") }
-
-            // Edit / Delete only if user owns the recipe
-            if (isOwner) {
-                Spacer(Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = onEditClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Edit recipe") }
-
-                Spacer(Modifier.height(8.dp))
-                Button(
-                    onClick = { showDeleteDialog = true },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Delete recipe") }
-            }
-        }
-
-        if (showDeleteDialog) {
-            DeleteConfirmationDialog(
-                recipeName = recipe.name,
-                onConfirm = {
-                    showDeleteDialog = false
-                    onDeleteClick()
-                },
-                onDismiss = { showDeleteDialog = false }
-            )
-        }
-        if (showDuplicateDialog) {
-            DuplicateConfirmationDialog(
-                recipeName = recipe.name,
-                onConfirm = {
-                    showDuplicateDialog = false // Close popup
-                    onDuplicateClick()          // Clone recipe
-
-                    // Success toast
-                    Toast.makeText(context, "Recipe copied to My Recipes!", Toast.LENGTH_SHORT).show()
-                },
-                onDismiss = {
-                    showDuplicateDialog = false // Close popup if user cancels
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun DeleteConfirmationDialog(
-    recipeName: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Delete recipe") },
-        text = {
-            Text(
-                text = if (recipeName.isBlank())
-                    "Are you sure you want to delete this recipe? This action cannot be undone."
-                else
-                    "Are you sure you want to delete \"$recipeName\"? This action cannot be undone."
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
-
-@Composable
-fun DuplicateConfirmationDialog(
-    recipeName: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Duplicate recipe") },
-        text = {
-            Text("Do you want to create a copy of \"$recipeName\" in your recipes list?")
-        },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text("Copy")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
-}

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModelProvider
 
@@ -39,6 +40,13 @@ class OwnedRecipeViewModel(
         }
         result
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _selectedRecipe = MutableStateFlow<Recipe?>(null)
+    val selectedRecipe: StateFlow<Recipe?> = _selectedRecipe
+
+    fun selectRecipe(recipe: Recipe?) {
+        _selectedRecipe.value = recipe
+    }
 
     private fun matches(
         r: Recipe,
@@ -105,6 +113,20 @@ class OwnedRecipeViewModel(
     fun delete(id: String) {
         viewModelScope.launch {
             repo.deleteRecipe(id)
+            if (_selectedRecipe.value?.id == id) {
+                _selectedRecipe.value = null
+            }
+        }
+    }
+
+    fun duplicateRecipe(recipe: Recipe) {
+        viewModelScope.launch {
+            val duplicatedRecipe = recipe.copy(
+                id = java.util.UUID.randomUUID().toString(),
+                ownerId = userId,
+                name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)"
+            )
+            repo.addRecipe(duplicatedRecipe)
         }
     }
 

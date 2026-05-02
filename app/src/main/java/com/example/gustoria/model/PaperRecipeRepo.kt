@@ -27,6 +27,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Medium",
             cookingTimeMinutes = 20,
             servings = 2,
+            rating = 4.8f,
             ingredients = listOf(
                 RecipeIngredient("Spaghetti", 200, "g"),
                 RecipeIngredient("Guanciale", 100, "g"),
@@ -43,6 +44,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Hard",
             cookingTimeMinutes = 90,
             servings = 4,
+            rating = 4.5f,
             ingredients = listOf(
                 RecipeIngredient("Flour", 500, "g"),
                 RecipeIngredient("Tomato Sauce", 200, "ml"),
@@ -59,6 +61,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Hard",
             cookingTimeMinutes = 120,
             servings = 6,
+            rating = 4.9f,
             ingredients = listOf(
                 RecipeIngredient("Lasagna sheets", 250, "g"),
                 RecipeIngredient("Ragù sauce", 500, "ml"),
@@ -75,6 +78,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Medium",
             cookingTimeMinutes = 30,
             servings = 3,
+            rating = 4.2f,
             ingredients = listOf(
                 RecipeIngredient("Arborio Rice", 300, "g"),
                 RecipeIngredient("Saffron", 1, "tsp"),
@@ -91,6 +95,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Easy",
             cookingTimeMinutes = 45,
             servings = 8,
+            rating = 5.0f,
             ingredients = listOf(
                 RecipeIngredient("Savoiardi", 200, "g"),
                 RecipeIngredient("Mascarpone", 500, "g"),
@@ -107,6 +112,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Hard",
             cookingTimeMinutes = 60,
             servings = 2,
+            rating = 4.8f,
             ingredients = listOf(
                 RecipeIngredient("Sushi Rice", 200, "g"),
                 RecipeIngredient("Nori", 2, "sheets"),
@@ -123,6 +129,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Easy",
             cookingTimeMinutes = 15,
             servings = 1,
+            rating = 4.0f,
             ingredients = listOf(
                 RecipeIngredient("Ground Beef", 200, "g"),
                 RecipeIngredient("Burger Bun", 1, "pc"),
@@ -139,6 +146,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Easy",
             cookingTimeMinutes = 20,
             servings = 2,
+            rating = 4.8f,
             ingredients = listOf(
                 RecipeIngredient("Romaine Lettuce", 1, "head"),
                 RecipeIngredient("Chicken Breast", 200, "g"),
@@ -155,6 +163,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Medium",
             cookingTimeMinutes = 30,
             servings = 2,
+            rating = 4.8f,
             ingredients = listOf(
                 RecipeIngredient("Rice Noodles", 200, "g"),
                 RecipeIngredient("Shrimp", 150, "g"),
@@ -171,6 +180,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             difficulty = "Medium",
             cookingTimeMinutes = 75,
             servings = 4,
+            rating = 4.5f,
             ingredients = listOf(
                 RecipeIngredient("Onions", 500, "g"),
                 RecipeIngredient("Beef Broth", 1, "l"),

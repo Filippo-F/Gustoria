@@ -1,5 +1,6 @@
 package com.example.gustoria.ui.recipe
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.flowOf
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.OwnedRecipeViewModel
 import coil.compose.AsyncImage
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,6 +101,26 @@ fun OwnedRecipeScreen(
     val ingredient by vm.ingredientQuery.collectAsStateWithLifecycle()
     val costs by vm.costs.collectAsStateWithLifecycle()
     val difficulties by vm.difficulties.collectAsStateWithLifecycle()
+    val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
+
+    BackHandler(enabled = selectedRecipe != null) {
+        vm.selectRecipe(null)
+    }
+
+    if (selectedRecipe != null) {
+        RecipeDetailsScreen(
+            recipe = selectedRecipe!!,
+            isOwner = true,
+            onBackClick = { vm.selectRecipe(null) },
+            onDeleteClick = { vm.delete(selectedRecipe!!.id) },
+            onDuplicateClick = { vm.duplicateRecipe(selectedRecipe!!) },
+            onEditClick = {
+                onEditRecipe(selectedRecipe!!.id)
+                vm.selectRecipe(null)
+            }
+        )
+        return
+    }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var idToDelete by remember { mutableStateOf("") }
@@ -185,7 +207,7 @@ fun OwnedRecipeScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onEditRecipe(r.id) }
+                                .clickable { vm.selectRecipe(r) }
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 AsyncImage(
