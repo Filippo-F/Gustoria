@@ -302,6 +302,7 @@ fun RecipeDetailsContent(
     onEditClick: () -> Unit
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var showDuplicateDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -380,10 +381,7 @@ fun RecipeDetailsContent(
 
             // duplicate
             Button(
-                onClick = {
-                    onDuplicateClick()
-                    Toast.makeText(context, "Recipe copied to My Recipes!", Toast.LENGTH_SHORT).show()
-                },
+                onClick = { showDuplicateDialog = true },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Duplicate this recipe") }
 
@@ -417,6 +415,21 @@ fun RecipeDetailsContent(
                 onDismiss = { showDeleteDialog = false }
             )
         }
+        if (showDuplicateDialog) {
+            DuplicateConfirmationDialog(
+                recipeName = recipe.name,
+                onConfirm = {
+                    showDuplicateDialog = false // Close popup
+                    onDuplicateClick()          // Clone recipe
+
+                    // Success toast
+                    Toast.makeText(context, "Recipe copied to My Recipes!", Toast.LENGTH_SHORT).show()
+                },
+                onDismiss = {
+                    showDuplicateDialog = false // Close popup if user cancels
+                }
+            )
+        }
     }
 }
 
@@ -448,3 +461,27 @@ fun DeleteConfirmationDialog(
     )
 }
 
+@Composable
+fun DuplicateConfirmationDialog(
+    recipeName: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Duplicate recipe") },
+        text = {
+            Text("Do you want to create a copy of \"$recipeName\" in your recipes list?")
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Copy")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
