@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import com.example.gustoria.R
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
@@ -261,14 +262,14 @@ fun OwnedRecipeScreen(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete recipe") },
-                text = { Text("Delete \"$nameToDelete\"?") },
+                title = { Text("Delete recipe", color = Color.Black) },
+                text = { Text("Delete \"$nameToDelete\"?", color = Color.Black) },
                 confirmButton = {
                     TextButton(onClick = {
                         vm.delete(idToDelete)
                         showDeleteDialog = false
                     }) {
-                        Text("Delete")
+                        Text("Delete", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {

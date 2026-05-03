@@ -23,7 +23,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         Recipe(
             ownerId = "101",
             name = "Spaghetti Pomodoro",
-            imageUri = "file:///android_asset/carbonara.jpg",
+            imageUri = "file:///android_asset/pasta.jpg",
             cost = "€",
             difficulty = "Medium",
             cookingTimeMinutes = 20,
@@ -39,6 +39,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         Recipe(
             ownerId = "101",
             name = "Margherita Pizza",
+            imageUri = "file:///android_asset/margherita.jpg",
             cost = "€",
             difficulty = "Hard",
             cookingTimeMinutes = 90,
