@@ -22,17 +22,16 @@ class PaperRecipeRepo : RecipeRepoInterface {
     private val _placeholderRecipes = listOf(
         Recipe(
             ownerId = "101",
-            name = "Spaghetti Carbonara",
-            cost = "€€",
+            name = "Spaghetti Pomodoro",
+            imageUri = "file:///android_asset/carbonara.jpg",
+            cost = "€",
             difficulty = "Medium",
             cookingTimeMinutes = 20,
             servings = 2,
             rating = 4.8f,
             ingredients = listOf(
                 RecipeIngredient("Spaghetti", 200, "g"),
-                RecipeIngredient("Guanciale", 100, "g"),
-                RecipeIngredient("Eggs", 4, "pcs"),
-                RecipeIngredient("Pecorino Romano", 50, "g")
+                RecipeIngredient("Pomodoro", 90, "g")
             ),
             steps = listOf("Boil water", "Fry guanciale", "Mix eggs and cheese", "Combine all"),
             description = "Classic Roman pasta dish."
@@ -57,7 +56,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         Recipe(
             ownerId = "101",
             name = "Lasagna Bolognese",
-            cost = "€€€",
+            cost = "€€",
             difficulty = "Hard",
             cookingTimeMinutes = 120,
             servings = 6,
