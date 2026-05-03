@@ -94,7 +94,8 @@ class RecipeViewModel(
             val copy = recipe.copy(
                 id = Uuid.random().toString(),
                 ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
-                name = "${recipe.name} (Copy)"
+                name = if (recipe.name.endsWith(" (Copy)")) recipe.name
+                        else "${recipe.name} (Copy)"
             )
             recipeRepository.addRecipe(copy)
         }
