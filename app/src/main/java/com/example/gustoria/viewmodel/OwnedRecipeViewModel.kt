@@ -121,14 +121,16 @@ class OwnedRecipeViewModel(
         }
     }
 
-    fun duplicateRecipe(recipe: Recipe) {
+    fun duplicateRecipe(recipe: Recipe, onSuccess: (String) -> Unit = {}) {
         viewModelScope.launch {
+            val newId = Uuid.random().toString()
             val duplicatedRecipe = recipe.copy(
-                id = Uuid.random().toString(),
+                id = newId,
                 ownerId = userId,
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)"
             )
             repo.addRecipe(duplicatedRecipe)
+            onSuccess(newId)
         }
     }
 

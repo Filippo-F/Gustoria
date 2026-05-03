@@ -89,15 +89,17 @@ class RecipeViewModel(
 
 
     @OptIn(ExperimentalUuidApi::class)
-    fun duplicateRecipe(recipe: Recipe) {
+    fun duplicateRecipe(recipe: Recipe, onSuccess: (String) -> Unit = {}) {
         viewModelScope.launch {
+            val newId = Uuid.random().toString()
             val copy = recipe.copy(
-                id = Uuid.random().toString(),
+                id = newId,
                 ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name
                         else "${recipe.name} (Copy)"
             )
             recipeRepository.addRecipe(copy)
+            onSuccess(newId)
         }
     }
 

@@ -130,7 +130,12 @@ fun RecipeScreen(
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
             onBackClick = { viewModel.selectRecipe(null) },
             onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
-            onDuplicateClick = { viewModel.duplicateRecipe(selectedRecipe!!) },
+            onDuplicateClick = {
+                viewModel.duplicateRecipe(selectedRecipe!!) { newId ->
+                    onEditRecipe(newId)
+                    viewModel.selectRecipe(null)
+                }
+            },
             onEditClick = { onEditRecipe(selectedRecipe!!.id) }
         )
     }

@@ -114,7 +114,12 @@ fun OwnedRecipeScreen(
             isOwner = true,
             onBackClick = { vm.selectRecipe(null) },
             onDeleteClick = { vm.delete(selectedRecipe!!.id) },
-            onDuplicateClick = { vm.duplicateRecipe(selectedRecipe!!) },
+            onDuplicateClick = {
+                vm.duplicateRecipe(selectedRecipe!!) { newId ->
+                    onEditRecipe(newId)
+                    vm.selectRecipe(null)
+                }
+            },
             onEditClick = {
                 onEditRecipe(selectedRecipe!!.id)
                 vm.selectRecipe(null)
