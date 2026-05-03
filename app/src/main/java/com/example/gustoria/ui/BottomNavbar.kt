@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 enum class NavDestination {
-    EXPLORE,        // lista pubblica RECIPES_LIST
+    EXPLORE,        // Public list RECIPES_LIST
     CREATE,         // CREATE_RECIPE
     PROFILE         // MY_RECIPES
 }

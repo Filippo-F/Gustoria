@@ -13,26 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.remember
 import com.example.gustoria.ui.theme.GustoriaTheme
@@ -53,9 +44,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import com.example.gustoria.R
-import android.widget.Toast
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.ui.platform.LocalContext
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -197,25 +185,40 @@ private fun RecipeListContent(
             Spacer(Modifier.height(8.dp))
 
             // 3. Cost filter
-            Text("Cost range", style = MaterialTheme.typography.labelMedium)
+            Text("Cost", style = MaterialTheme.typography.labelMedium)
+            var selectedCosts by remember { mutableStateOf(emptySet<Int>()) }
 
-            var range by remember(filters.costMin, filters.costMax) {
-                mutableStateOf(filters.costMin.toFloat()..filters.costMax.toFloat())
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val costOptions = listOf("€" to 1, "€€" to 2, "€€€" to 3)
+
+                costOptions.forEach { (label, value) ->
+                    val isSelected = selectedCosts.contains(value)
+
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            val newSelection = if (isSelected) {
+                                selectedCosts - value
+                            } else {
+                                selectedCosts + value
+                            }
+                            selectedCosts = newSelection
+
+                            if (newSelection.isEmpty()) {
+                                onCostRangeChange(1, 3)
+                            } else {
+                                val min = newSelection.minOrNull() ?: 1
+                                val max = newSelection.maxOrNull() ?: 3
+                                onCostRangeChange(min, max)
+                            }
+                        },
+                        label = { Text(label) }
+                    )
+                }
             }
-
-            Text(
-                text = "${"€".repeat(range.start.toInt())} – ${"€".repeat(range.endInclusive.toInt())}"
-            )
-
-            RangeSlider(
-                value = range,
-                onValueChange = { range = it },
-                onValueChangeFinished = {
-                    onCostRangeChange(range.start.toInt(), range.endInclusive.toInt())
-                },
-                valueRange = 1f..3f,
-                steps = 1
-            )
 
             // 4. Difficulty filter
             Text("Difficulty", style = MaterialTheme.typography.labelMedium)

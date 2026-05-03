@@ -134,7 +134,7 @@ class OwnedRecipeViewModel(
         }
     }
 
-    //da rivedere
+    // TODO: to recheck if this is correct
     companion object {
         fun factory(repo: RecipeRepoInterface): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {

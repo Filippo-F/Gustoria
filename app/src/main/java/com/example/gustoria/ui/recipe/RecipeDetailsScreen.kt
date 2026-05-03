@@ -51,7 +51,7 @@ fun RecipeDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(bottom = innerPadding.calculateBottomPadding())
                 .background(MaterialTheme.colorScheme.background),
         ) {
             // Food image section
@@ -87,6 +87,7 @@ fun RecipeDetailsScreen(
                         onClick = onBackClick,
                         modifier = Modifier
                             .align(Alignment.TopStart)
+                            .statusBarsPadding()
                             .padding(8.dp)
                             .background(Color.Black.copy(alpha = 0.3f), CircleShape)
                     ) {
@@ -101,6 +102,7 @@ fun RecipeDetailsScreen(
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
+                            .statusBarsPadding()
                             .padding(8.dp)
                     ) {
                         IconButton(

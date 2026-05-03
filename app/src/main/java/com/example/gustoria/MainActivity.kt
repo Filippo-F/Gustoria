@@ -33,12 +33,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.activity.enableEdgeToEdge
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         Paper.init(applicationContext)
         recipeRepository = PaperRecipeRepo()
 
@@ -81,19 +84,21 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
     Scaffold(
         bottomBar = {
             if (currentScreen != MainScreen.HOME) {
-                AppBottomNavBar(
-                    currentDestination = currentDestination,
-                    onNavigate = { dest ->
-                        when (dest) {
-                            NavDestination.EXPLORE -> currentScreen = MainScreen.RECIPES_LIST
-                            NavDestination.CREATE  -> {
-                                editingRecipeId = null
-                                currentScreen = MainScreen.CREATE_RECIPE
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    AppBottomNavBar(
+                        currentDestination = currentDestination,
+                        onNavigate = { dest ->
+                            when (dest) {
+                                NavDestination.EXPLORE -> currentScreen = MainScreen.RECIPES_LIST
+                                NavDestination.CREATE  -> {
+                                    editingRecipeId = null
+                                    currentScreen = MainScreen.CREATE_RECIPE
+                                }
+                                NavDestination.PROFILE -> currentScreen = MainScreen.MY_RECIPES
                             }
-                            NavDestination.PROFILE -> currentScreen = MainScreen.MY_RECIPES
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     ) { paddingValues ->
