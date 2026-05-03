@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModelProvider
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class OwnedRecipeViewModel(
     private val repo: RecipeRepoInterface
 ) : ViewModel() {
@@ -122,7 +124,7 @@ class OwnedRecipeViewModel(
     fun duplicateRecipe(recipe: Recipe) {
         viewModelScope.launch {
             val duplicatedRecipe = recipe.copy(
-                id = java.util.UUID.randomUUID().toString(),
+                id = Uuid.random().toString(),
                 ownerId = userId,
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)"
             )
@@ -130,7 +132,7 @@ class OwnedRecipeViewModel(
         }
     }
 
-    //da rivedere campanion object
+    //da rivedere
     companion object {
         fun factory(repo: RecipeRepoInterface): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {

@@ -171,7 +171,7 @@ class EditRecipeViewModel(
         if (currentState.name.isBlank()) errors["name"] = "Recipe name cannot be empty"
 
         val cookingTime = currentState.cookingTimeMinutesText.toIntOrNull()
-        if (cookingTime == null || cookingTime < 0) errors["cookingTime"] = "Enter a valid time"
+        if (cookingTime == null || cookingTime <= 0) errors["cookingTime"] = "Enter a valid time"
 
         val servings = currentState.servingsText.toIntOrNull()
         if (servings == null || servings <= 0) errors["servings"] = "Enter a valid serving size"
