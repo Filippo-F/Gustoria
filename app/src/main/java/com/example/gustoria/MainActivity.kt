@@ -35,6 +35,7 @@ import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.text.font.FontWeight
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -185,7 +186,9 @@ fun MainMenuScreen(
     ) {
         Text(
             text = "GUSTORIA",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold
+            )
         )
 
         Spacer(modifier = Modifier.height(32.dp))
