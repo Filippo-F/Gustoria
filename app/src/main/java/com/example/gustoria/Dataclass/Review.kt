@@ -12,5 +12,5 @@ data class Review (
     val rating: Float = 0f,
     val likes: Int = 0,
     val photoUri: String? = null,
-    val timestamp: String = "",
+    val timestamp: String = ""
 )

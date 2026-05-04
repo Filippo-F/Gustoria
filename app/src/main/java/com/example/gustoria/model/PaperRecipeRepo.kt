@@ -198,6 +198,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             recipeBook.read<Recipe>(key)
         }
     )
+
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {

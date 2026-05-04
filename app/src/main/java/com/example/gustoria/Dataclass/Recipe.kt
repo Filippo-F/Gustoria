@@ -18,6 +18,6 @@ data class Recipe(
     val ingredients: List<RecipeIngredient> = emptyList(),
     val steps: List<String> = emptyList(),
     val description: String = "",
-    val tags: List<String> = emptyList(),         // per dietary/cuisine/type
+    val tags: List<String> = emptyList(), // per dietary/cuisine/type
     val caloriesKcal: Int = 0
 )

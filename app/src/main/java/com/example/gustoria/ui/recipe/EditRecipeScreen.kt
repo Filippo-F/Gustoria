@@ -64,7 +64,6 @@ fun EditRecipeScreen(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val isEditMode = vm.isEditMode
-    //val context = LocalContext.current
 
     BackHandler {
         vm.revertChanges()
@@ -72,6 +71,7 @@ fun EditRecipeScreen(
     }
 
     var showTopMenu by remember { mutableStateOf(false) }
+
     // If we are uploading info onto DB, show a loading indicator
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

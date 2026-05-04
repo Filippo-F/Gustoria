@@ -54,6 +54,7 @@ fun RecipeCardContent(recipe: Recipe) {
         fallback = painterResource(id = R.drawable.no_image),
         error = painterResource(id = R.drawable.no_image)
     )
+
     Spacer(Modifier.height(8.dp))
 
     Text(
@@ -61,11 +62,14 @@ fun RecipeCardContent(recipe: Recipe) {
         style = MaterialTheme.typography.titleMedium,
         maxLines = 2
     )
+
     Spacer(Modifier.height(4.dp))
+
     Text(
         text = "${recipe.cost} \u2022 ${recipe.difficulty}",
         style = MaterialTheme.typography.bodySmall
     )
+
     Text(
         text = "${recipe.cookingTimeMinutes} min \u00b7 ${recipe.servings} serv.",
         style = MaterialTheme.typography.bodySmall

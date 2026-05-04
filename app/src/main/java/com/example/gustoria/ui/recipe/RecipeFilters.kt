@@ -9,7 +9,8 @@ import com.example.gustoria.Dataclass.Recipe
   3. by cost range
   4. by difficulty
   5. by max cooking time (?)
- */
+*/
+
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",

@@ -37,7 +37,7 @@ class RecipeViewModel(
         combine(recipes, _filters) { list, filters -> list.applyFilters(filters) }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000), // o Eagerly?
+                started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptyList()
             )
 
