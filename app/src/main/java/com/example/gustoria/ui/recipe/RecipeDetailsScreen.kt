@@ -47,11 +47,13 @@ fun RecipeDetailsScreen(
     var isMade by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp)
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding())
+                .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background),
         ) {
             // Food image section
@@ -87,7 +89,6 @@ fun RecipeDetailsScreen(
                         onClick = onBackClick,
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .statusBarsPadding()
                             .padding(8.dp)
                             .background(Color.Black.copy(alpha = 0.3f), CircleShape)
                     ) {
@@ -102,7 +103,6 @@ fun RecipeDetailsScreen(
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .statusBarsPadding()
                             .padding(8.dp)
                     ) {
                         IconButton(

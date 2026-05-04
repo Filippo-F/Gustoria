@@ -32,37 +32,13 @@ import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.viewmodel.EditRecipeViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.example.gustoria.ui.utils.MultiPreview
+import com.example.gustoria.ui.utils.PreviewUtils
 
-@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
-@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
-@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
-@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
-@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
-@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
-@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
-
+@MultiPreview
 @Composable
 fun EditRecipeScreenPreview() {
-    val fakeRepo = object : RecipeRepoInterface {
-        override fun getAllRecipes(): Flow<List<Recipe>> = flowOf(emptyList())
-        override fun getRecipeById(recipeId: String): Flow<Recipe?> = flowOf(
-            Recipe(
-                name = "Pasta al Pomodoro",
-                description = "A classic Italian pasta dish with fresh tomatoes and basil.",
-                cost = "€",
-                difficulty = "Low",
-                cookingTimeMinutes = 15,
-                servings = 2,
-                steps = listOf("Boil water", "Cook pasta", "Prepare sauce", "Mix and serve")
-            )
-        )
-        override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = flowOf(emptyList())
-        override suspend fun addRecipe(recipe: Recipe) {}
-        override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {}
-        override suspend fun deleteRecipe(recipeId: String) {}
-    }
+    val fakeRepo = PreviewUtils.createFakeRecipeRepo()
 
     GustoriaTheme(dynamicColor = false) {
         EditRecipeScreen(
@@ -94,37 +70,6 @@ fun EditRecipeScreen(
         vm.revertChanges()
         onCancel()
     }
-
-    //var showCameraScreen by remember { mutableStateOf(false) }
-    //var showImageMenu by remember { mutableStateOf(false) }
-    //var showTopMenu by remember { mutableStateOf(false) }
-
-    /*val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let { vm.updateImageUri(it.toString()) }
-    }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            showCameraScreen = true
-        } else {
-            Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    if (showCameraScreen) {
-        CameraXScreen(
-            onImageCaptured = { uri ->
-                vm.updateImageUri(uri)
-                showCameraScreen = false
-            },
-            onCancel = { showCameraScreen = false }
-        )
-        return
-    }*/
 
     var showTopMenu by remember { mutableStateOf(false) }
     // If we are uploading info onto DB, show a loading indicator
@@ -181,7 +126,8 @@ fun EditRecipeScreen(
                     }
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
     ) { paddingValues ->
         // ScrollState to allow the user to scroll down the screen
         Column(
@@ -224,7 +170,11 @@ fun EditRecipeScreen(
                 label = { Text("Image URL or asset path") },
                 placeholder = { Text("file:///android_asset/pasta.jpg") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
             )
 
             // Name

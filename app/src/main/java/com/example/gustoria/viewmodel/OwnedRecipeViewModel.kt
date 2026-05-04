@@ -1,17 +1,15 @@
 package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import com.example.gustoria.ui.recipe.RecipeFilters
+import com.example.gustoria.ui.recipe.applyFilters
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import androidx.lifecycle.ViewModelProvider
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -22,25 +20,17 @@ class OwnedRecipeViewModel(
 
     private val userId = SessionManager.CURRENT_LOGGED_IN_USER_ID
 
-    val nameQuery = MutableStateFlow("")
-    val ingredientQuery = MutableStateFlow("")
-    val costs = MutableStateFlow<Set<String>>(emptySet())
-    val difficulties = MutableStateFlow<Set<String>>(emptySet())
+    private val _filters = MutableStateFlow(RecipeFilters())
+    val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
 
     private val myRecipes: StateFlow<List<Recipe>> =
         repo.getRecipeByOwner(userId)
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val recipesToShow: StateFlow<List<Recipe>> = combine(
-        myRecipes, nameQuery, ingredientQuery, costs, difficulties
-    ) { list, name, ing, c, d ->
-        val result = mutableListOf<Recipe>()
-        for (recipe in list) {
-            if (matches(recipe, name, ing, c, d)) {
-                result.add(recipe)
-            }
-        }
-        result
+        myRecipes, _filters
+    ) { list, f ->
+        list.applyFilters(f)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _selectedRecipe = MutableStateFlow<Recipe?>(null)
@@ -50,66 +40,30 @@ class OwnedRecipeViewModel(
         _selectedRecipe.value = recipe
     }
 
-    private fun matches(
-        r: Recipe,
-        name: String,
-        ing: String,
-        costs: Set<String>,
-        diffs: Set<String>
-    ): Boolean {
-        if (name.isNotBlank()) {
-            if (!r.name.contains(name, ignoreCase = true)) return false
-        }
-        if (ing.isNotBlank()) {
-            var found = false
-            for (i in r.ingredients) {
-                if (i.name.contains(ing, ignoreCase = true)) {
-                    found = true
-                    break
-                }
-            }
-            if (!found) return false
-        }
-        if (costs.isNotEmpty()) {
-            if (r.cost !in costs) return false
-        }
-        if (diffs.isNotEmpty()) {
-            if (r.difficulty !in diffs) return false
-        }
-        return true
-    }
-
     fun setNameQuery(q: String) {
-        nameQuery.value = q
+        _filters.update { it.copy(nameQuery = q) }
     }
 
     fun setIngredientQuery(q: String) {
-        ingredientQuery.value = q
+        _filters.update { it.copy(ingredientQuery = q) }
     }
 
     fun toggleCost(c: String) {
-        val current = costs.value
-        if (c in current) {
-            costs.value = current - c
-        } else {
-            costs.value = current + c
+        _filters.update {
+            val newSet = if (c in it.selectedCosts) it.selectedCosts - c else it.selectedCosts + c
+            it.copy(selectedCosts = newSet)
         }
     }
 
     fun toggleDifficulty(d: String) {
-        val current = difficulties.value
-        if (d in current) {
-            difficulties.value = current - d
-        } else {
-            difficulties.value = current + d
+        _filters.update {
+            val newSet = if (d in it.selectedDifficulties) it.selectedDifficulties - d else it.selectedDifficulties + d
+            it.copy(selectedDifficulties = newSet)
         }
     }
 
     fun resetFilters() {
-        nameQuery.value = ""
-        ingredientQuery.value = ""
-        costs.value = emptySet()
-        difficulties.value = emptySet()
+        _filters.value = RecipeFilters()
     }
 
     fun delete(id: String) {

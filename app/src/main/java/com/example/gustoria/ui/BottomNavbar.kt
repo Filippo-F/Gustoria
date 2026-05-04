@@ -34,8 +34,7 @@ fun AppBottomNavBar(
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp,
-        modifier = Modifier.height(72.dp)
+        tonalElevation = 0.dp
     ) {
         NavItem(
             icon = Icons.Outlined.Explore,
