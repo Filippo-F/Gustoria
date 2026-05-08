@@ -41,11 +41,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TabRowDefaults
 import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.NavDestination
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -274,7 +275,8 @@ fun RecentActivitySection(activities: List<UserActivity>) {
         }
     }
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit = {}) {
     val tabs = listOf("Collections", "Recent Activity")
@@ -361,12 +363,6 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                         divider = {
                             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                         },
-                        indicator = {
-                            TabRowDefaults.SecondaryIndicator(
-                                modifier = Modifier.tabIndicatorOffset(viewModel.currentTab),
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
                     ) {
                         tabs.forEachIndexed { index, title ->
                             Tab(
