@@ -46,7 +46,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.AppBottomNavBar
-import com.example.gustoria.ui.NavDestination
 import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -71,22 +70,21 @@ fun OwnedProfileScreenPreview() {
         OwnedProfileScreen(
             viewModel = viewModel(),
             onBack = {},
-            onNavigate = {}
         )
     }
 }
 
 @Composable
-fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit) {
+fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}) {
     val configuration = LocalConfiguration.current
 
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
-                AppBottomNavBar(
+                /*AppBottomNavBar(
                     currentDestination = NavDestination.PROFILE,
                     onNavigate = onNavigate
-                )
+                )*/
             }
         }
     ) { innerPadding ->
@@ -137,6 +135,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 fun PresentationPane(user: UserClass, isLandscape: Boolean) {
     LazyColumn(
         modifier = Modifier
@@ -249,9 +248,9 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 maxItemsInEachRow = 3
             ) {
-                ValueBox(value = user.numberOfRecipes, text = "Recipes")
-                ValueBox(value = user.numberOfFollowers, text = "Followers")
-                ValueBox(value = user.numberOfLikes, text = "Likes")
+                //ValueBox(value = user.numberOfRecipes, text = "Recipes")
+                //ValueBox(value = user.numberOfFollowers, text = "Followers")
+                //ValueBox(value = user.numberOfLikes, text = "Likes")
             }
         }
 

@@ -32,7 +32,6 @@ import io.paperdb.Paper
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
-import com.example.gustoria.ui.NavDestination
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.text.font.FontWeight
 
@@ -74,17 +73,17 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
     }
 
     val currentDestination = when (currentScreen) {
-        MainScreen.RECIPES_LIST   -> NavDestination.EXPLORE
-        MainScreen.MY_RECIPES     -> NavDestination.PROFILE
+        MainScreen.RECIPES_LIST   -> "TEST"
+        MainScreen.MY_RECIPES     -> "TEST"
         MainScreen.CREATE_RECIPE,
-        MainScreen.EDIT_RECIPE    -> NavDestination.CREATE
-        else                      -> NavDestination.EXPLORE
+        MainScreen.EDIT_RECIPE    -> "TEST"
+        else                      -> "TEST"
     }
 
     Scaffold(
         bottomBar = {
             if (currentScreen != MainScreen.HOME) {
-                AppBottomNavBar(
+                /*AppBottomNavBar(
                     currentDestination = currentDestination,
                     onNavigate = { dest ->
                         when (dest) {
@@ -96,7 +95,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                             NavDestination.PROFILE -> currentScreen = MainScreen.MY_RECIPES
                         }
                     }
-                )
+                )*/
             }
         }
     ) { paddingValues ->

@@ -34,7 +34,7 @@ private val loggedInUser = mutableStateOf(
         numberOfLikes = 850
     )
 )
-
+/*
 private val viewRecipe = mutableStateOf(
     RecipeProposal(
         title = "Tomato Spaghetti",
@@ -58,7 +58,7 @@ private val viewRecipe = mutableStateOf(
         ),
         description = "Pasta al pomodoro is an iconic Italian dish consisting of pasta—traditionally spaghetti—tossed in a simple, fresh tomato sauce, olive oil, garlic, and basil."
     )
-)
+)*/
 
 class OwnedProfileViewModel : ViewModel() {
     var user by loggedInUser
@@ -241,7 +241,7 @@ class OtherProfileViewModel : ViewModel() {
 }
 
 class RecipeViewModel : ViewModel() {
-    var recipe by viewRecipe
+    //var recipe by viewRecipe
 
     var isFavorite by mutableStateOf(false)
         private set

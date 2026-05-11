@@ -1,4 +1,4 @@
-package com.example.gustoria
+package com.example.gustoria.ui.user
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,11 +42,14 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
-import com.example.gustoria.ui.NavDestination
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.gustoria.OtherProfileViewModel
+import com.example.gustoria.CookingRole
+import com.example.gustoria.UserCollection
+import com.example.gustoria.UserActivity
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -62,7 +65,6 @@ fun OtherProfileScreenPreview() {
         OtherProfileScreen(
             viewModel = viewModel(),
             onBack = {},
-            onNavigate = {}
         )
     }
 }
@@ -275,19 +277,18 @@ fun RecentActivitySection(activities: List<UserActivity>) {
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}, onNavigate: (NavDestination) -> Unit = {}) {
+fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}) {
     val tabs = listOf("Collections", "Recent Activity")
 
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
-                AppBottomNavBar(
+                /*AppBottomNavBar(
                     currentDestination = NavDestination.PROFILE,
                     onNavigate = onNavigate
-                )
+                )*/
             }
         }
     ) { innerPadding ->
