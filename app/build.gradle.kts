@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -72,4 +73,10 @@ dependencies {
 
     implementation("androidx.camera:camera-view:${camerax_version}")
     implementation("androidx.camera:camera-extensions:${camerax_version}")
+
+    val navVersion = "2.8.1" //also 2.9.8 is fine
+    // Jetpack Compose Integration
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+    implementation("androidx.navigation:navigation-ui:$navVersion ")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
