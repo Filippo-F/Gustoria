@@ -25,31 +25,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.gustoria.CreateRoute
-import com.example.gustoria.FavouriteRoute
-import com.example.gustoria.HomeRoute
-import com.example.gustoria.ProfileRoute
-import com.example.gustoria.SearchRoute
+import com.example.gustoria.Create
+import com.example.gustoria.Favourite
+import com.example.gustoria.Favourite.Saved
+import com.example.gustoria.Home
+import com.example.gustoria.Profile
+import com.example.gustoria.Search
 
 class BottomNavBarActions (
     val navCtrl : NavHostController
 ) {
     val navigateHome: () -> Unit = {
-        navCtrl.navigate(HomeRoute)
+        navCtrl.navigate(Home)
     }
     val navigateSearch: () -> Unit = {
-        navCtrl.navigate(SearchRoute)
+        navCtrl.navigate(Search)
     }
     val navigateCreate: () -> Unit = {
-        navCtrl.navigate(CreateRoute)
+        navCtrl.navigate(Create)
     }
     val navigateFavourite: () -> Unit = {
-        navCtrl.navigate(FavouriteRoute)
+        navCtrl.navigate(Saved)
     }
     val navigateProfile: () -> Unit = {
-        navCtrl.navigate(ProfileRoute)
+        navCtrl.navigate(Profile)
     }
     val navigateBack: () -> Unit = {
         navCtrl.popBackStack()
@@ -74,35 +76,35 @@ fun AppBottomNavBar(
         NavItem(
             icon = Icons.Outlined.Explore,
             label = "EXPLORE",
-            selected = currentDestination?.hasRoute<HomeRoute>() == true,
+            selected = currentDestination?.hasRoute<Home>() == true,
             isCreate = false,
             onClick = actions.navigateHome
         )
         NavItem(
             icon = Icons.Outlined.Search,
             label = "SEARCH",
-            selected = currentDestination?.hasRoute<SearchRoute>() == true,
+            selected = currentDestination?.hierarchy?.any { it.hasRoute<Search>() } == true,
             isCreate = false,
             onClick = actions.navigateSearch
         )
         NavItem(
             icon = Icons.Filled.AddCircle,
             label = "CREATE",
-            selected = currentDestination?.hasRoute<CreateRoute>() == true,
+            selected = currentDestination?.hasRoute<Create>() == true,
             isCreate = true,
             onClick = actions.navigateCreate
         )
         NavItem(
             icon = Icons.Filled.Favorite,
             label = "FAVORITES",
-            selected = currentDestination?.hasRoute<FavouriteRoute>() == true,
+            selected = currentDestination?.hierarchy?.any { it.hasRoute<Favourite>() } == true,
             isCreate = false,
             onClick = actions.navigateFavourite
         )
         NavItem(
             icon = Icons.Outlined.Person,
             label = "PROFILE",
-            selected = currentDestination?.hasRoute<ProfileRoute>() == true,
+            selected = currentDestination?.hierarchy?.any { it.hasRoute<Profile>() } == true,
             isCreate = false,
             onClick = actions.navigateProfile
         )
