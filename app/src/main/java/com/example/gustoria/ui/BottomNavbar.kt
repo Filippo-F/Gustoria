@@ -27,6 +27,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.gustoria.CreateRoute
+import com.example.gustoria.FavouriteRoute
+import com.example.gustoria.HomeRoute
+import com.example.gustoria.ProfileRoute
+import com.example.gustoria.SearchRoute
 
 class BottomNavBarActions (
     val navCtrl : NavHostController
