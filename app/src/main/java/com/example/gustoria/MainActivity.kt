@@ -167,12 +167,23 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         }
                     }
                     composable<Search.Searched> {
-                        Text("Searched Recipes")
+                        RecipeScreen(
+                            recipeRepository = recipeRepository,
+                            onEditRecipe = { id -> 
+                                // valore di default
+                            },
+                            onBack = { actions.navigateBack() }
+                        )
                     }
                 }
 
                 composable<Create> {
-                    Text("Create Route")
+                    com.example.gustoria.ui.recipe.EditRecipeScreen(
+                        recipeRepository = recipeRepository,
+                        recipeId = null,
+                        onSaved = { actions.navigateBack() },
+                        onCancel = { actions.navigateBack() }
+                    )
                 }
 
                 navigation<Favourite>(startDestination = Favourite.Saved) {
@@ -207,6 +218,14 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
 
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
+                        OwnedProfileScreen(
+                            viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+                            onBack = { actions.navigateBack() },
+                            onEditRecipe = { id -> 
+                                // valore di default
+                            }           
+                        )
+                        
                         Column (
 
                         ) {
