@@ -28,6 +28,9 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.gustoria.ui.HomeScreen
+import com.example.gustoria.ui.recipe.EditRecipeScreen
+import com.example.gustoria.ui.recipe.OwnedRecipeScreen
+import com.example.gustoria.ui.recipe.RecipeScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -167,7 +170,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         }
                     }
                     composable<Search.Searched> {
-                        com.example.gustoria.ui.recipe.RecipeScreen(
+                        RecipeScreen(
                             recipeRepository = recipeRepository,
                             onEditRecipe = { id: String -> 
                                 // valore di default
@@ -178,7 +181,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                 }
 
                 composable<Create> {
-                    com.example.gustoria.ui.recipe.EditRecipeScreen(
+                    EditRecipeScreen(
                         recipeRepository = recipeRepository,
                         recipeId = null,
                         onSaved = { actions.navigateBack() },
@@ -206,7 +209,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         }
                     }
                     composable<Favourite.Created> {
-                        com.example.gustoria.ui.recipe.OwnedRecipeScreen(
+                        OwnedRecipeScreen(
                             recipeRepository = recipeRepository,
                             onCreateNewRecipe = { navController.navigate(Create) },
                             onEditRecipe = { id: String -> 
