@@ -167,9 +167,9 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         }
                     }
                     composable<Search.Searched> {
-                        RecipeScreen(
+                        com.example.gustoria.ui.recipe.RecipeScreen(
                             recipeRepository = recipeRepository,
-                            onEditRecipe = { id -> 
+                            onEditRecipe = { id: String -> 
                                 // valore di default
                             },
                             onBack = { actions.navigateBack() }
@@ -206,13 +206,14 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         }
                     }
                     composable<Favourite.Created> {
-                        Column (
-
-                        ) {
-                            Text("Created Tab")
-                            Button(onClick = { navController.navigate(Favourite.Saved) }) { Text("Go to saved") }
-                            Button(onClick = { navController.navigate(Favourite.Tried) }) { Text("Go to tried") }
-                        }
+                        com.example.gustoria.ui.recipe.OwnedRecipeScreen(
+                            recipeRepository = recipeRepository,
+                            onCreateNewRecipe = { navController.navigate(Create) },
+                            onEditRecipe = { id: String -> 
+                                // TODO: Navigate to EditRecipeScreen with id
+                            },
+                            onBack = { actions.navigateBack() }
+                        )
                     }
                 }
 
@@ -221,20 +222,11 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         OwnedProfileScreen(
                             viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
                             onBack = { actions.navigateBack() },
-                            onEditRecipe = { id -> 
-                                // valore di default
-                            }           
+                            onNavigateToProfileInfo = { navController.navigate(Profile.ProfileInfo.OverallProfileInfo) },
+                            onNavigateToSettings = { navController.navigate(Profile.Settings) },
+                            onNavigateToHelp = { navController.navigate(Profile.HelpAndFeedback) },
+                            onSignOut = { navController.navigate(Profile.SignOut) }
                         )
-                        
-                        Column (
-
-                        ) {
-                            Text("Profile View")
-                            Button(onClick = {navController.navigate(Profile.ProfileInfo.OverallProfileInfo)}){Text("Profile Info")}
-                            Button(onClick = {navController.navigate(Profile.Settings)}){Text("Settings")}
-                            Button(onClick = { navController.navigate(Profile.HelpAndFeedback) }) { Text("Help & Feedback") }
-                            Button(onClick = { navController.navigate(Profile.SignOut) }) { Text("Sign Out") }
-                        }
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {

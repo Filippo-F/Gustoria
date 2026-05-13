@@ -75,7 +75,14 @@ fun OwnedProfileScreenPreview() {
 }
 
 @Composable
-fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}) {
+fun OwnedProfileScreen(
+    viewModel: OwnedProfileViewModel,
+    onBack: () -> Unit = {},
+    onNavigateToProfileInfo: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToHelp: () -> Unit = {},
+    onSignOut: () -> Unit = {}
+) {
     val configuration = LocalConfiguration.current
 
     Scaffold(
@@ -127,7 +134,11 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
             } else {
                 PresentationPane(
                     user = viewModel.user,
-                    isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
+                    onNavigateToProfileInfo = onNavigateToProfileInfo,
+                    onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToHelp = onNavigateToHelp,
+                    onSignOut = onSignOut
                 )
             }
         }
@@ -136,7 +147,14 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-fun PresentationPane(user: UserClass, isLandscape: Boolean) {
+fun PresentationPane(
+    user: UserClass,
+    isLandscape: Boolean,
+    onNavigateToProfileInfo: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToHelp: () -> Unit = {},
+    onSignOut: () -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -258,11 +276,11 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 24.dp)) {
-                MenuListItem(title = "Profile Info", icon = Icons.Default.Person)
-                MenuListItem(title = "Settings", icon = Icons.Default.Settings)
-                MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info)
+                MenuListItem(title = "Profile Info", icon = Icons.Default.Person, onClick = onNavigateToProfileInfo)
+                MenuListItem(title = "Settings", icon = Icons.Default.Settings, onClick = onNavigateToSettings)
+                MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info, onClick = onNavigateToHelp)
                 Spacer(modifier = Modifier.height(16.dp))
-                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true)
+                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true, onClick = onSignOut)
             }
         }
     }
@@ -595,7 +613,12 @@ fun EditProfilePane(
 }
 
 @Composable
-fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
+fun MenuListItem(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isDestructive: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -603,7 +626,8 @@ fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageV
             .height(56.dp),
         colors = CardDefaults.cardColors(containerColor = if (isDestructive) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface),
         border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
