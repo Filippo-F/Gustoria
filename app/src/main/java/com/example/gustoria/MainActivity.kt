@@ -29,7 +29,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.recipe.EditRecipeScreen
-import com.example.gustoria.ui.recipe.OwnedRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
 import kotlinx.serialization.Serializable
 
@@ -173,7 +172,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         RecipeScreen(
                             recipeRepository = recipeRepository,
                             onEditRecipe = { id: String -> 
-                                // valore di default
+                                // Default value
                             },
                             onBack = { actions.navigateBack() }
                         )
@@ -191,31 +190,45 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
 
                 navigation<Favourite>(startDestination = Favourite.Saved) {
                     composable<Favourite.Saved> {
-                        Column (
-
-                        ) {
-                            Text("Saved Tab")
-                            Button(onClick = { navController.navigate(Favourite.Tried) }) { Text("Go to tried") }
-                            Button(onClick = { navController.navigate(Favourite.Created) }) { Text("Go to created") }
-                        }
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
+                            recipeRepository = recipeRepository,
+                            initialTab = 0,
+                            onCreateNewRecipe = { navController.navigate(Create) },
+                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
+                            onTabChange = { tabIndex ->
+                                when(tabIndex) {
+                                    1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
+                                    2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+                                }
+                            }
+                        )
                     }
                     composable<Favourite.Tried> {
-                        Column (
-
-                        ) {
-                            Text("Tried Tab")
-                            Button(onClick = { navController.navigate(Favourite.Saved) }) { Text("Go to saved") }
-                            Button(onClick = { navController.navigate(Favourite.Created) }) { Text("Go to created") }
-                        }
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
+                            recipeRepository = recipeRepository,
+                            initialTab = 1,
+                            onCreateNewRecipe = { navController.navigate(Create) },
+                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
+                            onTabChange = { tabIndex ->
+                                when(tabIndex) {
+                                    0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
+                                    2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+                                }
+                            }
+                        )
                     }
                     composable<Favourite.Created> {
-                        OwnedRecipeScreen(
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
+                            initialTab = 2,
                             onCreateNewRecipe = { navController.navigate(Create) },
-                            onEditRecipe = { id: String -> 
-                                // TODO: Navigate to EditRecipeScreen with id
-                            },
-                            onBack = { actions.navigateBack() }
+                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
+                            onTabChange = { tabIndex ->
+                                when(tabIndex) {
+                                    0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
+                                    1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
+                                }
+                            }
                         )
                     }
                 }

@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.sp
 fun ThreeItemTopNavbar(
     modifier: Modifier = Modifier,
     title: String,
-    onBack: () -> Unit,
+    onBack: () -> Unit = {},
+    showBackButton: Boolean = true,
     extraIcon: ImageVector? = null,
     extraIconDescription: String? = null,
     onClickExtra: () -> Unit = {}
@@ -31,14 +32,18 @@ fun ThreeItemTopNavbar(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            modifier = Modifier.size(56.dp),
-            onClick = onBack
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back"
-            )
+        if (showBackButton) {
+            IconButton(
+                modifier = Modifier.size(56.dp),
+                onClick = onBack
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        } else {
+            Box(modifier = Modifier.size(56.dp))
         }
 
         Text(
