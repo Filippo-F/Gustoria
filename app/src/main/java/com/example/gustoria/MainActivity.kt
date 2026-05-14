@@ -27,21 +27,33 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.example.gustoria.domain.ReviewRepoInterface
+import com.example.gustoria.domain.UserRepoInterface
+import com.example.gustoria.model.PaperReviewRepo
+import com.example.gustoria.model.PaperUserRepo
 import com.example.gustoria.ui.HomeScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
+    private lateinit var userRepository: UserRepoInterface
+    private lateinit var reviewRepository: ReviewRepoInterface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Paper.init(applicationContext)
         recipeRepository = PaperRecipeRepo()
+        userRepository = PaperUserRepo()
+        reviewRepository = PaperReviewRepo()
 
         setContent {
             GustoriaTheme {
-                GustoriaApp(recipeRepository = recipeRepository)
+                GustoriaApp(
+                    recipeRepository = recipeRepository,
+                    userRepository = userRepository,
+                    reviewRepository = reviewRepository
+                )
             }
         }
     }
@@ -115,7 +127,11 @@ class Actions(val navCtrl : NavHostController) {
 }
 
 @Composable
-fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
+fun GustoriaApp(
+    recipeRepository: RecipeRepoInterface,
+    userRepository: UserRepoInterface,
+    reviewRepository: ReviewRepoInterface
+) {
     val navController = rememberNavController()
     val actions = remember(navController) {
         Actions(navController)
