@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.R
 
 @Composable

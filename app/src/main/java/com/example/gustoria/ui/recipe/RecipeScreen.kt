@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.ThreeItemTopNavbar

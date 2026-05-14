@@ -1,6 +1,6 @@
 package com.example.gustoria.model
 
-import com.example.gustoria.Dataclass.Review
+import com.example.gustoria.dataclass.Review
 import com.example.gustoria.domain.ReviewRepoInterface
 import io.paperdb.Paper
 import kotlinx.coroutines.CoroutineScope

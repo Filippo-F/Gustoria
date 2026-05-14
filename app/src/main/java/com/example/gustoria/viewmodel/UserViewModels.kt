@@ -1,4 +1,4 @@
-package com.example.gustoria
+package com.example.gustoria.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.gustoria.SessionManager
 
 //validation state
 data class ProfileValidation(

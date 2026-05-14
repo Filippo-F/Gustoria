@@ -1,6 +1,6 @@
 package com.example.gustoria.ui.utils
 
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

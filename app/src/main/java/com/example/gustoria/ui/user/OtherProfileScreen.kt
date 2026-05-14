@@ -29,30 +29,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import com.example.gustoria.ui.ThreeItemTopNavbar
-import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.gustoria.OtherProfileViewModel
-import com.example.gustoria.UserCollection
-import com.example.gustoria.UserActivity
+import com.example.gustoria.viewmodel.OtherProfileViewModel
+import com.example.gustoria.viewmodel.UserCollection
+import com.example.gustoria.viewmodel.UserActivity
 import com.example.gustoria.dataclass.CookingRole
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+/*
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
 @Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
@@ -70,6 +67,8 @@ fun OtherProfileScreenPreview() {
         )
     }
 }
+
+ */
 
 @Composable
 fun ProfileImage(imageUrl: String?, fullName: String) {
