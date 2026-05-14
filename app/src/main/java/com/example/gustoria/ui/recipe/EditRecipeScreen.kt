@@ -33,7 +33,15 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.viewmodel.EditRecipeViewModel
 import com.example.gustoria.ui.utils.MultiPreview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.utils.PreviewUtils
+
+class EditRecipeActions(private val navController: NavHostController) {
+    val navigateBack: () -> Unit = {
+        navController.popBackStack()
+    }
+}
 
 @MultiPreview
 @Composable
@@ -42,10 +50,9 @@ fun EditRecipeScreenPreview() {
 
     GustoriaTheme(dynamicColor = false) {
         EditRecipeScreen(
+            navController = rememberNavController(),
             recipeRepository = fakeRepo,
-            recipeId = "preview_id",
-            onSaved = {},
-            onCancel = {}
+            recipeId = "preview_id"
         )
     }
 }
@@ -53,10 +60,9 @@ fun EditRecipeScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditRecipeScreen(
+    navController: NavHostController,
     recipeRepository: RecipeRepoInterface,
     recipeId: String?,
-    onSaved: () -> Unit,
-    onCancel: () -> Unit,
     vm: EditRecipeViewModel = viewModel(
         key = recipeId ?: "create_mode", // If recipeId is null, we're in create mode
         factory = EditRecipeViewModel.factory(recipeRepository, recipeId)
@@ -64,10 +70,11 @@ fun EditRecipeScreen(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val isEditMode = vm.isEditMode
+    val actions = remember(navController) { EditRecipeActions(navController) }
 
     BackHandler {
         vm.revertChanges()
-        onCancel()
+        actions.navigateBack()
     }
 
     var showTopMenu by remember { mutableStateOf(false) }
@@ -88,7 +95,7 @@ fun EditRecipeScreen(
                     title = if (isEditMode) "Edit Recipe" else "Create New Recipe",
                     onBack = {
                         vm.revertChanges()
-                        onCancel()
+                        actions.navigateBack()
                     },
                     extraIcon = Icons.Default.MoreVert,
                     extraIconDescription = "More Options",
@@ -104,7 +111,7 @@ fun EditRecipeScreen(
                                 text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
                                 onClick = {
                                     showTopMenu = false
-                                    vm.deleteRecipe(onSuccess = onCancel)
+                                    vm.deleteRecipe(onSuccess = actions.navigateBack)
                                 },
                                 leadingIcon = {
                                     Icon(
@@ -429,12 +436,12 @@ fun EditRecipeScreen(
             ) {
                 TextButton(onClick = {
                     vm.revertChanges()
-                    onCancel()
+                    actions.navigateBack()
                 }) {
                     Text("Cancel")
                 }
                 Spacer(Modifier.width(16.dp))
-                Button(onClick = { vm.saveRecipe(onSuccess = onSaved) }) {
+                Button(onClick = { vm.saveRecipe(onSuccess = actions.navigateBack) }) {
                     Text("Save Recipe")
                 }
             }

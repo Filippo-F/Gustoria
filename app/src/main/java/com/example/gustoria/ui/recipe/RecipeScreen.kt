@@ -16,12 +16,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.Edit
+import com.example.gustoria.Home
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.ui.HomeActions
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.RecipeViewModel
@@ -37,18 +43,30 @@ fun RecipeScreenPreview() {
 
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(
-            recipeRepository = fakeRepo,
-            onEditRecipe = {},
-            onBack = {}
+            navCtrl = rememberNavController(),
+            recipeRepository = fakeRepo
         )
+    }
+}
+
+class RecipeScreenActions(val navCtrl : NavHostController) {
+    val goHome: () -> Unit = {
+        navCtrl.navigate(Home)
+    }
+
+    val navigateBack: () -> Unit = {
+        navCtrl.popBackStack()
+    }
+
+    val onEditRecipe: (String) -> Unit = { id ->
+        navCtrl.navigate(Edit(id))
     }
 }
 
 @Composable
 fun RecipeScreen(
+    navCtrl: NavHostController,
     recipeRepository: RecipeRepoInterface,
-    onEditRecipe: (String) -> Unit,
-    onBack: () -> Unit,
     viewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModel.provideFactory(recipeRepository)
     )
@@ -56,6 +74,10 @@ fun RecipeScreen(
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
     val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
+
+    val actions = remember(navCtrl) {
+        RecipeScreenActions(navCtrl)
+    }
 
     BackHandler(enabled = selectedRecipe != null) {
         viewModel.selectRecipe(null)
@@ -65,7 +87,7 @@ fun RecipeScreen(
         RecipeListContent(
             recipes = filteredRecipes,
             filters = filters,
-            onBack = onBack,
+            onBack = actions.navigateBack,
             onRecipeClick = viewModel::selectRecipe,
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
@@ -75,17 +97,18 @@ fun RecipeScreen(
         )
     } else {
         RecipeDetailsScreen(
+            navCtrl = navCtrl,
             recipe = selectedRecipe!!,
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
             onBackClick = { viewModel.selectRecipe(null) },
             onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
             onDuplicateClick = {
                 viewModel.duplicateRecipe(selectedRecipe!!) { newId ->
-                    onEditRecipe(newId)
+                    actions.onEditRecipe(newId)
                     viewModel.selectRecipe(null)
                 }
             },
-            onEditClick = { onEditRecipe(selectedRecipe!!.id) }
+            onEditClick = { actions.onEditRecipe(selectedRecipe!!.id) }
         )
     }
 }

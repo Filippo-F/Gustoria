@@ -344,10 +344,10 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                 }
 
                 item {
-                    FlowRow(
+                    Row(
                         modifier = Modifier.padding(16.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        maxItemsInEachRow = 3,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         ValueBox(viewModel.user.numberOfRecipes, "Recipes")
                         ValueBox(viewModel.user.numberOfFollowers, "Followers")

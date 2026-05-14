@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
@@ -53,6 +54,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.tooling.preview.Devices
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import android.util.Log
 
@@ -69,21 +72,40 @@ fun OwnedProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
             viewModel = viewModel(),
-            onBack = {},
+            navController = rememberNavController()
         )
+    }
+}
+
+class OwnedProfileActions(private val navController: NavHostController) {
+    val navigateBack: () -> Unit = {
+        navController.popBackStack()
+    }
+    val onNavigateToProfileInfo: () -> Unit = {
+        navController.navigate(Profile.ProfileInfo.OverallProfileInfo)
+    }
+    val onNavigateToSettings: () -> Unit = {
+        navController.navigate(Profile.Settings)
+    }
+    val onNavigateToHelp: () -> Unit = {
+        navController.navigate(Profile.HelpAndFeedback)
+    }
+    val onSignOut: () -> Unit = {
+        navController.navigate(Profile.SignOut)
     }
 }
 
 @Composable
 fun OwnedProfileScreen(
     viewModel: OwnedProfileViewModel,
-    onBack: () -> Unit = {},
-    onNavigateToProfileInfo: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {},
-    onNavigateToHelp: () -> Unit = {},
-    onSignOut: () -> Unit = {}
+    navController: NavHostController
 ) {
     val configuration = LocalConfiguration.current
+    val actions = remember(navController) { OwnedProfileActions(navController) }
+
+    BackHandler(enabled = viewModel.isEditing) {
+        viewModel.validateAndSave()
+    }
 
     Scaffold(
         bottomBar = {
@@ -107,7 +129,7 @@ fun OwnedProfileScreen(
                     if (viewModel.isEditing) {
                         viewModel.validateAndSave()
                     } else {
-                        onBack()
+                        actions.navigateBack()
                     }
                 },
                 extraIcon = if (!viewModel.isEditing) Icons.Default.Edit else null,
@@ -135,10 +157,10 @@ fun OwnedProfileScreen(
                 PresentationPane(
                     user = viewModel.user,
                     isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-                    onNavigateToProfileInfo = onNavigateToProfileInfo,
-                    onNavigateToSettings = onNavigateToSettings,
-                    onNavigateToHelp = onNavigateToHelp,
-                    onSignOut = onSignOut
+                    onNavigateToProfileInfo = actions.onNavigateToProfileInfo,
+                    onNavigateToSettings = actions.onNavigateToSettings,
+                    onNavigateToHelp = actions.onNavigateToHelp,
+                    onSignOut = actions.onSignOut
                 )
             }
         }
@@ -259,12 +281,12 @@ fun PresentationPane(
         }
 
         item {
-            FlowRow(
+            Row(
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                maxItemsInEachRow = 3
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 //ValueBox(value = user.numberOfRecipes, text = "Recipes")
                 //ValueBox(value = user.numberOfFollowers, text = "Followers")

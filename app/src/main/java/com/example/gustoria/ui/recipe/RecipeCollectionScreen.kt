@@ -16,17 +16,35 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.ThreeItemTopNavbar
+import androidx.navigation.NavHostController
+import com.example.gustoria.Create
+import com.example.gustoria.Edit
+import com.example.gustoria.Favourite
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.recipe.components.RecipeFilterSection
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
+
+class RecipeCollectionActions(val navController: NavHostController) {
+    val onCreateNewRecipe: () -> Unit = {
+        navController.navigate(Create)
+    }
+    val onEditRecipe: (String) -> Unit = { id ->
+        navController.navigate(Edit(id))
+    }
+    val onTabChange: (Int) -> Unit = { tabIndex ->
+        when (tabIndex) {
+            0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
+            1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
+            2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+        }
+    }
+}
 
 @Composable
 fun RecipeCollectionScreen(
     recipeRepository: RecipeRepoInterface,
     initialTab: Int = 0,
-    onCreateNewRecipe: () -> Unit,
-    onEditRecipe: (String) -> Unit,
-    onTabChange: (Int) -> Unit = {},
+    navController: NavHostController,
     vm: RecipeCollectionViewModel = viewModel(
         factory = RecipeCollectionViewModel.factory(recipeRepository)
     )
@@ -35,6 +53,8 @@ fun RecipeCollectionScreen(
     val filters by vm.filters.collectAsStateWithLifecycle()
     val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
     val currentTab by vm.currentTab.collectAsStateWithLifecycle()
+
+    val actions = remember(navController) { RecipeCollectionActions(navController) }
 
     // Sync initial tab
     LaunchedEffect(initialTab) {
@@ -52,10 +72,10 @@ fun RecipeCollectionScreen(
             currentTab = currentTab,
             onTabSelected = {
                 vm.setTab(it)
-                onTabChange(it)
+                actions.onTabChange(it)
             },
-            onCreateNewRecipe = onCreateNewRecipe,
-            onEditRecipe = onEditRecipe,
+            onCreateNewRecipe = actions.onCreateNewRecipe,
+            onEditRecipe = actions.onEditRecipe,
             onRecipeClick = vm::selectRecipe,
             onDeleteRecipe = vm::delete,
             onNameQueryChange = vm::setNameQuery,
@@ -66,18 +86,19 @@ fun RecipeCollectionScreen(
         )
     } else {
         RecipeDetailsScreen(
+            navCtrl = navController,
             recipe = selectedRecipe!!,
             isOwner = currentTab == 2, // Only Owner if we're looking at "Created" tab
             onBackClick = { vm.selectRecipe(null) },
             onDeleteClick = { vm.delete(selectedRecipe!!.id) },
             onDuplicateClick = {
                 vm.duplicateRecipe(selectedRecipe!!) { newId ->
-                    onEditRecipe(newId)
+                    actions.onEditRecipe(newId)
                     vm.selectRecipe(null)
                 }
             },
             onEditClick = {
-                onEditRecipe(selectedRecipe!!.id)
+                actions.onEditRecipe(selectedRecipe!!.id)
                 vm.selectRecipe(null)
             }
         )

@@ -19,7 +19,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
-import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
@@ -65,6 +65,9 @@ object Search {
 
 @Serializable
 object Create
+
+@Serializable
+data class Edit(val recipeId: String)
 
 
 
@@ -106,22 +109,9 @@ object Favourite {
     object Created
 }
 
-class Actions(val navCtrl : NavHostController) {
-    val goHome: () -> Unit = {
-        navCtrl.navigate(Home)
-    }
-
-    val navigateBack: () -> Unit = {
-        navCtrl.popBackStack()
-    }
-}
-
 @Composable
 fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
     val navController = rememberNavController()
-    val actions = remember(navController) {
-        Actions(navController)
-    }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
 
@@ -170,21 +160,26 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                     }
                     composable<Search.Searched> {
                         RecipeScreen(
-                            recipeRepository = recipeRepository,
-                            onEditRecipe = { id: String -> 
-                                // Default value
-                            },
-                            onBack = { actions.navigateBack() }
+                            navCtrl = navController,
+                            recipeRepository = recipeRepository
                         )
                     }
                 }
 
                 composable<Create> {
                     EditRecipeScreen(
+                        navController = navController,
                         recipeRepository = recipeRepository,
-                        recipeId = null,
-                        onSaved = { actions.navigateBack() },
-                        onCancel = { actions.navigateBack() }
+                        recipeId = null
+                    )
+                }
+
+                composable<Edit> { backStackEntry ->
+                    val edit: Edit = backStackEntry.toRoute()
+                    EditRecipeScreen(
+                        navController = navController,
+                        recipeRepository = recipeRepository,
+                        recipeId = edit.recipeId
                     )
                 }
 
@@ -193,42 +188,21 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             initialTab = 0,
-                            onCreateNewRecipe = { navController.navigate(Create) },
-                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
-                            onTabChange = { tabIndex ->
-                                when(tabIndex) {
-                                    1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
-                                    2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
-                                }
-                            }
+                            navController = navController
                         )
                     }
                     composable<Favourite.Tried> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             initialTab = 1,
-                            onCreateNewRecipe = { navController.navigate(Create) },
-                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
-                            onTabChange = { tabIndex ->
-                                when(tabIndex) {
-                                    0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
-                                    2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
-                                }
-                            }
+                            navController = navController
                         )
                     }
                     composable<Favourite.Created> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             initialTab = 2,
-                            onCreateNewRecipe = { navController.navigate(Create) },
-                            onEditRecipe = { id -> /* TODO Navigate to Edit */ },
-                            onTabChange = { tabIndex ->
-                                when(tabIndex) {
-                                    0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
-                                    1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
-                                }
-                            }
+                            navController = navController
                         )
                     }
                 }
@@ -237,11 +211,7 @@ fun GustoriaApp(recipeRepository: RecipeRepoInterface) {
                     composable<Profile.OverallProfile> {
                         OwnedProfileScreen(
                             viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-                            onBack = { actions.navigateBack() },
-                            onNavigateToProfileInfo = { navController.navigate(Profile.ProfileInfo.OverallProfileInfo) },
-                            onNavigateToSettings = { navController.navigate(Profile.Settings) },
-                            onNavigateToHelp = { navController.navigate(Profile.HelpAndFeedback) },
-                            onSignOut = { navController.navigate(Profile.SignOut) }
+                            navController = navController
                         )
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
