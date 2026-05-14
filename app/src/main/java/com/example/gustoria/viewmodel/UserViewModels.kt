@@ -5,7 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.gustoria.dataclass.CookingRole
+import com.example.gustoria.dataclass.User
+import com.example.gustoria.domain.UserRepoInterface
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
+//validation state
 data class ProfileValidation(
     val nicknameError: String = "",
     val phoneError: String = "",
@@ -15,8 +25,19 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-// Data class variables visible to all ViewModels
-private val loggedInUser = mutableStateOf(
+//placeholders data (poi da sostituire)
+data class UserCollection(
+    val title: String,
+    val subtitle: String
+)
+
+data class UserActivity(
+    val title: String,
+    val subtitle: String
+)
+
+// Data class variables visible to all ViewModels (commentato per cambio logica)
+/*private val loggedInUser = mutableStateOf(
     UserClass(
         fullName = "Mario Rossi",
         nickname = "SuperChef",
@@ -33,38 +54,19 @@ private val loggedInUser = mutableStateOf(
         numberOfFollowers = 1200,
         numberOfLikes = 850
     )
-)
-/*
-private val viewRecipe = mutableStateOf(
-    RecipeProposal(
-        title = "Tomato Spaghetti",
-        cost = "€",
-        difficulty = "Easy",
-        cookingTimeMinutes = 20,
-        servings = 2,
-        rating = 4.5f,
-        reviews = 100,
-        ingredients = listOf(
-            Ingredient("Spaghetti", "200g"),
-            Ingredient("Tomatoes", "300g"),
-            Ingredient("Garlic", "2 cloves"),
-            Ingredient("Oil EVO", "3 Spoons")
-        ),
-        steps = listOf(
-            "Bring a large pot of salted water to a boil",
-            "Sauté the garlic in oil for 2 minutes.",
-            "Add the tomatoes and cook for 10 minutes.",
-            "Drain the pasta al dente, then toss with the sauce."
-        ),
-        description = "Pasta al pomodoro is an iconic Italian dish consisting of pasta—traditionally spaghetti—tossed in a simple, fresh tomato sauce, olive oil, garlic, and basil."
-    )
 )*/
 
-class OwnedProfileViewModel : ViewModel() {
-    var user by loggedInUser
-        private set
+class OwnedProfileViewModel(
+    private val userRepo: UserRepoInterface
+) : ViewModel() {
 
-    var editableUser by mutableStateOf(user) // draft while modifying
+    // Stato dell'utente loggato preso dal repo (può essere null inizialm)
+    val user: StateFlow<User?> = userRepo
+        .getUserById(SessionManager.CURRENT_LOGGED_IN_USER_ID)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    // Bozza modificabile durante l'editing
+    var editableUser by mutableStateOf<User?>(null)
         private set
 
     var validation by mutableStateOf(ProfileValidation())
@@ -73,46 +75,46 @@ class OwnedProfileViewModel : ViewModel() {
     var isEditing by mutableStateOf(false)
         private set
 
-    fun startEditing() { // Click on edit
-        editableUser = user
+    fun startEditing() { // click on edit
+        editableUser = user.value
         validation = ProfileValidation()
         isEditing = true
     }
-
-    fun cancelEditing() { // Delete changes
-        editableUser = user
+    fun cancelEditing() {
+        editableUser = user.value
         validation = ProfileValidation()
         isEditing = false
     }
 
     fun validateAndSave() {
+        val draft = editableUser ?: return
+
         var currentNicknameError = ""
         var currentPhoneError = ""
         var currentEmailError = ""
         var cookingRoleError = ""
         var descriptionError = ""
 
-        if (editableUser.nickname.isBlank()) {
+        if (draft.nickname.isBlank()) {
             currentNicknameError = "Nickname cannot be blank"
         }
 
-        val phone = editableUser.phoneNumber.trim().replace(" ", "")   // ".orEmpty" not needed since "string" is a non-nullable type
+        val phone = draft.phoneNumber.trim().replace(" ", "")
         if (phone.isBlank()) {
             currentPhoneError = "Phone number cannot be blank"
-        } else if (phone.length !in 7..15) {  // Kotlin equivalent for "if (phone.length < 7 || phone.length > 15)"
+        } else if (phone.length !in 7..15) {
             currentPhoneError = "Phone number length is invalid"
         } else {
-            val isValid = phone.withIndex().all { (index, char) ->
+            val isValidPhone = phone.withIndex().all { (index, char) ->
                 if (index == 0 && char == '+') true
                 else char.isDigit()
             }
-
-            if (!isValid) {
+            if (!isValidPhone) {
                 currentPhoneError = "Phone number must contain only digits"
             }
         }
 
-        val email = editableUser.email.trim()
+        val email = draft.email.trim()
         if (email.isBlank()) {
             currentEmailError = "Email cannot be blank"
         } else if (!email.contains("@")) {
@@ -133,11 +135,11 @@ class OwnedProfileViewModel : ViewModel() {
             }
         }
 
-        if (editableUser.cookingRole == null) {
+        if (draft.cookingRole == CookingRole.NONE) {
             cookingRoleError = "Please select a role"
         }
 
-        val description = editableUser.description.trim() // ".orEmpty" not needed since "string" is a non-nullable type
+        val description = draft.description.trim()
         if (description.length > 150) {
             descriptionError = "Maximum 150 characters"
         }
@@ -158,50 +160,76 @@ class OwnedProfileViewModel : ViewModel() {
         )
 
         if (formIsValid) {
-            user = editableUser
-            isEditing = false
+            // Persistenza nel repo: aggiorna la fonte (?)
+            viewModelScope.launch {
+                userRepo.updateUser(draft.internalId, draft)
+                isEditing = false
+            }
         }
     }
 
-    // Setters for editableUser
-    fun setNickname(nickname: String) { editableUser = editableUser.copy(nickname = nickname) }
-    fun setDescription(description: String) { editableUser = editableUser.copy(description = description) }
-    fun setPhoneNumber(phone: String) { editableUser = editableUser.copy(phoneNumber = phone) }
-    fun setEmail(email: String) { editableUser = editableUser.copy(email = email) }
-    fun setCookingRole(role: CookingRole?) { editableUser = editableUser.copy(cookingRole = role) }
+    // Setters per la bozza
+    fun setNickname(nickname: String) {
+        editableUser = editableUser?.copy(nickname = nickname)
+    }
+
+    fun setDescription(description: String) {
+        editableUser = editableUser?.copy(description = description)
+    }
+
+    fun setPhoneNumber(phone: String) {
+        editableUser = editableUser?.copy(phoneNumber = phone)
+    }
+
+    fun setEmail(email: String) {
+        editableUser = editableUser?.copy(email = email)
+    }
+
+    // cookingRole  riceve sempre un CookingRole !! (per cambio logica)
+    fun setCookingRole(role: CookingRole) {
+        editableUser = editableUser?.copy(cookingRole = role)
+    }
 
     fun setCuisinePreferencesFromText(text: String) {
-        editableUser = editableUser.copy(
-            cuisinePreferences = text.toTagList()
-        )
+        editableUser = editableUser?.copy(cuisinePreferences = text.toTagList())
     }
 
     fun setDietaryRestrictionsFromText(text: String) {
-        editableUser = editableUser.copy(
-            dietaryRestrictions = text.toTagList()
-        )
+        editableUser = editableUser?.copy(dietaryRestrictions = text.toTagList())
     }
 
     fun setFavoriteIngredientsFromText(text: String) {
-        editableUser = editableUser.copy(
-            favoriteIngredients = text.toTagList()
-        )
+        editableUser = editableUser?.copy(favoriteIngredients = text.toTagList())
     }
 
-    private fun String.toTagList(): List<String> {
-        return split(",")
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
+    fun setProfileImageUri(uri: String?) {
+        editableUser = editableUser?.copy(profileImageUri = uri)
     }
 
-    fun setProfileImageUri(uri: String?) { editableUser = editableUser.copy(profileImageUri = uri) }
+    private fun String.toTagList(): List<String> =
+        split(",").map { it.trim() }.filter { it.isNotBlank() }
 
+    companion object {
+        fun factory(userRepo: UserRepoInterface): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    OwnedProfileViewModel(userRepo) as T
+            }
+    }
 }
 
-class OtherProfileViewModel : ViewModel() {
-    var user by loggedInUser
-        private set
 
+class OtherProfileViewModel(
+    private val userRepo: UserRepoInterface,
+    private val viewedUserId: String
+) : ViewModel() {
+
+    val user: StateFlow<User?> = userRepo
+        .getUserById(viewedUserId)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    // Per ora placeholder hardcoded, in seguito popolato da Review/Recipe repos
     val collections = listOf(
         UserCollection("Summer Harvest", "12 Recipes • 2.4k Views"),
         UserCollection("Artisan Bakes", "8 Recipes • 1.1k Views")
@@ -219,27 +247,26 @@ class OtherProfileViewModel : ViewModel() {
         private set
 
     fun toggleFollow() {
-        isFollowing = !isFollowing
-        if (isFollowing) {
-            follow()
-        } else {
-            unfollow()
-        }
+        isFollowing = !isFollowing // per ora non persiste sul repo
     }
-
-    fun follow() {
-        user = user.copy(numberOfFollowers = user.numberOfFollowers + 1)
-    }
-
-    fun unfollow() {
-        user = user.copy(numberOfFollowers = user.numberOfFollowers - 1)
-    }
-
-    fun changeTab (index: Int) {
+    fun changeTab(index: Int) {
         currentTab = index
+    }
+
+    companion object {
+        fun factory(
+            userRepo: UserRepoInterface,
+            viewedUserId: String
+        ): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    OtherProfileViewModel(userRepo, viewedUserId) as T
+            }
     }
 }
 
+/*
 class RecipeViewModel : ViewModel() {
     //var recipe by viewRecipe
 
@@ -256,4 +283,4 @@ class RecipeViewModel : ViewModel() {
     fun toggleMade() {
         isMade = !isMade
     }
-}
+} */

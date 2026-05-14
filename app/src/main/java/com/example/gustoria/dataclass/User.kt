@@ -23,16 +23,16 @@ data class User(
     val internalId: String = Uuid.random().toString(),
 
     val nickname: String = "",
-    val bio: String = "",
+    val description: String = "",
     val cookingRole: CookingRole = CookingRole.NONE,
 
-    val name: String = "",
+    val fullName: String,
     val username: String = "",
 
     val email: String = "",
     val phoneNumber: String = "",
 
-    val profileImageUrl: String? = null,
+    val profileImageUri: String? = null,
 
     val cuisinePreferences: List<String> = emptyList(),
     val dietaryRestrictions: List<String> = emptyList(),
