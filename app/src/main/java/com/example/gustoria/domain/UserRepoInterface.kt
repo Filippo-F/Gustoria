@@ -11,6 +11,9 @@ interface UserRepoInterface {
     // Get a specific user by their unique ID
     fun getUserById(userId: String): Flow<User?>
 
+    // Create a new user
+    suspend fun createUser(user: User)
+
     // Update user profile information and preferences
     suspend fun updateUser(userId: String, user: User)
 
