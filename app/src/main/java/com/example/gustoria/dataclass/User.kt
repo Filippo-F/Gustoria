@@ -8,6 +8,14 @@ enum class CookingRole {
     HOME_COOK,
     CONTENT_CREATOR,
     PROFESSIONAL_CHEF;
+
+    fun displayName(): String = when (this) {
+        NONE -> "None"
+        FOOD_LOVER -> "Food Lover"
+        HOME_COOK -> "Home Cook"
+        CONTENT_CREATOR -> "Content Creator"
+        PROFESSIONAL_CHEF -> "Professional Chef"
+    }
 }
 
 @OptIn(ExperimentalUuidApi::class)

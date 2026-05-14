@@ -88,20 +88,4 @@ class PaperUserRepo: UserRepoInterface {
             list.filter { it.internalId != userId }
         }
     }
-
-    override suspend fun toggleFollow(currentUserId: String, targetUserId: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCreatedRecipes(userId: String): Flow<List<Recipe>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLikedRecipes(userId: String): Flow<List<Recipe>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getTriedRecipes(userId: String): Flow<List<Recipe>> {
-        TODO("Not yet implemented")
-    }
 }
