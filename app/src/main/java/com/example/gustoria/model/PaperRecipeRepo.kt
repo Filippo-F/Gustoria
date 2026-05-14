@@ -210,9 +210,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
         }
     }
 
-    override fun getAllRecipes(): StateFlow<List<Recipe>> {
-        return _recipes.asStateFlow()
-    }
+    override fun getAllRecipes(): Flow<List<Recipe>> = _recipes.asStateFlow()
 
     override fun getRecipeById(recipeId: String): Flow<Recipe?> =
         _recipes

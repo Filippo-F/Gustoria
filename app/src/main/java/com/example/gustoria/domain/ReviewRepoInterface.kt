@@ -13,6 +13,9 @@ interface ReviewRepoInterface {
     // Get a specific review by its ID
     fun getReviewById(reviewId: String): Flow<Review?>
 
+    // Get all reviews available
+    fun getAllReviews(): Flow<List<Review>>
+
     // Add a review to a recipe
     suspend fun addReview(review: Review)
 

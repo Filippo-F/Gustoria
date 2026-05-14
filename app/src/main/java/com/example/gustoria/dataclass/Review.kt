@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 data class Review (
     val id: String = Uuid.random().toString(),
 
-    val authorId: String = "",
+    val userId: String = "",
     val recipeId: String = "",
 
     val description: String = "",

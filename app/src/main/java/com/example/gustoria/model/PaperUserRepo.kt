@@ -8,6 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -53,7 +55,8 @@ class PaperUserRepo: UserRepoInterface {
         }
     }
 
-    override fun getAllUsers(): Flow<List<User>> = _users
+    override fun getAllUsers(): Flow<List<User>> = _users.asStateFlow()
+
 
     override fun getUserById(userId: String): Flow<User?> =
         _users
