@@ -45,7 +45,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.ui.AppBottomNavBar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -55,6 +54,29 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.tooling.preview.Devices
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.gustoria.dataclass.CookingRole
+import androidx.compose.runtime.getValue
+import com.example.gustoria.ui.user.ValueBox
+import com.example.gustoria.User
+import androidx.compose.material.icons.filled.*
 
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
@@ -77,28 +99,18 @@ fun OwnedProfileScreenPreview() {
 @Composable
 fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}) {
     val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
-        bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                /*AppBottomNavBar(
-                    currentDestination = NavDestination.PROFILE,
-                    onNavigate = onNavigate
-                )*/
-            }
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        topBar = {
             ThreeItemTopNavbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                title = "Profile",
+                title = if (viewModel.isEditing) "Edit Profile" else "My Profile",
                 onBack = {
                     if (viewModel.isEditing) {
-                        viewModel.validateAndSave()
+                        viewModel.cancelEditing()
                     } else {
                         onBack()
                     }
@@ -107,7 +119,8 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
                 extraIconDescription = "Edit Profile",
                 onClickExtra = { viewModel.startEditing() }
             )
-
+        }) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
             if (viewModel.isEditing) {
                 EditProfilePane(
                     user = viewModel.editableUser,
@@ -127,7 +140,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
             } else {
                 PresentationPane(
                     user = viewModel.user,
-                    isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    isLandscape = isLandscape
                 )
             }
         }
@@ -136,7 +149,7 @@ fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-fun PresentationPane(user: UserClass, isLandscape: Boolean) {
+fun PresentationPane(user: User, isLandscape: Boolean) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -248,9 +261,12 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 maxItemsInEachRow = 3
             ) {
-                //ValueBox(value = user.numberOfRecipes, text = "Recipes")
-                //ValueBox(value = user.numberOfFollowers, text = "Followers")
-                //ValueBox(value = user.numberOfLikes, text = "Likes")
+                /*ValueBox(u.numberOfRecipes, "Recipes")
+                ValueBox(u.numberOfFollowers, "Followers")
+                ValueBox(u.numberOfLikes, "Likes")*/
+                ValueBox(user.numberOfRecipes, "Recipes")
+                ValueBox(user.numberOfFollowers, "Followers")
+                ValueBox(user.numberOfLikes, "Likes")
             }
         }
 
@@ -270,7 +286,7 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
 
 @Composable
 fun EditProfilePane(
-    user: UserClass,
+    user: User,
     validation: ProfileValidation,
     onNicknameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -619,7 +635,7 @@ fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageV
 }
 
 @Composable
-fun ImageBoxContent(user: UserClass) {
+fun ImageBoxContent(user: User) {
     if (user.profileImageUri != null) {
         coil.compose.AsyncImage(
             model = user.profileImageUri,
