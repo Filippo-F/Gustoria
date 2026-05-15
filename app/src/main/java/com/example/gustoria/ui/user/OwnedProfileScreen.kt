@@ -75,25 +75,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gustoria.Profile
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.dataclass.User
+import com.example.gustoria.ui.theme.GustoriaTheme
+import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.viewmodel.OwnedProfileViewModel
 import com.example.gustoria.viewmodel.ProfileValidation
 
-/*
-@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
-@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
-@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
-@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
-@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
-@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
-@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
-
+@MultiPreview
 @Composable
 fun OwnedProfileScreenPreview() {
+    val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
-            viewModel = viewModel(),
+            userRepo = fakeRepo,
             navController = rememberNavController()
         )
     }
@@ -117,12 +114,13 @@ class OwnedProfileActions(private val navController: NavHostController) {
     }
 }
 
- */
-
 @Composable
 fun OwnedProfileScreen(
-    viewModel: OwnedProfileViewModel,
-    navController: NavHostController
+    userRepo: com.example.gustoria.domain.UserRepoInterface,
+    navController: NavHostController,
+    viewModel: OwnedProfileViewModel = viewModel(
+        factory = OwnedProfileViewModel.factory(userRepo)
+    )
 ) {
     val configuration = LocalConfiguration.current
     val actions = remember(navController) { OwnedProfileActions(navController) }
@@ -197,11 +195,10 @@ fun OwnedProfileScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 fun PresentationPane(
-    user: UserClass,
+    user: User,
     isLandscape: Boolean,
     onNavigateToProfileInfo: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},

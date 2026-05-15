@@ -193,11 +193,19 @@ class PaperRecipeRepo : RecipeRepoInterface {
     private val recipeBook = Paper.book("recipes")
 
     // In memory state
-    private val _recipes = MutableStateFlow<List<Recipe>>(
-        recipeBook.allKeys.mapNotNull { key ->
-            recipeBook.read<Recipe>(key)
+    private val _recipes = MutableStateFlow<List<Recipe>>(loadInitialRecipes())
+
+    private fun loadInitialRecipes(): List<Recipe> {
+        return try {
+            recipeBook.allKeys.mapNotNull { key ->
+                recipeBook.read<Recipe>(key)
+            }
+        } catch (e: Exception) {
+            // If we have a ClassCastException (e.g. package rename), clear the book
+            recipeBook.destroy()
+            emptyList()
         }
-    )
+    }
 
     private val scope = CoroutineScope(Dispatchers.IO)
 

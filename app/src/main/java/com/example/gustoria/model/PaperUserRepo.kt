@@ -1,6 +1,7 @@
 package com.example.gustoria.model
 
-import com.example.gustoria.Dataclass.Recipe
+import com.example.gustoria.dataclass.CookingRole
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.UserRepoInterface
 import io.paperdb.Paper
@@ -23,25 +24,36 @@ class PaperUserRepo: UserRepoInterface {
             nickname = "User 101",
             fullName = "First User",
             username = "user101",
-            email = "user101@example.com"
+            email = "user101@example.com",
+            phoneNumber = "+39 123 4567890",
+            cookingRole = CookingRole.HOME_COOK
         ),
         User(
             internalId = "202",
             nickname = "User 202",
             fullName = "Second User",
             username = "user202",
-            email = "user202@example.com"
+            email = "user202@example.com",
+            phoneNumber = "+39 098 7654321",
+            cookingRole = CookingRole.FOOD_LOVER
         )
     )
 
     private val userBook = Paper.book("users")
 
     // In memory state
-    private val _users = MutableStateFlow<List<User>>(
-        userBook.allKeys.mapNotNull { key ->
-            userBook.read<User>(key)
+    private val _users = MutableStateFlow<List<User>>(loadInitialUsers())
+
+    private fun loadInitialUsers(): List<User> {
+        return try {
+            userBook.allKeys.mapNotNull { key ->
+                userBook.read<User>(key)
+            }
+        } catch (e: Exception) {
+            userBook.destroy()
+            emptyList()
         }
-    )
+    }
 
     private val scope = CoroutineScope(Dispatchers.IO)
 

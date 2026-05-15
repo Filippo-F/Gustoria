@@ -48,27 +48,22 @@ import com.example.gustoria.dataclass.CookingRole
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gustoria.ui.theme.GustoriaTheme
 
-/*
-@Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
-@Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
-@Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
-@Preview(name = "Long Scroll View", showBackground = true, heightDp = 1500)
-@Preview(name = "Tablet 4:3", showSystemUi = true, device = Devices.TABLET)
-@Preview(name = "Foldable Inner", showSystemUi = true, device = Devices.FOLDABLE)
-@Preview(name = "Landscape", showSystemUi = true, device = "spec:width=411dp,height=891dp,orientation=landscape")
+import com.example.gustoria.ui.utils.MultiPreview
 
+@MultiPreview
 @Composable
 fun OtherProfileScreenPreview() {
+    val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
     GustoriaTheme(dynamicColor = false) {
         OtherProfileScreen(
-            viewModel = viewModel(),
+            userRepo = fakeRepo,
+            viewedUserId = "101",
             onBack = {},
         )
     }
 }
-
- */
 
 @Composable
 fun ProfileImage(imageUrl: String?, fullName: String) {
@@ -292,8 +287,12 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(
-    viewModel: OtherProfileViewModel,
-    onBack: () -> Unit = {}
+    userRepo: com.example.gustoria.domain.UserRepoInterface,
+    viewedUserId: String,
+    onBack: () -> Unit = {},
+    viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = OtherProfileViewModel.factory(userRepo, viewedUserId)
+    )
 ) {
     val tabs = listOf("Collections", "Recent Activity")
     val user by viewModel.user.collectAsStateWithLifecycle()

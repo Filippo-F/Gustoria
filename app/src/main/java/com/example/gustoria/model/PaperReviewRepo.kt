@@ -20,7 +20,18 @@ class PaperReviewRepo: ReviewRepoInterface {
     private val reviewBook = Paper.book("reviews")
 
     // In memory state
-    private val _reviews = MutableStateFlow<List<Review>>(emptyList())
+    private val _reviews = MutableStateFlow<List<Review>>(loadInitialReviews())
+
+    private fun loadInitialReviews(): List<Review> {
+        return try {
+            reviewBook.allKeys.mapNotNull { key ->
+                reviewBook.read<Review>(key)
+            }
+        } catch (e: Exception) {
+            reviewBook.destroy()
+            emptyList()
+        }
+    }
 
     private val scope = CoroutineScope(Dispatchers.IO)
 

@@ -34,6 +34,7 @@ import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
+import com.example.gustoria.ui.user.OwnedProfileScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -226,7 +227,7 @@ fun GustoriaApp(
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
                         OwnedProfileScreen(
-                            viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+                            userRepo = userRepository,
                             navController = navController
                         )
                     }
