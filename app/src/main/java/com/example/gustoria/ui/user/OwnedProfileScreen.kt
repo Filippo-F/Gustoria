@@ -49,7 +49,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.ThreeItemTopNavbar
@@ -57,7 +56,6 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,7 +71,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.Profile
