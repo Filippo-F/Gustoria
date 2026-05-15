@@ -28,12 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.R
 
 @Composable
 fun RecipeDetailsScreen(
+    navCtrl: NavHostController,
     recipe: Recipe,
     isOwner: Boolean,
     onBackClick: () -> Unit,

@@ -377,10 +377,10 @@ fun OtherProfileScreen(
                 }
 
                 item {
-                    FlowRow(
+                    Row(
                         modifier = Modifier.padding(16.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        maxItemsInEachRow = 3,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         ValueBox(u.numberOfRecipes, "Recipes")
                         ValueBox(u.numberOfFollowers, "Followers")

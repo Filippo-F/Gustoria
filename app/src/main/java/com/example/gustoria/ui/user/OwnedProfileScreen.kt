@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
@@ -48,6 +49,9 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -90,8 +94,26 @@ fun OwnedProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
             viewModel = viewModel(),
-            onBack = {},
+            navController = rememberNavController()
         )
+    }
+}
+
+class OwnedProfileActions(private val navController: NavHostController) {
+    val navigateBack: () -> Unit = {
+        navController.popBackStack()
+    }
+    val onNavigateToProfileInfo: () -> Unit = {
+        navController.navigate(Profile.ProfileInfo.OverallProfileInfo)
+    }
+    val onNavigateToSettings: () -> Unit = {
+        navController.navigate(Profile.Settings)
+    }
+    val onNavigateToHelp: () -> Unit = {
+        navController.navigate(Profile.HelpAndFeedback)
+    }
+    val onSignOut: () -> Unit = {
+        navController.navigate(Profile.SignOut)
     }
 }
 
@@ -100,9 +122,14 @@ fun OwnedProfileScreenPreview() {
 @Composable
 fun OwnedProfileScreen(
     viewModel: OwnedProfileViewModel,
-    onBack: () -> Unit = {}
+    navController: NavHostController
 ) {
     val configuration = LocalConfiguration.current
+    val actions = remember(navController) { OwnedProfileActions(navController) }
+
+    BackHandler(enabled = viewModel.isEditing) {
+        viewModel.validateAndSave()
+    }
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val userState by viewModel.user.collectAsStateWithLifecycle()
 
@@ -114,7 +141,7 @@ fun OwnedProfileScreen(
                     .height(56.dp),
                 title = if (viewModel.isEditing) "Edit Profile" else "My Profile",
                 onBack = {
-                    if (viewModel.isEditing) viewModel.cancelEditing() else onBack()
+                    if (viewModel.isEditing) viewModel.cancelEditing() else actions.navigateBack()
                 },
                 extraIcon = if (!viewModel.isEditing) Icons.Default.Edit else null,
                 extraIconDescription = "Edit Profile",
@@ -159,7 +186,11 @@ fun OwnedProfileScreen(
             } else {
                 PresentationPane(
                     user = currentUser,
-                    isLandscape = isLandscape
+                    isLandscape = isLandscape,
+                    onNavigateToProfileInfo = actions.onNavigateToProfileInfo,
+                    onNavigateToSettings = actions.onNavigateToSettings,
+                    onNavigateToHelp = actions.onNavigateToHelp,
+                    onSignOut = actions.onSignOut
                 )
             }
         }
@@ -168,7 +199,15 @@ fun OwnedProfileScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PresentationPane(user: User, isLandscape: Boolean) {
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+fun PresentationPane(
+    user: UserClass,
+    isLandscape: Boolean,
+    onNavigateToProfileInfo: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToHelp: () -> Unit = {},
+    onSignOut: () -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -270,12 +309,12 @@ fun PresentationPane(user: User, isLandscape: Boolean) {
         }
 
         item {
-            FlowRow(
+            Row(
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                maxItemsInEachRow = 3
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 ValueBox(user.numberOfRecipes, "Recipes")
                 ValueBox(user.numberOfFollowers, "Followers")
@@ -289,11 +328,11 @@ fun PresentationPane(user: User, isLandscape: Boolean) {
                     .fillMaxWidth()
                     .padding(top = 24.dp, bottom = 24.dp)
             ) {
-                MenuListItem(title = "Profile Info", icon = Icons.Default.Person)
-                MenuListItem(title = "Settings", icon = Icons.Default.Settings)
-                MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info)
+                MenuListItem(title = "Profile Info", icon = Icons.Default.Person, onClick = onNavigateToProfileInfo)
+                MenuListItem(title = "Settings", icon = Icons.Default.Settings, onClick = onNavigateToSettings)
+                MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info, onClick = onNavigateToHelp)
                 Spacer(modifier = Modifier.height(16.dp))
-                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true)
+                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true, onClick = onSignOut)
             }
         }
     }
@@ -574,7 +613,12 @@ fun EditProfilePane(
 }
 
 @Composable
-fun MenuListItem(title: String, icon: ImageVector, isDestructive: Boolean = false) {
+fun MenuListItem(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isDestructive: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -589,7 +633,8 @@ fun MenuListItem(title: String, icon: ImageVector, isDestructive: Boolean = fals
             if (isDestructive) MaterialTheme.colorScheme.error
             else MaterialTheme.colorScheme.outline
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),

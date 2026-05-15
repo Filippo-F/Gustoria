@@ -19,7 +19,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
-import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +30,10 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
+import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
+import com.example.gustoria.ui.recipe.EditRecipeScreen
+import com.example.gustoria.ui.recipe.RecipeScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -76,6 +78,9 @@ object Search {
 @Serializable
 object Create
 
+@Serializable
+data class Edit(val recipeId: String)
+
 
 
 @Serializable
@@ -116,16 +121,6 @@ object Favourite {
     object Created
 }
 
-class Actions(val navCtrl : NavHostController) {
-    val goHome: () -> Unit = {
-        navCtrl.navigate(Home)
-    }
-
-    val navigateBack: () -> Unit = {
-        navCtrl.popBackStack()
-    }
-}
-
 @Composable
 fun GustoriaApp(
     recipeRepository: RecipeRepoInterface,
@@ -133,9 +128,6 @@ fun GustoriaApp(
     reviewRepository: ReviewRepoInterface
 ) {
     val navController = rememberNavController()
-    val actions = remember(navController) {
-        Actions(navController)
-    }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
 
@@ -183,55 +175,60 @@ fun GustoriaApp(
                         }
                     }
                     composable<Search.Searched> {
-                        Text("Searched Recipes")
+                        RecipeScreen(
+                            navCtrl = navController,
+                            recipeRepository = recipeRepository
+                        )
                     }
                 }
 
                 composable<Create> {
-                    Text("Create Route")
+                    EditRecipeScreen(
+                        navController = navController,
+                        recipeRepository = recipeRepository,
+                        recipeId = null
+                    )
+                }
+
+                composable<Edit> { backStackEntry ->
+                    val edit: Edit = backStackEntry.toRoute()
+                    EditRecipeScreen(
+                        navController = navController,
+                        recipeRepository = recipeRepository,
+                        recipeId = edit.recipeId
+                    )
                 }
 
                 navigation<Favourite>(startDestination = Favourite.Saved) {
                     composable<Favourite.Saved> {
-                        Column (
-
-                        ) {
-                            Text("Saved Tab")
-                            Button(onClick = { navController.navigate(Favourite.Tried) }) { Text("Go to tried") }
-                            Button(onClick = { navController.navigate(Favourite.Created) }) { Text("Go to created") }
-                        }
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
+                            recipeRepository = recipeRepository,
+                            initialTab = 0,
+                            navController = navController
+                        )
                     }
                     composable<Favourite.Tried> {
-                        Column (
-
-                        ) {
-                            Text("Tried Tab")
-                            Button(onClick = { navController.navigate(Favourite.Saved) }) { Text("Go to saved") }
-                            Button(onClick = { navController.navigate(Favourite.Created) }) { Text("Go to created") }
-                        }
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
+                            recipeRepository = recipeRepository,
+                            initialTab = 1,
+                            navController = navController
+                        )
                     }
                     composable<Favourite.Created> {
-                        Column (
-
-                        ) {
-                            Text("Created Tab")
-                            Button(onClick = { navController.navigate(Favourite.Saved) }) { Text("Go to saved") }
-                            Button(onClick = { navController.navigate(Favourite.Tried) }) { Text("Go to tried") }
-                        }
+                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
+                            recipeRepository = recipeRepository,
+                            initialTab = 2,
+                            navController = navController
+                        )
                     }
                 }
 
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
-                        Column (
-
-                        ) {
-                            Text("Profile View")
-                            Button(onClick = {navController.navigate(Profile.ProfileInfo.OverallProfileInfo)}){Text("Profile Info")}
-                            Button(onClick = {navController.navigate(Profile.Settings)}){Text("Settings")}
-                            Button(onClick = { navController.navigate(Profile.HelpAndFeedback) }) { Text("Help & Feedback") }
-                            Button(onClick = { navController.navigate(Profile.SignOut) }) { Text("Sign Out") }
-                        }
+                        OwnedProfileScreen(
+                            viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+                            navController = navController
+                        )
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
