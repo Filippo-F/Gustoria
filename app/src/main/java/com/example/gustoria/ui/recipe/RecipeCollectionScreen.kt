@@ -23,6 +23,7 @@ import com.example.gustoria.Favourite
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.recipe.components.RecipeFilterSection
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
+import com.example.gustoria.domain.UserRepoInterface
 
 class RecipeCollectionActions(val navController: NavHostController) {
     val onCreateNewRecipe: () -> Unit = {
@@ -43,10 +44,11 @@ class RecipeCollectionActions(val navController: NavHostController) {
 @Composable
 fun RecipeCollectionScreen(
     recipeRepository: RecipeRepoInterface,
+    userRepository: UserRepoInterface,
     initialTab: Int = 0,
     navController: NavHostController,
     vm: RecipeCollectionViewModel = viewModel(
-        factory = RecipeCollectionViewModel.factory(recipeRepository)
+        factory = RecipeCollectionViewModel.factory(recipeRepository, userRepository)
     )
 ) {
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.recipe.RecipeFilters
 import com.example.gustoria.ui.recipe.applyFilters
 import kotlinx.coroutines.flow.*
@@ -15,18 +16,21 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class RecipeCollectionViewModel(
-    private val repo: RecipeRepoInterface
+    private val repo: RecipeRepoInterface,
+    private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
     private val userId = SessionManager.CURRENT_LOGGED_IN_USER_ID
 
     private val _filters = MutableStateFlow(RecipeFilters())
     val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
-
     // 1. Mocked Saved Recipes (Medium Difficulty)
-    private val savedRecipes: StateFlow<List<Recipe>> = repo.getAllRecipes()
-        .map { list -> list.filter { it.difficulty == "Medium" } }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    private val savedRecipes: StateFlow<List<Recipe>> = combine(
+        repo.getAllRecipes(),
+        userRepo.getFavouriteRecipeIds(userId)
+    ) { allRecipes, favouriteIds ->
+        allRecipes.filter { it.id in favouriteIds }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // 2. Mocked Tried Recipes (Easy Difficulty)
     private val triedRecipes: StateFlow<List<Recipe>> = repo.getAllRecipes()
@@ -37,13 +41,13 @@ class RecipeCollectionViewModel(
     private val createdRecipes: StateFlow<List<Recipe>> = repo.getRecipeByOwner(userId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Keep track of current tab (0: Saved, 1: Tried, 2: Created)
+    // Keep track of current tab (tab corrente) (0: Saved, 1: Tried, 2: Created)
     private val _currentTab = MutableStateFlow(0)
     val currentTab: StateFlow<Int> = _currentTab.asStateFlow()
 
     fun setTab(index: Int) {
         _currentTab.value = index
-        resetFilters() // Optional: clear search when switching tabs
+        resetFilters()
     }
 
     // This dynamically changes the list based on the active tab and applies your existing filters!
@@ -103,12 +107,23 @@ class RecipeCollectionViewModel(
         }
     }
 
+    fun toggleFavourite(recipeId: String) {
+        viewModelScope.launch {
+            val isFav = userRepo
+                .isFavourite(userId, recipeId)
+                .first()  // legge il valore corrente una volta
+            if (isFav) userRepo.removeFavourite(userId, recipeId)
+            else userRepo.addFavourite(userId, recipeId)
+        }
+    }
     companion object {
-        fun factory(repo: RecipeRepoInterface): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    RecipeCollectionViewModel(repo) as T
-            }
+        fun factory(
+            repo: RecipeRepoInterface,
+            userRepo: UserRepoInterface
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                RecipeCollectionViewModel(repo, userRepo) as T
+        }
     }
 }

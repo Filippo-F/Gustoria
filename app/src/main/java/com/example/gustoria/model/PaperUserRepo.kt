@@ -1,7 +1,6 @@
 package com.example.gustoria.model
 
 import com.example.gustoria.dataclass.CookingRole
-import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.UserRepoInterface
 import io.paperdb.Paper
@@ -9,13 +8,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class PaperUserRepo: UserRepoInterface {
     private val _placeholderUsers = listOf(
@@ -100,4 +99,54 @@ class PaperUserRepo: UserRepoInterface {
             list.filter { it.internalId != userId }
         }
     }
+
+    //metodi per i favourites : get, add, remove e boolean (isFavourite: true or false)
+    override fun getFavouriteRecipeIds(userId: String): Flow<List<String>> =
+        _users
+            .map { list -> list.find { it.internalId == userId }?.savedRecipesIds ?: emptyList() }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+
+    override suspend fun addFavourite(
+        userId: String,
+        recipeId: String
+    ) = withContext(Dispatchers.IO) {
+        val current = _users.value.find { it.internalId == userId } ?: return@withContext
+        if (recipeId in current.savedRecipesIds) return@withContext   // idempotente
+        val updated = current.copy(
+            savedRecipesIds = current.savedRecipesIds + recipeId
+        )
+        userBook.write(userId, updated)
+        _users.update { list ->
+            list.map { if (it.internalId == userId) updated else it }
+        }
+    }
+
+    override suspend fun removeFavourite(
+        userId: String,
+        recipeId: String
+    ) = withContext(Dispatchers.IO) {
+        val current = _users.value.find { it.internalId == userId } ?: return@withContext
+        if (recipeId !in current.savedRecipesIds) return@withContext  // niente da fare
+        val updated = current.copy(
+            savedRecipesIds = current.savedRecipesIds - recipeId
+        )
+        userBook.write(userId, updated)
+        _users.update { list ->
+            list.map { if (it.internalId == userId) updated else it }
+        }
+    }
+
+    override fun isFavourite(
+        userId: String,
+        recipeId: String
+    ): Flow<Boolean> =
+        _users
+            .map { list ->
+                list.find { it.internalId == userId }
+                    ?.savedRecipesIds
+                    ?.contains(recipeId) == true
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
 }

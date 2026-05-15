@@ -19,7 +19,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -204,6 +203,7 @@ fun GustoriaApp(
                     composable<Favourite.Saved> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
+                            userRepository = userRepository,
                             initialTab = 0,
                             navController = navController
                         )
@@ -211,6 +211,7 @@ fun GustoriaApp(
                     composable<Favourite.Tried> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
+                            userRepository = userRepository,
                             initialTab = 1,
                             navController = navController
                         )
@@ -218,6 +219,7 @@ fun GustoriaApp(
                     composable<Favourite.Created> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
+                            userRepository = userRepository,
                             initialTab = 2,
                             navController = navController
                         )
