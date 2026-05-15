@@ -91,7 +91,9 @@ class AuthenticationViewModel(
             return
         }
 
-        // TODO : Handling login
+        viewModelScope.launch {
+            // TODO : Handling login
+        }
     }
 
     private fun register(onSuccess: (String) -> Unit) {
@@ -128,7 +130,9 @@ class AuthenticationViewModel(
             return
         }
 
-        // TODO  : Handlign sign in
+        viewModelScope.launch {
+            // TODO : Handling sign in
+        }
     }
 
     private fun isValidEmail(email: String): Boolean {
