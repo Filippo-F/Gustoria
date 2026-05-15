@@ -29,28 +29,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import com.example.gustoria.ui.ThreeItemTopNavbar
-import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import com.example.gustoria.ui.AppBottomNavBar
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.gustoria.OtherProfileViewModel
-import com.example.gustoria.CookingRole
-import com.example.gustoria.UserCollection
-import com.example.gustoria.UserActivity
+import com.example.gustoria.viewmodel.OtherProfileViewModel
+import com.example.gustoria.viewmodel.UserCollection
+import com.example.gustoria.viewmodel.UserActivity
+import com.example.gustoria.dataclass.CookingRole
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+/*
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
 @Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
@@ -68,6 +67,8 @@ fun OtherProfileScreenPreview() {
         )
     }
 }
+
+ */
 
 @Composable
 fun ProfileImage(imageUrl: String?, fullName: String) {
@@ -112,7 +113,7 @@ fun ProfileImage(imageUrl: String?, fullName: String) {
 }
 
 @Composable
-fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, description: String){
+fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole, description: String){
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,18 +125,19 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, d
             fontWeight = FontWeight.Bold
         )
 
-        // Nickname
+        //nickname + cookingRole
         Text(
             text = buildString {
                 append(nickname)
-                cookingRole?.let {
+                if (cookingRole != CookingRole.NONE) {
                     append(" • ")
-                    append(it.displayName())
+                    append(cookingRole.displayName())
                 }
             },
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
+
 
         // Description
         Text(
@@ -150,28 +152,38 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole?, d
 }
 
 @Composable
-fun ValueBox (
+fun ValueBox(
     value: Int,
     text: String,
 ) {
     Box(
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp)).width(100.dp).height(70.dp),
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+            .width(100.dp)
+            .height(70.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = value.toString(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-            Text(text = text.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = value.toString(),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = text.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
 
 @Composable
-fun CollectionCard(
-    collection: UserCollection
-) {
+fun CollectionCard(collection: UserCollection) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -279,16 +291,17 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 }
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}) {
+fun OtherProfileScreen(
+    viewModel: OtherProfileViewModel,
+    onBack: () -> Unit = {}
+) {
     val tabs = listOf("Collections", "Recent Activity")
+    val user by viewModel.user.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
-                /*AppBottomNavBar(
-                    currentDestination = NavDestination.PROFILE,
-                    onNavigate = onNavigate
-                )*/
+                /* AppBottomNavBar gestita in MainActivity!! */
             }
         }
     ) { innerPadding ->
@@ -298,7 +311,6 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background),
         ) {
-            // Navigation Bar
             ThreeItemTopNavbar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -311,17 +323,32 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                 onClickExtra = {}
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                item { ProfileImage(imageUrl = viewModel.user.profileImageUri, fullName = viewModel.user.fullName) }
+            // Stato di caricamento: utente non ancora emesso dal repo
+            val u = user
+            if (u == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+                return@Column
+            }
+
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                item {
+                    ProfileImage(
+                        imageUrl = u.profileImageUri,
+                        fullName = u.fullName
+                    )
+                }
 
                 item {
                     ProfileInfo(
-                        fullName = viewModel.user.fullName,
-                        nickname = viewModel.user.nickname,
-                        cookingRole = viewModel.user.cookingRole,
-                        description = viewModel.user.description
+                        fullName = u.fullName,
+                        nickname = u.nickname,
+                        cookingRole = u.cookingRole,
+                        description = u.description
                     )
                 }
 
@@ -334,8 +361,14 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                             modifier = Modifier.padding(8.dp),
                             onClick = viewModel::toggleFollow,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = if (viewModel.isFollowing) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
+                                containerColor = if (viewModel.isFollowing)
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                else
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = if (viewModel.isFollowing)
+                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         ) {
                             Text(text = if (viewModel.isFollowing) "Unfollow" else "Follow")
@@ -349,13 +382,13 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         maxItemsInEachRow = 3,
                     ) {
-                        ValueBox(viewModel.user.numberOfRecipes, "Recipes")
-                        ValueBox(viewModel.user.numberOfFollowers, "Followers")
-                        ValueBox(viewModel.user.numberOfLikes, "Likes")
+                        ValueBox(u.numberOfRecipes, "Recipes")
+                        ValueBox(u.numberOfFollowers, "Followers")
+                        ValueBox(u.numberOfLikes, "Likes")
                     }
                 }
 
-                // Tabs
+
                 item {
                     SecondaryTabRow(
                         selectedTabIndex = viewModel.currentTab,
@@ -373,8 +406,14 @@ fun OtherProfileScreen(viewModel: OtherProfileViewModel, onBack: () -> Unit = {}
                                     Text(
                                         text = title,
                                         fontSize = 12.sp,
-                                        fontWeight = if (viewModel.currentTab == index) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (viewModel.currentTab == index) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
+                                        fontWeight = if (viewModel.currentTab == index)
+                                            FontWeight.Bold
+                                        else
+                                            FontWeight.Normal,
+                                        color = if (viewModel.currentTab == index)
+                                            MaterialTheme.colorScheme.secondary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             )

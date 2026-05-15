@@ -1,4 +1,4 @@
-package com.example.gustoria
+package com.example.gustoria.ui.user
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -38,24 +38,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.ui.AppBottomNavBar
-import com.example.gustoria.ui.theme.GustoriaTheme
 import java.io.File
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.ui.tooling.preview.Devices
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gustoria.dataclass.CookingRole
+import com.example.gustoria.dataclass.User
+import com.example.gustoria.viewmodel.OwnedProfileViewModel
+import com.example.gustoria.viewmodel.ProfileValidation
 
+/*
 @Preview(name = "Small Phone", showSystemUi = true, device = "spec:width=360dp,height=640dp,dpi=480")
 @Preview(name = "Standard Phone", showSystemUi = true, device = Devices.PHONE)
 @Preview(name = "Big Tall Phone", showSystemUi = true, device = "spec:width=412dp,height=915dp,dpi=420")
@@ -74,69 +95,80 @@ fun OwnedProfileScreenPreview() {
     }
 }
 
+ */
+
 @Composable
-fun OwnedProfileScreen(viewModel: OwnedProfileViewModel, onBack: () -> Unit = {}) {
+fun OwnedProfileScreen(
+    viewModel: OwnedProfileViewModel,
+    onBack: () -> Unit = {}
+) {
     val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val userState by viewModel.user.collectAsStateWithLifecycle()
 
     Scaffold(
-        bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                /*AppBottomNavBar(
-                    currentDestination = NavDestination.PROFILE,
-                    onNavigate = onNavigate
-                )*/
-            }
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        topBar = {
             ThreeItemTopNavbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                title = "Profile",
+                title = if (viewModel.isEditing) "Edit Profile" else "My Profile",
                 onBack = {
-                    if (viewModel.isEditing) {
-                        viewModel.validateAndSave()
-                    } else {
-                        onBack()
-                    }
+                    if (viewModel.isEditing) viewModel.cancelEditing() else onBack()
                 },
                 extraIcon = if (!viewModel.isEditing) Icons.Default.Edit else null,
                 extraIconDescription = "Edit Profile",
                 onClickExtra = { viewModel.startEditing() }
             )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            val currentUser = userState
+            if (currentUser == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                return@Box
+            }
 
             if (viewModel.isEditing) {
-                EditProfilePane(
-                    user = viewModel.editableUser,
-                    validation = viewModel.validation,
-                    onNicknameChange = viewModel::setNickname,
-                    onDescriptionChange = viewModel::setDescription,
-                    onPhoneChange = viewModel::setPhoneNumber,
-                    onCookingRoleChange = viewModel::setCookingRole,
-                    onCuisinePreferencesChange = viewModel::setCuisinePreferencesFromText,
-                    onDietaryRestrictionsChange = viewModel::setDietaryRestrictionsFromText,
-                    onFavoriteIngredientsChange = viewModel::setFavoriteIngredientsFromText,
-                    onImageChange = viewModel::setProfileImageUri,
-                    onSave = viewModel::validateAndSave,
-                    onCancel = viewModel::cancelEditing,
-                    onEmailChange = viewModel::setEmail,
-                )
+                val draft = viewModel.editableUser
+                if (draft == null) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
+                } else {
+                    EditProfilePane(
+                        user = draft,
+                        validation = viewModel.validation,
+                        onNicknameChange = viewModel::setNickname,
+                        onDescriptionChange = viewModel::setDescription,
+                        onPhoneChange = viewModel::setPhoneNumber,
+                        onCookingRoleChange = viewModel::setCookingRole,
+                        onCuisinePreferencesChange = viewModel::setCuisinePreferencesFromText,
+                        onDietaryRestrictionsChange = viewModel::setDietaryRestrictionsFromText,
+                        onFavoriteIngredientsChange = viewModel::setFavoriteIngredientsFromText,
+                        onImageChange = viewModel::setProfileImageUri,
+                        onSave = viewModel::validateAndSave,
+                        onCancel = viewModel::cancelEditing,
+                        onEmailChange = viewModel::setEmail,
+                    )
+                }
             } else {
                 PresentationPane(
-                    user = viewModel.user,
-                    isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    user = currentUser,
+                    isLandscape = isLandscape
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-fun PresentationPane(user: UserClass, isLandscape: Boolean) {
+fun PresentationPane(user: User, isLandscape: Boolean) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -152,9 +184,7 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ImageBoxContent(user)
-                    
                     Spacer(modifier = Modifier.width(16.dp))
-
                     Column(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.Start,
@@ -164,7 +194,6 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
-
                         Text(
                             text = user.description.ifBlank { "No description yet." },
                             color = MaterialTheme.colorScheme.onSurface,
@@ -186,11 +215,8 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                         .height(150.dp)
                         .padding(top = 16.dp),
                     contentAlignment = Alignment.Center
-                ) {
-                    ImageBoxContent(user)
-                }
+                ) { ImageBoxContent(user) }
             }
-
             item {
                 Column(
                     modifier = Modifier
@@ -203,7 +229,6 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-
                     Text(
                         text = user.description.ifBlank { "No description yet." },
                         color = MaterialTheme.colorScheme.onSurface,
@@ -226,15 +251,19 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(modifier = Modifier
-                    .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)) {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
                     Text("🌿 Vegan Specialist", color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Box(modifier = Modifier
-                    .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)) {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
                     Text("⭐ Top Curator", color = MaterialTheme.colorScheme.onTertiaryContainer, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -248,16 +277,18 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 maxItemsInEachRow = 3
             ) {
-                //ValueBox(value = user.numberOfRecipes, text = "Recipes")
-                //ValueBox(value = user.numberOfFollowers, text = "Followers")
-                //ValueBox(value = user.numberOfLikes, text = "Likes")
+                ValueBox(user.numberOfRecipes, "Recipes")
+                ValueBox(user.numberOfFollowers, "Followers")
+                ValueBox(user.numberOfLikes, "Likes")
             }
         }
 
         item {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, bottom = 24.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 24.dp)
+            ) {
                 MenuListItem(title = "Profile Info", icon = Icons.Default.Person)
                 MenuListItem(title = "Settings", icon = Icons.Default.Settings)
                 MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info)
@@ -270,13 +301,13 @@ fun PresentationPane(user: UserClass, isLandscape: Boolean) {
 
 @Composable
 fun EditProfilePane(
-    user: UserClass,
+    user: User,
     validation: ProfileValidation,
     onNicknameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
-    onCookingRoleChange: (CookingRole?) -> Unit,
+    onCookingRoleChange: (CookingRole) -> Unit,
     onCuisinePreferencesChange: (String) -> Unit,
     onDietaryRestrictionsChange: (String) -> Unit,
     onFavoriteIngredientsChange: (String) -> Unit,
@@ -292,19 +323,14 @@ fun EditProfilePane(
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
-        if (uri != null) {
-            onImageChange(uri.toString())
-        }
+        if (uri != null) onImageChange(uri.toString())
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
-            showCameraScreen.value = true
-        } else {
-            Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
-        }
+        if (isGranted) showCameraScreen.value = true
+        else Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
     }
 
     if (showCameraScreen.value) {
@@ -330,10 +356,7 @@ fun EditProfilePane(
                     contentAlignment = Alignment.Center
                 ) {
                     ImageBoxContent(user)
-
-                    Box(
-                        modifier = Modifier.size(120.dp)
-                    ) {
+                    Box(modifier = Modifier.size(120.dp)) {
                         IconButton(
                             onClick = { showImageMenu.value = true },
                             modifier = Modifier
@@ -348,7 +371,6 @@ fun EditProfilePane(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-
                         DropdownMenu(
                             expanded = showImageMenu.value,
                             onDismissRequest = { showImageMenu.value = false }
@@ -365,15 +387,10 @@ fun EditProfilePane(
                                 onClick = {
                                     showImageMenu.value = false
                                     val isGranted = ContextCompat.checkSelfPermission(
-                                        context,
-                                        Manifest.permission.CAMERA
+                                        context, Manifest.permission.CAMERA
                                     ) == PackageManager.PERMISSION_GRANTED
-
-                                    if (isGranted) {
-                                        showCameraScreen.value = true
-                                    } else {
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                                    }
+                                    if (isGranted) showCameraScreen.value = true
+                                    else permissionLauncher.launch(Manifest.permission.CAMERA)
                                 }
                             )
                         }
@@ -399,15 +416,12 @@ fun EditProfilePane(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 )
             }
-
             if (validation.emailError.isNotBlank()) {
                 item {
                     Text(
                         text = validation.emailError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                     )
                 }
             }
@@ -422,15 +436,12 @@ fun EditProfilePane(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-
             if (validation.nicknameError.isNotBlank()) {
                 item {
                     Text(
                         text = validation.nicknameError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                     )
                 }
             }
@@ -441,20 +452,15 @@ fun EditProfilePane(
                     onValueChange = onDescriptionChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     label = { Text("Description") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
             }
-
             if (validation.descriptionError.isNotBlank()) {
                 item {
                     Text(
                         text = validation.descriptionError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                     )
                 }
             }
@@ -466,20 +472,15 @@ fun EditProfilePane(
                     label = { Text("Phone Number") },
                     isError = validation.phoneError.isNotBlank(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
             }
-
             if (validation.phoneError.isNotBlank()) {
                 item {
                     Text(
                         text = validation.phoneError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                     )
                 }
             }
@@ -487,24 +488,21 @@ fun EditProfilePane(
             item {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = user.cookingRole?.displayName() ?: "",
+                        value = if (user.cookingRole == CookingRole.NONE) "" else user.cookingRole.displayName(),
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Cooking Role") },
                         trailingIcon = {
                             IconButton(onClick = { expanded = !expanded }) {
                                 Icon(
-                                    imageVector = if (expanded)
-                                        Icons.Default.KeyboardArrowUp
-                                    else
-                                        Icons.Default.KeyboardArrowDown,
+                                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp
+                                    else Icons.Default.KeyboardArrowDown,
                                     contentDescription = null
                                 )
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
-
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
@@ -522,15 +520,12 @@ fun EditProfilePane(
                     }
                 }
             }
-
             if (validation.cookingRoleError.isNotBlank()) {
                 item {
                     Text(
                         text = validation.cookingRoleError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                     )
                 }
             }
@@ -541,53 +536,37 @@ fun EditProfilePane(
                     onValueChange = onCuisinePreferencesChange,
                     label = { Text("Cuisine Preferences") },
                     supportingText = { Text("Separate values with commas") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
             }
-
             item {
                 OutlinedTextField(
                     value = user.dietaryRestrictions.joinToString(", "),
                     onValueChange = onDietaryRestrictionsChange,
                     label = { Text("Dietary Restrictions") },
                     supportingText = { Text("Separate values with commas") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
             }
-
             item {
                 OutlinedTextField(
                     value = user.favoriteIngredients.joinToString(", "),
                     onValueChange = onFavoriteIngredientsChange,
                     label = { Text("Favorite Ingredients") },
                     supportingText = { Text("Separate values with commas") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
             }
-
             item {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onCancel) {
-                        Text("Cancel")
-                    }
-
+                    TextButton(onClick = onCancel) { Text("Cancel") }
                     Button(
                         onClick = onSave,
                         modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text("Save")
-                    }
+                    ) { Text("Save") }
                 }
             }
         }
@@ -595,31 +574,46 @@ fun EditProfilePane(
 }
 
 @Composable
-fun MenuListItem(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
+fun MenuListItem(title: String, icon: ImageVector, isDestructive: Boolean = false) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .height(56.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDestructive) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface),
-        border = androidx.compose.foundation.BorderStroke(1.dp, if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isDestructive) MaterialTheme.colorScheme.errorContainer
+            else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            1.dp,
+            if (isDestructive) MaterialTheme.colorScheme.error
+            else MaterialTheme.colorScheme.outline
+        ),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = icon, contentDescription = title, tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = if (isDestructive) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = title, fontWeight = FontWeight.Medium, color = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = title,
+                fontWeight = FontWeight.Medium,
+                color = if (isDestructive) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
 
 @Composable
-fun ImageBoxContent(user: UserClass) {
+fun ImageBoxContent(user: User) {
     if (user.profileImageUri != null) {
         coil.compose.AsyncImage(
             model = user.profileImageUri,
@@ -681,7 +675,6 @@ fun CameraXScreen(
             onClick = {
                 val photoFile = File(context.cacheDir, "profile_pic_${System.currentTimeMillis()}.jpg")
                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-
                 cameraController.takePicture(
                     outputOptions,
                     ContextCompat.getMainExecutor(context),
@@ -695,9 +688,7 @@ fun CameraXScreen(
                     }
                 )
             },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 48.dp)
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 48.dp)
         ) {
             Icon(Icons.Default.CameraAlt, contentDescription = "Take Photo")
             Spacer(modifier = Modifier.width(8.dp))

@@ -21,14 +21,14 @@ class PaperUserRepo: UserRepoInterface {
         User(
             internalId = "101",
             nickname = "User 101",
-            name = "First User",
+            fullName = "First User",
             username = "user101",
             email = "user101@example.com"
         ),
         User(
             internalId = "202",
             nickname = "User 202",
-            name = "Second User",
+            fullName = "Second User",
             username = "user202",
             email = "user202@example.com"
         )
