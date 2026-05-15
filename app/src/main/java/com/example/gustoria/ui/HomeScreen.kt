@@ -67,13 +67,13 @@ class HomeActions(val navCtrl: NavHostController) {
     val navigateToProfile: () -> Unit = {
         navCtrl.navigate(Profile)
     }
-    // naviga a RecipeScreen
-    val navigateToRecipes: () -> Unit = {
-        navCtrl.navigate(Search.Searched)
+    // naviga a RecipeScreen pre-selezionando la ricetta specifica
+    val navigateToRecipes: (String) -> Unit = { recipeId ->
+        navCtrl.navigate(Search.Searched(recipeId))
     }
-    // naviga ai risultati di ricerca quando si clicca una categoria
+    // naviga ai risultati di ricerca quando si clicca una categoria (lista completa)
     val navigateToSearch: () -> Unit = {
-        navCtrl.navigate(Search.Searched)
+        navCtrl.navigate(Search.Searched())
     }
     // naviga alla schermata di edit per una ricetta posseduta dall'utente
     val navigateToEdit: (String) -> Unit = { recipeId ->
@@ -141,7 +141,7 @@ fun HomeScreen(
             if (featuredRecipe != null) {
                 RecipeCard(
                     recipe = featuredRecipe!!,
-                    onClick = actions.navigateToRecipes,
+                    onClick = { actions.navigateToRecipes(featuredRecipe!!.id) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
