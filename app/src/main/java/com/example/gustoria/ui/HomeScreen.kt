@@ -92,7 +92,7 @@ fun HomeScreen(
 ) {
     val actions = remember(navCtrl) { HomeActions(navCtrl) }
 
-    val featuredRecipe by viewModel.featuredRecipe.collectAsStateWithLifecycle()
+    val recommendedRecipes by viewModel.recommendedRecipes.collectAsStateWithLifecycle()
     val myRecipes by viewModel.myRecipes.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
 
@@ -138,13 +138,17 @@ fun HomeScreen(
         item {
             HomeSectionHeader(title = "RECOMMENDED FOR YOU")
             Spacer(Modifier.height(8.dp))
-            if (featuredRecipe != null) {
-                RecipeCard(
-                    recipe = featuredRecipe!!,
-                    onClick = { actions.navigateToRecipes(featuredRecipe!!.id) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+            if (recommendedRecipes.isEmpty()) {
+                Text(
+                    text = "No recommendations available yet.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            } else {
+                RecommendedRow(
+                    recipes = recommendedRecipes,
+                    onRecipeClick = { id -> actions.navigateToRecipes(id) }
                 )
             }
             Spacer(Modifier.height(16.dp))
@@ -214,6 +218,25 @@ private fun CategoryChipsRow(
                 selected = category == selectedCategory,
                 onClick = { onCategorySelected(category) },
                 label = { Text(category) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecommendedRow(
+    recipes: List<Recipe>,
+    onRecipeClick: (String) -> Unit
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(recipes, key = { it.id }) { recipe ->
+            RecipeCard(
+                recipe = recipe,
+                onClick = { onRecipeClick(recipe.id) },
+                modifier = Modifier.width(180.dp)
             )
         }
     }
