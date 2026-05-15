@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gustoria.SessionManager
 import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow

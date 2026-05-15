@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +32,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.gustoria.Edit
 import com.example.gustoria.Profile
 import com.example.gustoria.Search
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.recipe.components.RecipeCard
@@ -60,11 +63,21 @@ fun HomeScreenPreview() {
 }
 
 class HomeActions(val navCtrl: NavHostController) {
+    // naviga al profilo utente corrente
     val navigateToProfile: () -> Unit = {
         navCtrl.navigate(Profile)
     }
+    // naviga a RecipeScreen
+    val navigateToRecipes: () -> Unit = {
+        navCtrl.navigate(Search.Searched)
+    }
+    // naviga ai risultati di ricerca quando si clicca una categoria
     val navigateToSearch: () -> Unit = {
-        navCtrl.navigate(Search)
+        navCtrl.navigate(Search.Searched)
+    }
+    // naviga alla schermata di edit per una ricetta posseduta dall'utente
+    val navigateToEdit: (String) -> Unit = { recipeId ->
+        navCtrl.navigate(Edit(recipeId))
     }
 }
 
@@ -80,7 +93,7 @@ fun HomeScreen(
     val actions = remember(navCtrl) { HomeActions(navCtrl) }
 
     val featuredRecipe by viewModel.featuredRecipe.collectAsStateWithLifecycle()
-    val myRecipes     by viewModel.myRecipes.collectAsStateWithLifecycle()
+    val myRecipes by viewModel.myRecipes.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -91,12 +104,21 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                title = "GUSTORIA",
+                titleContent = {
+                    Text(
+                        text = "GUSTORIA",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    )
+                },
                 leadingContent = {
                     IconButton(onClick = actions.navigateToProfile) {
                         Icon(
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Profile"
+                            contentDescription = "Profile",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -104,7 +126,8 @@ fun HomeScreen(
                     IconButton(onClick = { /* TODO: navigazione */ }) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notifications"
+                            contentDescription = "Notifications",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -118,7 +141,7 @@ fun HomeScreen(
             if (featuredRecipe != null) {
                 RecipeCard(
                     recipe = featuredRecipe!!,
-                    onClick = { /* TODO: navigazione */ },
+                    onClick = actions.navigateToRecipes,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -135,7 +158,7 @@ fun HomeScreen(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { category ->
                     viewModel.selectCategory(category)
-                    // TODO: navigazione a Search con categoria
+                    actions.navigateToSearch()
                 }
             )
             Spacer(Modifier.height(16.dp))
@@ -149,12 +172,13 @@ fun HomeScreen(
                 Text(
                     text = "No recipes created yet.",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             } else {
                 RecentCreationsRow(
                     recipes = myRecipes,
-                    onRecipeClick = { /* TODO: navigazione */ }
+                    onRecipeClick = { id -> actions.navigateToEdit(id) }
                 )
             }
             Spacer(Modifier.height(16.dp))
@@ -170,6 +194,7 @@ private fun HomeSectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onBackground,
         letterSpacing = 1.sp,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
@@ -196,7 +221,7 @@ private fun CategoryChipsRow(
 
 @Composable
 private fun RecentCreationsRow(
-    recipes: List<com.example.gustoria.dataclass.Recipe>,
+    recipes: List<Recipe>,
     onRecipeClick: (String) -> Unit
 ) {
     LazyRow(
