@@ -71,14 +71,6 @@ class HomeActions(val navCtrl: NavHostController) {
     val navigateToRecipes: (String) -> Unit = { recipeId ->
         navCtrl.navigate(Search.Searched(recipeId))
     }
-    // naviga ai risultati di ricerca quando si clicca una categoria (lista completa)
-    val navigateToSearch: () -> Unit = {
-        navCtrl.navigate(Search.Searched())
-    }
-    // naviga alla schermata di edit per una ricetta posseduta dall'utente
-    val navigateToEdit: (String) -> Unit = { recipeId ->
-        navCtrl.navigate(Edit(recipeId))
-    }
 }
 
 @Composable
@@ -162,7 +154,7 @@ fun HomeScreen(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { category ->
                     viewModel.selectCategory(category)
-                    actions.navigateToSearch()
+                    // TODO: navigazione a Search filtrata per categoria
                 }
             )
             Spacer(Modifier.height(16.dp))
@@ -182,7 +174,7 @@ fun HomeScreen(
             } else {
                 RecentCreationsRow(
                     recipes = myRecipes,
-                    onRecipeClick = { id -> actions.navigateToEdit(id) }
+                    onRecipeClick = { id -> actions.navigateToRecipes(id) }
                 )
             }
             Spacer(Modifier.height(16.dp))
