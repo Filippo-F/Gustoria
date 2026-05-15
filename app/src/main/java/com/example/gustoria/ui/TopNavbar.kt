@@ -69,3 +69,39 @@ fun ThreeItemTopNavbar(
         }
     }
 }
+
+/*
+
+variante usata dalla HomeScreen con avatar a sinistra, notifiche a destra e nome app centrale
+
+ - leadingContent: Composable sinistra (avatar)
+ - trailingContent: Composable destra (notifiche)
+ - title: testo centrato (nome app) 
+ 
+*/
+
+@Composable
+fun ThreeItemTopNavbar(
+    modifier: Modifier = Modifier,
+    title: String,
+    leadingContent: @Composable () -> Unit,
+    trailingContent: @Composable () -> Unit = { Box(modifier = Modifier.size(56.dp)) }
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        leadingContent()
+
+        Text(
+            text = title,
+            fontSize = 20.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
+        )
+
+        trailingContent()
+    }
+}

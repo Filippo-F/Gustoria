@@ -155,7 +155,11 @@ fun GustoriaApp(
                     }
                 }
                 composable<Home> {
-                    HomeScreen(navCtrl = navController)
+                    HomeScreen(
+                        navCtrl = navController,
+                        recipeRepository = recipeRepository,
+                        userRepository = userRepository
+                    )
                 }
 
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
