@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.Edit
 import com.example.gustoria.Authentication
 import com.example.gustoria.Profile
+import com.example.gustoria.RecipeDetails
 import com.example.gustoria.Search
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -68,9 +69,9 @@ class HomeActions(val navCtrl: NavHostController) {
     val navigateToProfile: () -> Unit = {
         navCtrl.navigate(Profile)
     }
-    // naviga a RecipeScreen pre-selezionando la ricetta specifica
-    val navigateToRecipes: (String) -> Unit = { recipeId ->
-        navCtrl.navigate(Search.Searched(recipeId))
+    // naviga direttamente ai dettagli della ricetta
+    val navigateToRecipeDetails: (String) -> Unit = { recipeId ->
+        navCtrl.navigate(RecipeDetails(recipeId))
     }
 }
 
@@ -141,7 +142,7 @@ fun HomeScreen(
             } else {
                 RecommendedRow(
                     recipes = recommendedRecipes,
-                    onRecipeClick = { id -> actions.navigateToRecipes(id) }
+                    onRecipeClick = { id -> actions.navigateToRecipeDetails(id) }
                 )
             }
             Spacer(Modifier.height(16.dp))
@@ -175,7 +176,7 @@ fun HomeScreen(
             } else {
                 RecentCreationsRow(
                     recipes = myRecipes,
-                    onRecipeClick = { id -> actions.navigateToRecipes(id) }
+                    onRecipeClick = { id -> actions.navigateToRecipeDetails(id) }
                 )
             }
             Spacer(Modifier.height(16.dp))

@@ -34,9 +34,12 @@ import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
+import com.example.gustoria.ui.recipe.RecipeDetailsScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
 import com.example.gustoria.viewmodel.AuthMode
+import com.example.gustoria.viewmodel.RecipeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -83,6 +86,8 @@ object Create
 
 @Serializable
 data class Edit(val recipeId: String)
+@Serializable
+data class RecipeDetails(val recipeId: String)
 
 @Serializable
 object Profile {
@@ -200,6 +205,15 @@ fun GustoriaApp(
                         navController = navController,
                         recipeRepository = recipeRepository,
                         recipeId = edit.recipeId
+                    )
+                }
+
+                composable<RecipeDetails> { backStackEntry ->
+                    val args: RecipeDetails = backStackEntry.toRoute()
+                    RecipeDetailsScreen(
+                        recipeId = args.recipeId,
+                        navCtrl = navController,
+                        viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
                     )
                 }
 

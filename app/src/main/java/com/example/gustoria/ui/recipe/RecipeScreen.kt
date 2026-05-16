@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.Edit
 import com.example.gustoria.Home
+import com.example.gustoria.RecipeDetails
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.HomeActions
 import com.example.gustoria.ui.theme.GustoriaTheme
@@ -61,6 +62,10 @@ class RecipeScreenActions(val navCtrl : NavHostController) {
 
     val onEditRecipe: (String) -> Unit = { id ->
         navCtrl.navigate(Edit(id))
+    }
+
+    val onRecipeClick: (String) -> Unit = { id ->
+        navCtrl.navigate(RecipeDetails(id))
     }
 }
 
@@ -97,27 +102,14 @@ fun RecipeScreen(
             recipes = filteredRecipes,
             filters = filters,
             onBack = actions.navigateBack,
-            onRecipeClick = viewModel::selectRecipe,
+            onRecipeClick = { id ->
+                actions.onRecipeClick(id)
+            },
             onNameQueryChange = viewModel::updateNameQuery,
             onIngredientQueryChange = viewModel::updateIngredientQuery,
             onToggleCost = viewModel::toggleCost,
             onToggleDifficulty = viewModel::toggleDifficulty,
             onClearFilters = viewModel::resetFilters
-        )
-    } else {
-        RecipeDetailsScreen(
-            navCtrl = navCtrl,
-            recipe = selectedRecipe!!,
-            isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
-            onBackClick = { viewModel.selectRecipe(null) },
-            onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
-            onDuplicateClick = {
-                viewModel.duplicateRecipe(selectedRecipe!!) { newId ->
-                    actions.onEditRecipe(newId)
-                    viewModel.selectRecipe(null)
-                }
-            },
-            onEditClick = { actions.onEditRecipe(selectedRecipe!!.id) }
         )
     }
 }

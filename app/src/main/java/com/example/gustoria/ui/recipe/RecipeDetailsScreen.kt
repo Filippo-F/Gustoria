@@ -32,9 +32,53 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gustoria.Edit
+import com.example.gustoria.RecipeDetails
+import com.example.gustoria.viewmodel.RecipeViewModel
+
+class RecipeDetailsActions(val navController: NavHostController) {
+    val navigateBack: () -> Unit = {
+        navController.popBackStack()
+    }
+}
 
 @Composable
 fun RecipeDetailsScreen(
+    recipeId: String,
+    navCtrl: NavHostController,
+    viewModel: RecipeViewModel
+) {
+    val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+
+    LaunchedEffect(recipeId) {
+        viewModel.selectRecipe(recipeId)
+    }
+
+    recipe?.let { r ->
+        RecipeDetailsContent(
+            navCtrl = navCtrl,
+            recipe = r,
+            isOwner = viewModel.isOwnedByCurrentUser(r),
+            onBackClick = { navCtrl.popBackStack() },
+            onDeleteClick = {
+                viewModel.deleteRecipe(r.id)
+                navCtrl.popBackStack()
+            },
+            onDuplicateClick = {
+                viewModel.duplicateRecipe(r) { newId ->
+                    navCtrl.navigate(Edit(newId)) {
+                        popUpTo(RecipeDetails(r.id)) { inclusive = true }
+                    }
+                }
+            },
+            onEditClick = { navCtrl.navigate(Edit(r.id)) }
+        )
+    }
+}
+
+@Composable
+fun RecipeDetailsContent(
     navCtrl: NavHostController,
     recipe: Recipe,
     isOwner: Boolean,

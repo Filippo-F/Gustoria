@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.example.gustoria.Create
 import com.example.gustoria.Edit
 import com.example.gustoria.Favourite
+import com.example.gustoria.RecipeDetails
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.recipe.components.RecipeFilterSection
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
@@ -39,6 +40,9 @@ class RecipeCollectionActions(val navController: NavHostController) {
             2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
         }
     }
+    val onRecipeClick: (String) -> Unit = { id ->
+        navController.navigate(RecipeDetails(id))
+    }
 }
 
 @Composable
@@ -53,7 +57,6 @@ fun RecipeCollectionScreen(
 ) {
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
     val filters by vm.filters.collectAsStateWithLifecycle()
-    val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
     val currentTab by vm.currentTab.collectAsStateWithLifecycle()
 
     val actions = remember(navController) { RecipeCollectionActions(navController) }
@@ -63,48 +66,24 @@ fun RecipeCollectionScreen(
         vm.setTab(initialTab)
     }
 
-    BackHandler(enabled = selectedRecipe != null) {
-        vm.selectRecipe(null)
-    }
-
-    if (selectedRecipe == null) {
-        RecipeCollectionListContent(
-            recipes = recipes,
-            filters = filters,
-            currentTab = currentTab,
-            onTabSelected = {
-                vm.setTab(it)
-                actions.onTabChange(it)
-            },
-            onCreateNewRecipe = actions.onCreateNewRecipe,
-            onEditRecipe = actions.onEditRecipe,
-            onRecipeClick = vm::selectRecipe,
-            onDeleteRecipe = vm::delete,
-            onNameQueryChange = vm::setNameQuery,
-            onIngredientQueryChange = vm::setIngredientQuery,
-            onToggleCost = vm::toggleCost,
-            onToggleDifficulty = vm::toggleDifficulty,
-            onResetFilters = vm::resetFilters
-        )
-    } else {
-        RecipeDetailsScreen(
-            navCtrl = navController,
-            recipe = selectedRecipe!!,
-            isOwner = currentTab == 2, // Only Owner if we're looking at "Created" tab
-            onBackClick = { vm.selectRecipe(null) },
-            onDeleteClick = { vm.delete(selectedRecipe!!.id) },
-            onDuplicateClick = {
-                vm.duplicateRecipe(selectedRecipe!!) { newId ->
-                    actions.onEditRecipe(newId)
-                    vm.selectRecipe(null)
-                }
-            },
-            onEditClick = {
-                actions.onEditRecipe(selectedRecipe!!.id)
-                vm.selectRecipe(null)
-            }
-        )
-    }
+    RecipeCollectionListContent(
+        recipes = recipes,
+        filters = filters,
+        currentTab = currentTab,
+        onTabSelected = {
+            vm.setTab(it)
+            actions.onTabChange(it)
+        },
+        onCreateNewRecipe = actions.onCreateNewRecipe,
+        onEditRecipe = actions.onEditRecipe,
+        onRecipeClick = { recipe -> actions.onRecipeClick(recipe.id) },
+        onDeleteRecipe = vm::delete,
+        onNameQueryChange = vm::setNameQuery,
+        onIngredientQueryChange = vm::setIngredientQuery,
+        onToggleCost = vm::toggleCost,
+        onToggleDifficulty = vm::toggleDifficulty,
+        onResetFilters = vm::resetFilters
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
