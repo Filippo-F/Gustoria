@@ -123,7 +123,7 @@ fun EditRecipeScreen(
                             )
                         } else {
                             DropdownMenuItem(
-                                text = { Text("Clear Form") },
+                                text = { Text("Clear All") },
                                 onClick = {
                                     showTopMenu = false
                                     vm.revertChanges()
