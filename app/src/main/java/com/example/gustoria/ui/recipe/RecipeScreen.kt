@@ -15,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -67,6 +68,7 @@ class RecipeScreenActions(val navCtrl : NavHostController) {
 fun RecipeScreen(
     navCtrl: NavHostController,
     recipeRepository: RecipeRepoInterface,
+    initialRecipeId: String? = null,
     viewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModel.provideFactory(recipeRepository)
     )
@@ -77,6 +79,13 @@ fun RecipeScreen(
 
     val actions = remember(navCtrl) {
         RecipeScreenActions(navCtrl)
+    }
+
+    // se arriviamo dalla Home con una ricetta specifica, la pre-selezioniamo
+    LaunchedEffect(initialRecipeId) {
+        if (initialRecipeId != null) {
+            viewModel.selectRecipe(initialRecipeId)
+        }
     }
 
     BackHandler(enabled = selectedRecipe != null) {

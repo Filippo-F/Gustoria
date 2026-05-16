@@ -29,6 +29,7 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.recipe.EditRecipeScreen
@@ -72,7 +73,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    object Searched
+    data class Searched(val recipeId: String? = null)
 }
 
 @Serializable
@@ -80,8 +81,6 @@ object Create
 
 @Serializable
 data class Edit(val recipeId: String)
-
-
 
 @Serializable
 object Profile {
@@ -154,7 +153,11 @@ fun GustoriaApp(
                     }
                 }
                 composable<Home> {
-                    HomeScreen(navCtrl = navController)
+                    HomeScreen(
+                        navCtrl = navController,
+                        recipeRepository = recipeRepository,
+                        userRepository = userRepository
+                    )
                 }
 
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
@@ -171,13 +174,15 @@ fun GustoriaApp(
 
                         ) {
                             Text("Searching...")
-                            Button(onClick = {navController.navigate(Search.Searched)}){Text("Confirm")}
+                            Button(onClick = {navController.navigate(Search.Searched())}){Text("Confirm")}
                         }
                     }
-                    composable<Search.Searched> {
+                    composable<Search.Searched> { backStackEntry ->
+                        val searched: Search.Searched = backStackEntry.toRoute()
                         RecipeScreen(
                             navCtrl = navController,
-                            recipeRepository = recipeRepository
+                            recipeRepository = recipeRepository,
+                            initialRecipeId = searched.recipeId
                         )
                     }
                 }
