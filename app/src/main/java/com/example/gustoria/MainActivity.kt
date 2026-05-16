@@ -248,12 +248,10 @@ fun GustoriaApp(
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
-                            Column(
-                            ) {
-                                Text("Profile Info Overview")
-                                Button(onClick = { navController.navigate(Profile.ProfileInfo.CulinaryPreference) }) {Text("Set Culinary Preference") }
-                                Button(onClick = { navController.navigate(Profile.ProfileInfo.DietPreference) }) {Text("Set Diet Preference") }
-                            }
+                            com.example.gustoria.ui.user.ProfileInfoScreen(
+                                navController = navController,
+                                userRepo = userRepository
+                            )
                         }
                         dialog<Profile.ProfileInfo.CulinaryPreference> {
                             Text("Culinary Preference")

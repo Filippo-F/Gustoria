@@ -19,6 +19,9 @@ import com.example.gustoria.SessionManager
 //validation state
 data class ProfileValidation(
     val nicknameError: String = "",
+    val firstNameError: String = "",
+    val lastNameError: String = "",
+    val passwordError: String = "",
     val phoneError: String = "",
     val emailError: String = "",
     val cookingRoleError: String = "",
@@ -76,21 +79,56 @@ class OwnedProfileViewModel(
     var isEditing by mutableStateOf(false)
         private set
 
+    // State for individual field editing in ProfileInfoScreen
+    var editingNickname by mutableStateOf(false)
+        private set
+    var editingFirstName by mutableStateOf(false)
+        private set
+    var editingLastName by mutableStateOf(false)
+        private set
+    var editingEmail by mutableStateOf(false)
+        private set
+    var editingPassword by mutableStateOf(false)
+        private set
+    var editingPhone by mutableStateOf(false)
+        private set
+
+    fun toggleEditingNickname() { editingNickname = !editingNickname }
+    fun toggleEditingFirstName() { editingFirstName = !editingFirstName }
+    fun toggleEditingLastName() { editingLastName = !editingLastName }
+    fun toggleEditingEmail() { editingEmail = !editingEmail }
+    fun toggleEditingPassword() { editingPassword = !editingPassword }
+    fun toggleEditingPhone() { editingPhone = !editingPhone }
+
     fun startEditing() { // click on edit
         editableUser = user.value
         validation = ProfileValidation()
         isEditing = true
+        resetFieldEditingStates()
     }
     fun cancelEditing() {
         editableUser = user.value
         validation = ProfileValidation()
         isEditing = false
+        resetFieldEditingStates()
+    }
+
+    private fun resetFieldEditingStates() {
+        editingNickname = false
+        editingFirstName = false
+        editingLastName = false
+        editingEmail = false
+        editingPassword = false
+        editingPhone = false
     }
 
     fun validateAndSave() {
         val draft = editableUser ?: return
 
         var currentNicknameError = ""
+        var currentFirstNameError = ""
+        var currentLastNameError = ""
+        var currentPasswordError = ""
         var currentPhoneError = ""
         var currentEmailError = ""
         var cookingRoleError = ""
@@ -98,6 +136,20 @@ class OwnedProfileViewModel(
 
         if (draft.nickname.isBlank()) {
             currentNicknameError = "Nickname cannot be blank"
+        }
+
+        if (draft.firstName.isBlank()) {
+            currentFirstNameError = "First name cannot be blank"
+        }
+
+        if (draft.lastName.isBlank()) {
+            currentLastNameError = "Last name cannot be blank"
+        }
+
+        if (draft.password.isBlank()) {
+            currentPasswordError = "Password cannot be blank"
+        } else if (draft.password.length < 6) {
+            currentPasswordError = "Password must be at least 6 characters"
         }
 
         val phone = draft.phoneNumber.trim().replace(" ", "")
@@ -146,6 +198,9 @@ class OwnedProfileViewModel(
         }
 
         val formIsValid = currentNicknameError.isBlank()
+                && currentFirstNameError.isBlank()
+                && currentLastNameError.isBlank()
+                && currentPasswordError.isBlank()
                 && currentPhoneError.isBlank()
                 && currentEmailError.isBlank()
                 && cookingRoleError.isBlank()
@@ -153,6 +208,9 @@ class OwnedProfileViewModel(
 
         validation = ProfileValidation(
             nicknameError = currentNicknameError,
+            firstNameError = currentFirstNameError,
+            lastNameError = currentLastNameError,
+            passwordError = currentPasswordError,
             phoneError = currentPhoneError,
             emailError = currentEmailError,
             cookingRoleError = cookingRoleError,
@@ -172,6 +230,28 @@ class OwnedProfileViewModel(
     // Setters per la bozza
     fun setNickname(nickname: String) {
         editableUser = editableUser?.copy(nickname = nickname)
+    }
+
+    fun setFirstName(firstName: String) {
+        editableUser = editableUser?.let { 
+            it.copy(
+                firstName = firstName,
+                fullName = "$firstName ${it.lastName}".trim()
+            )
+        }
+    }
+
+    fun setLastName(lastName: String) {
+        editableUser = editableUser?.let {
+            it.copy(
+                lastName = lastName,
+                fullName = "${it.firstName} $lastName".trim()
+            )
+        }
+    }
+
+    fun setPassword(password: String) {
+        editableUser = editableUser?.copy(password = password)
     }
 
     fun setDescription(description: String) {
