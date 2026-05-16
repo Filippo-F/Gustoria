@@ -88,6 +88,10 @@ object Create
 data class Edit(val recipeId: String)
 @Serializable
 data class RecipeDetails(val recipeId: String)
+@Serializable
+data class AddReview(val recipeId: String)
+@Serializable
+data class ReviewsList(val recipeId: String)
 
 @Serializable
 object Profile {
@@ -207,6 +211,24 @@ fun GustoriaApp(
                         recipeId = args.recipeId,
                         navCtrl = navController,
                         viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
+                    )
+                }
+
+                composable<AddReview> { backStackEntry ->
+                    val args: AddReview = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewFormScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository
+                    )
+                }
+
+                composable<ReviewsList> { backStackEntry ->
+                    val args: ReviewsList = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewsListScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository
                     )
                 }
 
