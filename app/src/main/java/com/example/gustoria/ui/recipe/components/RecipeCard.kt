@@ -42,13 +42,13 @@ fun RecipeCard(
 }
 
 @Composable
-fun RecipeCardContent(recipe: Recipe) {
+fun RecipeCardContent(recipe: Recipe, imageHeight: androidx.compose.ui.unit.Dp = 100.dp) {
     AsyncImage(
         model = recipe.imageUri,
         contentDescription = "Image of ${recipe.name}",
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(imageHeight)
             .clip(RoundedCornerShape(8.dp)),
         contentScale = ContentScale.Crop,
         fallback = painterResource(id = R.drawable.no_image),

@@ -188,10 +188,10 @@ fun HomeScreen(
 private fun HomeSectionHeader(title: String) {
     Text(
         text = title,
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onBackground,
-        letterSpacing = 1.sp,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.ExtraBold,
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+        letterSpacing = 1.5.sp,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
@@ -222,13 +222,19 @@ private fun RecommendedRow(
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(recipes, key = { it.id }) { recipe ->
             RecipeCard(
                 recipe = recipe,
                 onClick = { onRecipeClick(recipe.id) },
-                modifier = Modifier.width(180.dp)
+                modifier = Modifier.width(260.dp),
+                content = {
+                    com.example.gustoria.ui.recipe.components.RecipeCardContent(
+                        recipe = recipe,
+                        imageHeight = 160.dp
+                    )
+                }
             )
         }
     }
