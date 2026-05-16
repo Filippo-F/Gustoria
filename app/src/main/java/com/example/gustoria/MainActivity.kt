@@ -261,7 +261,7 @@ fun GustoriaApp(
                         }
                     }
                     composable<Profile.Settings> {
-                        Text("Settings")
+                        com.example.gustoria.ui.user.SettingsScreen(navController = navController)
                     }
                     composable<Profile.HelpAndFeedback> {
                         Text("Help & Feedback")
