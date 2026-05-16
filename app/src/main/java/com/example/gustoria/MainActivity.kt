@@ -36,7 +36,9 @@ import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
+import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.ui.user.SignOutDialogue
 import com.example.gustoria.viewmodel.AuthMode
 import com.example.gustoria.viewmodel.RecipeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -263,11 +265,11 @@ fun GustoriaApp(
                     composable<Profile.Settings> {
                         com.example.gustoria.ui.user.SettingsScreen(navController = navController)
                     }
-                    composable<Profile.HelpAndFeedback> {
-                        Text("Help & Feedback")
+                    dialog<Profile.HelpAndFeedback> {
+                        HelpAndFeedbackDialogue(navController = navController)
                     }
                     dialog<Profile.SignOut> {
-                        Text("Sign Out")
+                        SignOutDialogue(navController = navController)
                     }
                 }
             }
