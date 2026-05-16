@@ -150,7 +150,6 @@ fun GustoriaApp(
                     AuthenticationDialogue(
                         userRepo = userRepository,
                         onAuthSuccess = {},
-                        initialMode = AuthMode.LOGIN
                     )
 
                 }

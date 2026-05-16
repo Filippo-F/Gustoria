@@ -36,7 +36,7 @@ import com.example.gustoria.viewmodel.AuthenticationViewModel
 fun AuthScreenPreview() {
     val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
     GustoriaTheme(dynamicColor = false) {
-        AuthenticationDialogue(userRepo = fakeRepo, onAuthSuccess = {}, initialMode = AuthMode.REGISTER)
+        AuthenticationDialogue(userRepo = fakeRepo, onAuthSuccess = {})
     }
 }
 
@@ -44,16 +44,11 @@ fun AuthScreenPreview() {
 fun AuthenticationDialogue(
     userRepo: UserRepoInterface,
     onAuthSuccess: (String) -> Unit,
-    initialMode: AuthMode = AuthMode.LOGIN,
     vm: AuthenticationViewModel = viewModel(
         factory = AuthenticationViewModel.factory(userRepo)
     )
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(initialMode) {
-        vm.switchMode(initialMode)
-    }
 
     Surface(
         shape = RoundedCornerShape(28.dp),
