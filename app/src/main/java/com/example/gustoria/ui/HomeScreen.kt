@@ -8,8 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.Authentication.Login
-import com.example.gustoria.Authentication.Register
+import com.example.gustoria.Authentication
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 
@@ -25,11 +24,8 @@ fun HomeScreenPreview() {
 class HomeActions (
     val navCtrl: NavHostController
 ) {
-    val navigateLogin: () -> Unit = {
-        navCtrl.navigate(Login)
-    }
-    val navigateRegister: () -> Unit = {
-        navCtrl.navigate(Register)
+    val navigateAuth: () -> Unit = {
+        navCtrl.navigate(Authentication)
     }
 }
 
@@ -44,7 +40,6 @@ fun HomeScreen(
 
     ) {
         Text("Home Screen")
-        Button(onClick = actions.navigateLogin) {Text("Login") }
-        Button(onClick = actions.navigateRegister) {Text("Register") }
+        Button(onClick = actions.navigateAuth) {Text("Login") }
     }
 }

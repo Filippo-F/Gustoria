@@ -32,9 +32,11 @@ import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
+import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.viewmodel.AuthMode
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -105,12 +107,7 @@ object Profile {
     object SignOut
 }
 @Serializable
-object Authentication {
-    @Serializable
-    object Login
-    @Serializable
-    object Register
-}
+object Authentication
 
 @Serializable
 object Favourite {
@@ -146,13 +143,16 @@ fun GustoriaApp(
                 startDestination = Home,
                 modifier = Modifier.padding(paddingValues)
             ){
-                navigation<Authentication>(startDestination = Authentication.Login) {
-                    dialog<Authentication.Login> {
-                        Text("Login")
-                    }
-                    dialog<Authentication.Register> {
-                        Text("Register")
-                    }
+                dialog<Authentication>(
+                    // To have the dialog width not stuck at fixed size
+                    dialogProperties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    AuthenticationDialogue(
+                        userRepo = userRepository,
+                        onAuthSuccess = {},
+                        initialMode = AuthMode.LOGIN
+                    )
+
                 }
                 composable<Home> {
                     HomeScreen(navCtrl = navController)
