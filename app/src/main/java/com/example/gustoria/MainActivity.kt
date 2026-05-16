@@ -78,7 +78,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    data class Searched(val recipeId: String? = null)
+    object Searched
 }
 
 @Serializable
@@ -130,7 +130,6 @@ fun GustoriaApp(
 ) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = currentBackStackEntry?.destination
 
     Scaffold(
         bottomBar = {
@@ -166,27 +165,21 @@ fun GustoriaApp(
 
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
                     composable<Search.FeaturedSearch> {
-                        Column (
-
-                        ) {
+                        Column {
                             Text("Featured Search")
                             Button(onClick = {navController.navigate(Search.Searching)}){Text("Search")}
                         }
                     }
                     composable<Search.Searching> {
-                        Column (
-
-                        ) {
+                        Column {
                             Text("Searching...")
-                            Button(onClick = {navController.navigate(Search.Searched())}){Text("Confirm")}
+                            Button(onClick = {navController.navigate(Search.Searched)}){Text("Confirm")}
                         }
                     }
-                    composable<Search.Searched> { backStackEntry ->
-                        val searched: Search.Searched = backStackEntry.toRoute()
+                    composable<Search.Searched> {
                         RecipeScreen(
                             navCtrl = navController,
-                            recipeRepository = recipeRepository,
-                            initialRecipeId = searched.recipeId
+                            recipeRepository = recipeRepository
                         )
                     }
                 }

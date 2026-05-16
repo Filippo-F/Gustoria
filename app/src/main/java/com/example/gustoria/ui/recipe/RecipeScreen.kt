@@ -73,45 +73,30 @@ class RecipeScreenActions(val navCtrl : NavHostController) {
 fun RecipeScreen(
     navCtrl: NavHostController,
     recipeRepository: RecipeRepoInterface,
-    initialRecipeId: String? = null,
     viewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModel.provideFactory(recipeRepository)
     )
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
-    val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
 
     val actions = remember(navCtrl) {
         RecipeScreenActions(navCtrl)
     }
 
-    // se arriviamo dalla Home con una ricetta specifica, la pre-selezioniamo
-    LaunchedEffect(initialRecipeId) {
-        if (initialRecipeId != null) {
-            viewModel.selectRecipe(initialRecipeId)
-        }
-    }
-
-    BackHandler(enabled = selectedRecipe != null) {
-        viewModel.selectRecipe(null)
-    }
-
-    if (selectedRecipe == null) {
-        RecipeListContent(
-            recipes = filteredRecipes,
-            filters = filters,
-            onBack = actions.navigateBack,
-            onRecipeClick = { id ->
-                actions.onRecipeClick(id)
-            },
-            onNameQueryChange = viewModel::updateNameQuery,
-            onIngredientQueryChange = viewModel::updateIngredientQuery,
-            onToggleCost = viewModel::toggleCost,
-            onToggleDifficulty = viewModel::toggleDifficulty,
-            onClearFilters = viewModel::resetFilters
-        )
-    }
+    RecipeListContent(
+        recipes = filteredRecipes,
+        filters = filters,
+        onBack = actions.navigateBack,
+        onRecipeClick = { id ->
+            actions.onRecipeClick(id)
+        },
+        onNameQueryChange = viewModel::updateNameQuery,
+        onIngredientQueryChange = viewModel::updateIngredientQuery,
+        onToggleCost = viewModel::toggleCost,
+        onToggleDifficulty = viewModel::toggleDifficulty,
+        onClearFilters = viewModel::resetFilters
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
