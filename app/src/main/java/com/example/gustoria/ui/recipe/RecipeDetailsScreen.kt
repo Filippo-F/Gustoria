@@ -35,11 +35,21 @@ import com.example.gustoria.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.Edit
 import com.example.gustoria.RecipeDetails
+import com.example.gustoria.AddReview
+import com.example.gustoria.ReviewsList
 import com.example.gustoria.viewmodel.RecipeViewModel
 
 class RecipeDetailsActions(val navController: NavHostController) {
     val navigateBack: () -> Unit = {
         navController.popBackStack()
+    }
+
+    val onWriteReview: (String) -> Unit = { recipeId ->
+        navController.navigate(AddReview(recipeId))
+    }
+
+    val onViewReviews: (String) -> Unit = { recipeId ->
+        navController.navigate(ReviewsList(recipeId))
     }
 }
 
@@ -50,6 +60,7 @@ fun RecipeDetailsScreen(
     viewModel: RecipeViewModel
 ) {
     val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+    val actions = remember(navCtrl) { RecipeDetailsActions(navCtrl) }
 
     LaunchedEffect(recipeId) {
         viewModel.selectRecipe(recipeId)
@@ -60,7 +71,9 @@ fun RecipeDetailsScreen(
             navCtrl = navCtrl,
             recipe = r,
             isOwner = viewModel.isOwnedByCurrentUser(r),
-            onBackClick = { navCtrl.popBackStack() },
+            onBackClick = actions.navigateBack,
+            onWriteReview = { actions.onWriteReview(r.id) },
+            onViewReviews = { actions.onViewReviews(r.id) },
             onDeleteClick = {
                 viewModel.deleteRecipe(r.id)
                 navCtrl.popBackStack()
@@ -83,6 +96,8 @@ fun RecipeDetailsContent(
     recipe: Recipe,
     isOwner: Boolean,
     onBackClick: () -> Unit,
+    onWriteReview: () -> Unit,
+    onViewReviews: () -> Unit,
     onDeleteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
     onEditClick: () -> Unit
@@ -368,6 +383,29 @@ fun RecipeDetailsContent(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+
+            // Review actions: write and view reviews
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = { onWriteReview() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("WRITE REVIEW")
+                    }
+                    OutlinedButton(
+                        onClick = { onViewReviews() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("VIEW REVIEWS")
+                    }
+                }
             }
             itemsIndexed(recipe.steps) { index, step ->
                 Row(
