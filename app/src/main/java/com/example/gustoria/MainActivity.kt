@@ -29,14 +29,12 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
-import com.example.gustoria.ui.recipe.RecipeScreen
+import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
-import com.example.gustoria.viewmodel.AuthMode
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -126,6 +124,9 @@ fun GustoriaApp(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
+    val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository)
+    )
 
     Scaffold(
         bottomBar = {
@@ -159,29 +160,30 @@ fun GustoriaApp(
                     )
                 }
 
+
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
                     composable<Search.FeaturedSearch> {
-                        Column (
-
-                        ) {
-                            Text("Featured Search")
-                            Button(onClick = {navController.navigate(Search.Searching)}){Text("Search")}
-                        }
+                        com.example.gustoria.ui.FeaturedSearchScreen(
+                            onSearchClick = { navController.navigate(Search.Searching) },
+                            onCategoryClick = { categoryName ->
+                                navController.navigate(Search.Searched())
+                            }
+                        )
                     }
                     composable<Search.Searching> {
-                        Column (
-
-                        ) {
-                            Text("Searching...")
-                            Button(onClick = {navController.navigate(Search.Searched())}){Text("Confirm")}
-                        }
+                        SearchingScreen(
+                            vm = sharedSearchRecipeViewModel,
+                            onClose = { navController.popBackStack() },
+                            onShowResultsClick = { navController.navigate(Search.Searched()) }
+                        )
                     }
                     composable<Search.Searched> { backStackEntry ->
                         val searched: Search.Searched = backStackEntry.toRoute()
-                        RecipeScreen(
+                        com.example.gustoria.ui.recipe.RecipeScreen(
                             navCtrl = navController,
                             recipeRepository = recipeRepository,
-                            initialRecipeId = searched.recipeId
+                            initialRecipeId = searched.recipeId,
+                            viewModel = sharedSearchRecipeViewModel
                         )
                     }
                 }
