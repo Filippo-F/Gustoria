@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -60,7 +59,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -246,7 +244,7 @@ fun ProfileInfoScreen(
                     error = viewModel.validation.nicknameError
                 )
 
-                // First Name
+                //name
                 AccountInfoItem(
                     label = "Name",
                     value = draft.firstName,
@@ -256,7 +254,7 @@ fun ProfileInfoScreen(
                     error = viewModel.validation.firstNameError
                 )
 
-                // Last Name
+                // last name
                 AccountInfoItem(
                     label = "Surname",
                     value = draft.lastName,

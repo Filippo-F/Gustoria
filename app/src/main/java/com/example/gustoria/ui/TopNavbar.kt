@@ -71,15 +71,6 @@ fun ThreeItemTopNavbar(
     }
 }
 
-/*
-
-variante usata dalla HomeScreen con avatar a sinistra, notifiche a destra e nome app centrale
-
- - leadingContent: Composable sinistra (avatar)
- - trailingContent: Composable destra (notifiche)
- - title: testo centrato (nome app) 
- 
-*/
 
 @Composable
 fun ThreeItemTopNavbar(
