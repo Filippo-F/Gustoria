@@ -29,18 +29,14 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
-import com.example.gustoria.ui.recipe.RecipeDetailsScreen
-import com.example.gustoria.ui.recipe.RecipeScreen
+import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
-import com.example.gustoria.viewmodel.AuthMode
-import com.example.gustoria.viewmodel.RecipeViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -120,6 +116,8 @@ object Favourite {
     object Tried
     @Serializable
     object Created
+    @Serializable
+    object Filtering
 }
 
 @Composable
@@ -130,6 +128,13 @@ fun GustoriaApp(
 ) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination
+    val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
+    )
+    val sharedCollectionViewModel: com.example.gustoria.viewmodel.RecipeCollectionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.factory(recipeRepository, userRepository)
+    )
 
     Scaffold(
         bottomBar = {
@@ -163,23 +168,55 @@ fun GustoriaApp(
                     )
                 }
 
+
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
                     composable<Search.FeaturedSearch> {
-                        Column {
-                            Text("Featured Search")
-                            Button(onClick = {navController.navigate(Search.Searching)}){Text("Search")}
-                        }
+                        com.example.gustoria.ui.FeaturedSearchScreen(
+                            recipeVm = sharedSearchRecipeViewModel,   // VM condiviso
+                            onSearchClick = {
+                                navController.navigate(Search.Searching)
+                            },
+                            onCategoryClick = { categoryName ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(categoryName)
+                                navController.navigate(Search.Searched())
+                            },
+                            onRecentSearchClick = { query ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(query)
+                                navController.navigate(Search.Searched())
+                            },
+                            onTrendingTagClick = { tag ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(tag.removePrefix("#"))
+                                navController.navigate(Search.Searched())
+                            }
+                        )
                     }
                     composable<Search.Searching> {
-                        Column {
-                            Text("Searching...")
-                            Button(onClick = {navController.navigate(Search.Searched)}){Text("Confirm")}
-                        }
+                        val filters by sharedSearchRecipeViewModel.filters.collectAsStateWithLifecycle()
+                        val recipes by sharedSearchRecipeViewModel.filteredRecipes.collectAsStateWithLifecycle()
+
+                        SearchingScreen(
+                            filters = filters,
+                            resultCount = recipes.size,
+                            onClose = { navController.popBackStack() },
+                            onShowResultsClick = { navController.navigate(Search.Searched()) },
+                            onResetFilters = sharedSearchRecipeViewModel::resetFilters,
+                            onToggleDifficulty = sharedSearchRecipeViewModel::toggleDifficulty,
+                            onToggleCost = sharedSearchRecipeViewModel::toggleCost,
+                            onNameQueryChange = sharedSearchRecipeViewModel::updateNameQuery,
+                            onIngredientQueryChange = sharedSearchRecipeViewModel::updateIngredientQuery
+                        )
                     }
-                    composable<Search.Searched> {
-                        RecipeScreen(
+                    composable<Search.Searched> { backStackEntry ->
+                        val searched: Search.Searched = backStackEntry.toRoute()
+                        com.example.gustoria.ui.recipe.RecipeScreen(
                             navCtrl = navController,
-                            recipeRepository = recipeRepository
+                            recipeRepository = recipeRepository,
+                            userRepository = userRepository,
+                            initialRecipeId = searched.recipeId,
+                            viewModel = sharedSearchRecipeViewModel
                         )
                     }
                 }
@@ -216,7 +253,8 @@ fun GustoriaApp(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
                             initialTab = 0,
-                            navController = navController
+                            navController = navController,
+                            vm = sharedCollectionViewModel
                         )
                     }
                     composable<Favourite.Tried> {
@@ -224,7 +262,8 @@ fun GustoriaApp(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
                             initialTab = 1,
-                            navController = navController
+                            navController = navController,
+                            vm = sharedCollectionViewModel
                         )
                     }
                     composable<Favourite.Created> {
@@ -232,7 +271,24 @@ fun GustoriaApp(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
                             initialTab = 2,
-                            navController = navController
+                            navController = navController,
+                            vm = sharedCollectionViewModel
+                        )
+                    }
+                    composable<Favourite.Filtering> {
+                        val filters by sharedCollectionViewModel.filters.collectAsStateWithLifecycle()
+                        val recipes by sharedCollectionViewModel.recipesToShow.collectAsStateWithLifecycle()
+
+                        SearchingScreen(
+                            filters = filters,
+                            resultCount = recipes.size,
+                            onClose = { navController.popBackStack() },
+                            onShowResultsClick = { navController.popBackStack() }, // Goes back to list
+                            onResetFilters = sharedCollectionViewModel::resetFilters,
+                            onToggleDifficulty = sharedCollectionViewModel::toggleDifficulty,
+                            onToggleCost = sharedCollectionViewModel::toggleCost,
+                            onNameQueryChange = sharedCollectionViewModel::setNameQuery,
+                            onIngredientQueryChange = sharedCollectionViewModel::setIngredientQuery
                         )
                     }
                 }

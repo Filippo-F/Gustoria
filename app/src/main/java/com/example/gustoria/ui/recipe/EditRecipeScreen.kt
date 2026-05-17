@@ -22,13 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.viewmodel.EditRecipeViewModel

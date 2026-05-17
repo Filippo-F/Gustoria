@@ -48,7 +48,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.ui.theme.GustoriaTheme
-
 import com.example.gustoria.ui.utils.MultiPreview
 
 @MultiPreview
