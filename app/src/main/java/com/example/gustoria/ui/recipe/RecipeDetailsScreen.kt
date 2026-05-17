@@ -31,13 +31,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
+import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
+import com.example.gustoria.domain.UserRepoInterface
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.Edit
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.AddReview
 import com.example.gustoria.ReviewsList
 import com.example.gustoria.viewmodel.RecipeViewModel
+import com.example.gustoria.viewmodel.ReviewViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 class RecipeDetailsActions(val navController: NavHostController) {
     val navigateBack: () -> Unit = {
@@ -57,29 +64,39 @@ class RecipeDetailsActions(val navController: NavHostController) {
 fun RecipeDetailsScreen(
     recipeId: String,
     navCtrl: NavHostController,
-    viewModel: RecipeViewModel
+    recipeRepository: RecipeRepoInterface,
+    reviewRepository: ReviewRepoInterface,
+    userRepository: UserRepoInterface,
+    recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository)),
+    reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
-    val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+    val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
+    val reviews by reviewViewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
+    val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
+
     val actions = remember(navCtrl) { RecipeDetailsActions(navCtrl) }
 
     LaunchedEffect(recipeId) {
-        viewModel.selectRecipe(recipeId)
+        recipeViewModel.selectRecipe(recipeId)
     }
 
     recipe?.let { r ->
         RecipeDetailsContent(
             navCtrl = navCtrl,
             recipe = r,
-            isOwner = viewModel.isOwnedByCurrentUser(r),
+            reviews = reviews,
+            avgRating = if (average > 0f) average else r.rating,
+            userRepository = userRepository,
+            isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             onBackClick = actions.navigateBack,
             onWriteReview = { actions.onWriteReview(r.id) },
             onViewReviews = { actions.onViewReviews(r.id) },
             onDeleteClick = {
-                viewModel.deleteRecipe(r.id)
+                recipeViewModel.deleteRecipe(r.id)
                 navCtrl.popBackStack()
             },
             onDuplicateClick = {
-                viewModel.duplicateRecipe(r) { newId ->
+                recipeViewModel.duplicateRecipe(r) { newId ->
                     navCtrl.navigate(Edit(newId)) {
                         popUpTo(RecipeDetails(r.id)) { inclusive = true }
                     }
@@ -94,6 +111,9 @@ fun RecipeDetailsScreen(
 fun RecipeDetailsContent(
     navCtrl: NavHostController,
     recipe: Recipe,
+    reviews: List<Review>,
+    avgRating: Float,
+    userRepository: UserRepoInterface,
     isOwner: Boolean,
     onBackClick: () -> Unit,
     onWriteReview: () -> Unit,
@@ -256,7 +276,7 @@ fun RecipeDetailsContent(
                     VerticalDivider(modifier = Modifier.height(32.dp), color = Color.Gray.copy(alpha = 0.4f))
                     InfoItem(
                         icon = Icons.Default.Star,
-                        text = "${recipe.rating} (${recipe.reviews.size})",
+                        text = "${String.format("%.1f", avgRating)} (${reviews.size})",
                         iconTint = MaterialTheme.colorScheme.tertiary
                     )
                 }
@@ -385,28 +405,6 @@ fun RecipeDetailsContent(
                 )
             }
 
-            // Review actions: write and view reviews
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Button(
-                        onClick = { onWriteReview() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("WRITE REVIEW")
-                    }
-                    OutlinedButton(
-                        onClick = { onViewReviews() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("VIEW REVIEWS")
-                    }
-                }
-            }
             itemsIndexed(recipe.steps) { index, step ->
                 Row(
                     modifier = Modifier
@@ -433,6 +431,138 @@ fun RecipeDetailsContent(
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 22.sp
                     )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Community reviews section
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Surface(
+                        tonalElevation = 4.dp,
+                        shape = RoundedCornerShape(24.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Community Reviews",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = String.format("%.1f", avgRating),
+                                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                                        )
+                                    }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = onWriteReview,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(18.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("WRITE A REVIEW")
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            OutlinedButton(
+                                onClick = onViewReviews,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(18.dp)
+                            ) {
+                                Text("VIEW ALL ${reviews.size} REVIEWS")
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    reviews.take(2).forEach { review ->
+                        val user by userRepository.getUserById(review.userId).collectAsStateWithLifecycle(initialValue = null)
+                        val displayName = user?.fullName ?: review.userId
+                        val initials = displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+
+                        Surface(
+                            shape = RoundedCornerShape(18.dp),
+                            tonalElevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = initials,
+                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column {
+                                        Text(
+                                            text = displayName,
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        repeat(review.rating.coerceIn(0f, 5f).toInt()) {
+                                            Icon(
+                                                imageVector = Icons.Default.Star,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.secondary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = review.description,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

@@ -213,7 +213,9 @@ fun GustoriaApp(
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
                         navCtrl = navController,
-                        viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
+                        recipeRepository = recipeRepository,
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
                     )
                 }
 
