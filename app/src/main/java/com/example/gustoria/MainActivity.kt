@@ -37,6 +37,7 @@ import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.ui.user.OtherProfileScreen
 import com.example.gustoria.viewmodel.AuthMode
 import com.example.gustoria.viewmodel.RecipeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -92,6 +93,8 @@ data class RecipeDetails(val recipeId: String)
 data class AddReview(val recipeId: String)
 @Serializable
 data class ReviewsList(val recipeId: String)
+@Serializable
+data class OtherProfile(val userId: String)
 
 @Serializable
 object Profile {
@@ -229,6 +232,15 @@ fun GustoriaApp(
                         recipeId = args.recipeId,
                         navController = navController,
                         reviewRepository = reviewRepository
+                    )
+                }
+
+                composable<OtherProfile> { backStackEntry ->
+                    val args: OtherProfile = backStackEntry.toRoute()
+                    OtherProfileScreen(
+                        userRepo = userRepository,
+                        viewedUserId = args.userId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
 
