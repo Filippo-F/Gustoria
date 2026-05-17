@@ -182,8 +182,16 @@ fun ReviewsListScreen(
 @Composable
 fun ReviewRow(review: Review, userRepository: UserRepoInterface, onProfileClick: (String) -> Unit) {
     val user by userRepository.getUserById(review.userId).collectAsStateWithLifecycle(initialValue = null)
-    val displayName = user?.fullName ?: review.userId
-    val initials = displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+    val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+        "You"
+    } else {
+        user?.fullName ?: review.userId
+    }
+    val initials = if (displayName == "You") {
+        "Y"
+    } else {
+        displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+    }
 
     Surface(
         shape = RoundedCornerShape(18.dp),

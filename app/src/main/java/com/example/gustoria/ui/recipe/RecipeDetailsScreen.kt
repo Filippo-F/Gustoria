@@ -34,6 +34,7 @@ import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -498,7 +499,7 @@ fun RecipeDetailsContent(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(18.dp)
                             ) {
-                                Text("VIEW ALL ${reviews.size} REVIEWS")
+                                Text("VIEW ALL REVIEWS")
                             }
                         }
                     }
@@ -507,8 +508,16 @@ fun RecipeDetailsContent(
 
                     reviews.take(2).forEach { review ->
                         val user by userRepository.getUserById(review.userId).collectAsStateWithLifecycle(initialValue = null)
-                        val displayName = user?.fullName ?: review.userId
-                        val initials = displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+                        val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+                            "You"
+                        } else {
+                            user?.fullName ?: review.userId
+                        }
+                        val initials = if (displayName == "You") {
+                            "Y"
+                        } else {
+                            displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+                        }
 
                         Surface(
                             shape = RoundedCornerShape(18.dp),
