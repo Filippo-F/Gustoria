@@ -189,7 +189,7 @@ fun GustoriaApp(
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
                     composable<Search.FeaturedSearch> {
                         com.example.gustoria.ui.FeaturedSearchScreen(
-                            recipeVm = sharedSearchRecipeViewModel,   // VM condiviso
+                            recipeVm = sharedSearchRecipeViewModel,
                             onSearchClick = {
                                 navController.navigate(Search.Searching)
                             },
@@ -211,10 +211,20 @@ fun GustoriaApp(
                         )
                     }
                     composable<Search.Searching> {
-                        Column {
-                            Text("Searching...")
-                            Button(onClick = {navController.navigate(Search.Searched)}){Text("Confirm")}
-                        }
+                        val filters by sharedSearchRecipeViewModel.filters.collectAsStateWithLifecycle()
+                        val recipes by sharedSearchRecipeViewModel.filteredRecipes.collectAsStateWithLifecycle()
+
+                        SearchingScreen(
+                            filters = filters,
+                            resultCount = recipes.size,
+                            onClose = { navController.popBackStack() },
+                            onShowResultsClick = { navController.navigate(Search.Searched()) },
+                            onResetFilters = sharedSearchRecipeViewModel::resetFilters,
+                            onToggleDifficulty = sharedSearchRecipeViewModel::toggleDifficulty,
+                            onToggleCost = sharedSearchRecipeViewModel::toggleCost,
+                            onNameQueryChange = sharedSearchRecipeViewModel::updateNameQuery,
+                            onIngredientQueryChange = sharedSearchRecipeViewModel::updateIngredientQuery
+                        )
                     }
                     composable<Search.Searched> { backStackEntry ->
                         val args: Search.Searched = backStackEntry.toRoute()
