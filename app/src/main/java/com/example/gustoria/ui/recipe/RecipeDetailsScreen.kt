@@ -37,6 +37,40 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 
 @Composable
 fun RecipeDetailsScreen(
+    recipeId: String,
+    navCtrl: NavHostController,
+    viewModel: RecipeViewModel
+) {
+    val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+
+    LaunchedEffect(recipeId) {
+        viewModel.selectRecipe(recipeId)
+    }
+
+    recipe?.let { r ->
+        RecipeDetailsContent(
+            navCtrl = navCtrl,
+            recipe = r,
+            isOwner = viewModel.isOwnedByCurrentUser(r),
+            onBackClick = { navCtrl.popBackStack() },
+            onDeleteClick = {
+                viewModel.deleteRecipe(r.id)
+                navCtrl.popBackStack()
+            },
+            onDuplicateClick = {
+                viewModel.duplicateRecipe(r) { newId ->
+                    navCtrl.navigate(Edit(newId)) {
+                        popUpTo(RecipeDetails(r.id)) { inclusive = true }
+                    }
+                }
+            },
+            onEditClick = { navCtrl.navigate(Edit(r.id)) }
+        )
+    }
+}
+
+@Composable
+fun RecipeDetailsContent(
     navCtrl: NavHostController,
     recipe: Recipe,
     isOwner: Boolean,

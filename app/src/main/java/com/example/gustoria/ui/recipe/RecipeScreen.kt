@@ -94,7 +94,6 @@ fun RecipeScreen(
     )
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
-    val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
 
     val actions = remember(navCtrl) {

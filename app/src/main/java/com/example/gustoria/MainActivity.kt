@@ -74,7 +74,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    data class Searched(val recipeId: String? = null)
+    object Searched
 }
 
 @Serializable
@@ -82,6 +82,8 @@ object Create
 
 @Serializable
 data class Edit(val recipeId: String)
+@Serializable
+data class RecipeDetails(val recipeId: String)
 
 @Serializable
 object Profile {
@@ -233,6 +235,15 @@ fun GustoriaApp(
                         navController = navController,
                         recipeRepository = recipeRepository,
                         recipeId = edit.recipeId
+                    )
+                }
+
+                composable<RecipeDetails> { backStackEntry ->
+                    val args: RecipeDetails = backStackEntry.toRoute()
+                    RecipeDetailsScreen(
+                        recipeId = args.recipeId,
+                        navCtrl = navController,
+                        viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
                     )
                 }
 

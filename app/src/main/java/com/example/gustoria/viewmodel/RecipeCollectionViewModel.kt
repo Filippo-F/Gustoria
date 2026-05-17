@@ -63,13 +63,6 @@ class RecipeCollectionViewModel(
         baseList.applyFilters(f)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _selectedRecipe = MutableStateFlow<Recipe?>(null)
-    val selectedRecipe: StateFlow<Recipe?> = _selectedRecipe
-
-    fun selectRecipe(recipe: Recipe?) {
-        _selectedRecipe.value = recipe
-    }
-
     fun setNameQuery(q: String) { _filters.update { it.copy(nameQuery = q) } }
     fun setIngredientQuery(q: String) { _filters.update { it.copy(ingredientQuery = q) } }
     fun toggleCost(c: String) {
@@ -89,9 +82,6 @@ class RecipeCollectionViewModel(
     fun delete(id: String) {
         viewModelScope.launch {
             repo.deleteRecipe(id)
-            if (_selectedRecipe.value?.id == id) {
-                _selectedRecipe.value = null
-            }
         }
     }
 

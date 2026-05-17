@@ -49,6 +49,9 @@ class RecipeCollectionActions(val navController: NavHostController) {
             2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
         }
     }
+    val onRecipeClick: (String) -> Unit = { id ->
+        navController.navigate(RecipeDetails(id))
+    }
 }
 
 @Composable
@@ -63,7 +66,6 @@ fun RecipeCollectionScreen(
 ) {
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
     val filters by vm.filters.collectAsStateWithLifecycle()
-    val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
     val currentTab by vm.currentTab.collectAsStateWithLifecycle()
 
     val actions = remember(navController) { RecipeCollectionActions(navController) }
