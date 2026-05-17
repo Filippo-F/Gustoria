@@ -87,10 +87,20 @@ fun RecipeCollectionScreen(
             onResetFilters = vm::resetFilters
         )
     } else {
+        //controlla se la ricetta è nei favourites come in RecipeScreen
+        val isFav by vm
+            .let { collectionVm ->
+                // RecipeCollectionViewModel non ha isFavouriteFlow nominato così, lo costruisco
+                collectionVm.isFavouriteFlow(selectedRecipe!!.id)
+            }
+            .collectAsStateWithLifecycle(initialValue = false)
+
         RecipeDetailsScreen(
             navCtrl = navController,
             recipe = selectedRecipe!!,
-            isOwner = currentTab == 2, // Only Owner if we're looking at "Created" tab
+            isOwner = currentTab == 2, //solo Owner
+            isFavourite = isFav,
+            onToggleFavourite = { vm.toggleFavourite(selectedRecipe!!.id) },
             onBackClick = { vm.selectRecipe(null) },
             onDeleteClick = { vm.delete(selectedRecipe!!.id) },
             onDuplicateClick = {

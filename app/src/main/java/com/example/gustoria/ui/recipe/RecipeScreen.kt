@@ -49,16 +49,19 @@ import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.ui.utils.PreviewUtils
+import com.example.gustoria.domain.UserRepoInterface
 
 @MultiPreview
 @Composable
 fun RecipeScreenPreview() {
     val fakeRepo = PreviewUtils.createFakeRecipeRepo()
+    val fakeUserRepo = PreviewUtils.createFakeUserRepo()
 
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(
             navCtrl = rememberNavController(),
-            recipeRepository = fakeRepo
+            recipeRepository = fakeRepo,
+            userRepository = fakeUserRepo
         )
     }
 }
@@ -84,9 +87,10 @@ class RecipeScreenActions(val navCtrl : NavHostController) {
 fun RecipeScreen(
     navCtrl: NavHostController,
     recipeRepository: RecipeRepoInterface,
+    userRepository: UserRepoInterface,
     initialRecipeId: String? = null,
     viewModel: RecipeViewModel = viewModel(
-        factory = RecipeViewModel.provideFactory(recipeRepository)
+        factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)
     )
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
@@ -122,10 +126,17 @@ fun RecipeScreen(
             }
         )
     } else {
+        //controlla se la ricetta è nei favourites
+        val isFav by viewModel
+            .isFavouriteFlow(selectedRecipe!!.id)
+            .collectAsStateWithLifecycle(initialValue = false)
+
         RecipeDetailsScreen(
             navCtrl = navCtrl,
             recipe = selectedRecipe!!,
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
+            isFavourite = isFav,
+            onToggleFavourite = { viewModel.toggleFavourite(selectedRecipe!!.id) },
             onBackClick = { viewModel.selectRecipe(null) },
             onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
             onDuplicateClick = {

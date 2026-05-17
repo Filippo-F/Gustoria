@@ -125,7 +125,7 @@ fun GustoriaApp(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
     val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository)
+        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
     )
 
     Scaffold(
@@ -197,6 +197,7 @@ fun GustoriaApp(
                         com.example.gustoria.ui.recipe.RecipeScreen(
                             navCtrl = navController,
                             recipeRepository = recipeRepository,
+                            userRepository = userRepository,
                             initialRecipeId = searched.recipeId,
                             viewModel = sharedSearchRecipeViewModel
                         )
