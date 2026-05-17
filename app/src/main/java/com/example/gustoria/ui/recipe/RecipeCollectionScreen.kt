@@ -2,10 +2,18 @@ package com.example.gustoria.ui.recipe
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items as gridItems
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -13,26 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.ui.ThreeItemTopNavbar
 import androidx.navigation.NavHostController
 import com.example.gustoria.Create
 import com.example.gustoria.Edit
 import com.example.gustoria.Favourite
-import com.example.gustoria.ui.recipe.components.RecipeCard
-import com.example.gustoria.ui.recipe.components.RecipeFilterSection
-import com.example.gustoria.viewmodel.RecipeCollectionViewModel
+import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items as gridItems
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.ui.Alignment
+import com.example.gustoria.ui.ThreeItemTopNavbar
+import com.example.gustoria.ui.recipe.components.RecipeCard
+import com.example.gustoria.viewmodel.RecipeCollectionViewModel
 
 class RecipeCollectionActions(val navController: NavHostController) {
     val onCreateNewRecipe: () -> Unit = {
@@ -40,6 +38,9 @@ class RecipeCollectionActions(val navController: NavHostController) {
     }
     val onEditRecipe: (String) -> Unit = { id ->
         navController.navigate(Edit(id))
+    }
+    val onOpenFilters: () -> Unit = {
+        navController.navigate(Favourite.Filtering) { launchSingleTop = true }
     }
     val onTabChange: (Int) -> Unit = { tabIndex ->
         when (tabIndex) {
@@ -93,21 +94,18 @@ fun RecipeCollectionScreen(
             onIngredientQueryChange = vm::setIngredientQuery,
             onToggleCost = vm::toggleCost,
             onToggleDifficulty = vm::toggleDifficulty,
-            onResetFilters = vm::resetFilters
+            onOpenFilters = actions.onOpenFilters
         )
     } else {
-        //controlla se la ricetta è nei favourites come in RecipeScreen
+        // Check if recipe is in favourites
         val isFav by vm
-            .let { collectionVm ->
-                // RecipeCollectionViewModel non ha isFavouriteFlow nominato così, lo costruisco
-                collectionVm.isFavouriteFlow(selectedRecipe!!.id)
-            }
+            .isFavouriteFlow(selectedRecipe!!.id)
             .collectAsStateWithLifecycle(initialValue = false)
 
         RecipeDetailsScreen(
             navCtrl = navController,
             recipe = selectedRecipe!!,
-            isOwner = currentTab == 2, //solo Owner
+            isOwner = currentTab == 2, // Only Owner
             isFavourite = isFav,
             onToggleFavourite = { vm.toggleFavourite(selectedRecipe!!.id) },
             onBackClick = { vm.selectRecipe(null) },
@@ -141,17 +139,15 @@ private fun RecipeCollectionListContent(
     onIngredientQueryChange: (String) -> Unit,
     onToggleCost: (String) -> Unit,
     onToggleDifficulty: (String) -> Unit,
-    onResetFilters: () -> Unit
+    onOpenFilters: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var idToDelete by remember { mutableStateOf("") }
     var nameToDelete by remember { mutableStateOf("") }
-    var showFiltersSheet by remember { mutableStateOf(false) }
 
     val tabs = listOf("Saved", "Tried", "Created")
     val isCreatedTab = currentTab == 2
 
-    //filtri attivi in chip
     val activeFilters = remember(filters) {
         buildList {
             if (filters.nameQuery.isNotBlank()) add(filters.nameQuery)
@@ -208,17 +204,15 @@ private fun RecipeCollectionListContent(
                 }
             }
 
-            // Riga sempre visibile: chip "Filters" + chip filtri attivi
             LazyRow(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                //"Filters" sempre visibile, con etichetta
                 item {
                     AssistChip(
-                        onClick = { showFiltersSheet = true },
+                        onClick = onOpenFilters,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
@@ -243,7 +237,6 @@ private fun RecipeCollectionListContent(
                     )
                 }
 
-                //Active filter chips (rimovibili) accanto
                 items(activeFilters) { label ->
                     InputChip(
                         selected = true,
@@ -273,7 +266,6 @@ private fun RecipeCollectionListContent(
 
             Spacer(Modifier.height(8.dp))
 
-            //lista a 2 colonne (griglia)
             if (recipes.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(top = 32.dp),
@@ -306,42 +298,6 @@ private fun RecipeCollectionListContent(
             }
         }
 
-        // filtri completi
-        if (showFiltersSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showFiltersSheet = false },
-                containerColor = MaterialTheme.colorScheme.background
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text(
-                        text = "Filters",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    RecipeFilterSection(
-                        nameQuery = filters.nameQuery,
-                        onNameQueryChange = onNameQueryChange,
-                        ingredientQuery = filters.ingredientQuery,
-                        onIngredientQueryChange = onIngredientQueryChange,
-                        selectedCosts = filters.selectedCosts,
-                        onToggleCost = onToggleCost,
-                        selectedDifficulties = filters.selectedDifficulties,
-                        onToggleDifficulty = onToggleDifficulty,
-                        onResetFilters = onResetFilters,
-                        showResetButton = !filters.isEmpty
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Button(
-                        onClick = { showFiltersSheet = false },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Done") }
-                    Spacer(Modifier.height(16.dp))
-                }
-            }
-        }
-
-        // Delete dialog (per quando elimini dal dettaglio, lo lasciamo)
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
