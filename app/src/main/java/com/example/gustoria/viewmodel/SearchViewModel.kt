@@ -13,7 +13,7 @@ data class TrendingCategory(val id: String, val title: String, val imageUrl: Str
 class SearchViewModel : ViewModel() {
 
     // 1. Trending Searches
-    val trendingSearches = listOf("#Sourdough", "#AutumnVibes", "#Fermentation", "#QuickBites")
+    val trendingSearches = listOf("#Pizza", "#Sushi")
 
     // 2. Recent Searches
     private val _recentSearches = MutableStateFlow(
@@ -34,7 +34,7 @@ class SearchViewModel : ViewModel() {
         TrendingCategory("c5", "Soup", null),
         TrendingCategory("c6", "Risotto", null),
         TrendingCategory("c7", "Burger", null),
-        TrendingCategory("c8", "Tiramisù", null)
+        TrendingCategory("c8", "Tiramisù", null) // meglio sweets?
     )
 
     // Search Query State

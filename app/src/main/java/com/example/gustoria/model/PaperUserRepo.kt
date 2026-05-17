@@ -30,7 +30,7 @@ class PaperUserRepo: UserRepoInterface {
                 "recipe_spaghetti_pomodoro",
                 "recipe_lasagna_bolognese",
                 "recipe_risotto_milanese",
-                "Margherita Pizza",
+                "recipe_margherita_pizza",
                 "recipe_tiramisu"
             )
         ),
