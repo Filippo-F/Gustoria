@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,9 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.viewmodel.RecipeViewModel
+import com.example.gustoria.viewmodel.ReviewViewModel
 import com.example.gustoria.Edit
 import com.example.gustoria.RecipeDetails
+import com.example.gustoria.AddReview
+import com.example.gustoria.ReviewsList
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
@@ -41,15 +46,6 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.gustoria.Edit
-import com.example.gustoria.RecipeDetails
-import com.example.gustoria.AddReview
-import com.example.gustoria.ReviewsList
-import com.example.gustoria.viewmodel.RecipeViewModel
-import com.example.gustoria.viewmodel.ReviewViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 class RecipeDetailsActions(val navController: NavHostController) {
     val navigateBack: () -> Unit = {
@@ -64,8 +60,6 @@ class RecipeDetailsActions(val navController: NavHostController) {
         navController.navigate(ReviewsList(recipeId))
     }
 }
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 
 @Composable
 fun RecipeDetailsScreen(
@@ -74,11 +68,10 @@ fun RecipeDetailsScreen(
     recipeRepository: RecipeRepoInterface,
     reviewRepository: ReviewRepoInterface,
     userRepository: UserRepoInterface,
-    recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository)),
+    recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)),
     reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
-    val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
-    val isFavourite by viewModel.isFavouriteFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
+    val isFavourite by recipeViewModel.isFavouriteFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
     val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
     val reviews by reviewViewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
     val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
@@ -93,14 +86,12 @@ fun RecipeDetailsScreen(
         RecipeDetailsContent(
             navCtrl = navCtrl,
             recipe = r,
-            isOwner = viewModel.isOwnedByCurrentUser(r),
-            isFavourite = isFavourite,
-            onToggleFavourite = { viewModel.toggleFavourite(r.id) },
-            onBackClick = { navCtrl.popBackStack() },
             reviews = reviews,
             avgRating = if (average > 0f) average else r.rating,
             userRepository = userRepository,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
+            isFavourite = isFavourite,
+            onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
             onBackClick = actions.navigateBack,
             onWriteReview = { actions.onWriteReview(r.id) },
             onViewReviews = { actions.onViewReviews(r.id) },

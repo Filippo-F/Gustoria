@@ -42,9 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
-import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -82,7 +80,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    object Searched
+    data class Searched(val recipeId: String? = null)
 }
 
 @Serializable

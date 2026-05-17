@@ -148,7 +148,12 @@ fun RecipeScreen(
                     viewModel.selectRecipe(null)
                 }
             },
-            onEditClick = { actions.onEditRecipe(selectedRecipe!!.id) }
+            onEditClick = { actions.onEditRecipe(selectedRecipe!!.id) },
+            userRepository = userRepository,
+            reviews = emptyList(),
+            avgRating = selectedRecipe!!.rating,
+            onWriteReview = { },
+            onViewReviews = { }
         )
     }
 }

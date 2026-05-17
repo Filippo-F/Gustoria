@@ -126,7 +126,12 @@ fun RecipeCollectionScreen(
             onEditClick = {
                 actions.onEditRecipe(selectedRecipe!!.id)
                 vm.selectRecipe(null)
-            }
+            },
+            userRepository = userRepository,
+            reviews = emptyList(),
+            avgRating = selectedRecipe!!.rating,
+            onWriteReview = { },
+            onViewReviews = { }
         )
     }
 }
