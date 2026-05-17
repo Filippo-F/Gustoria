@@ -35,6 +35,10 @@ import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.ui.user.OtherProfileScreen
+import com.example.gustoria.viewmodel.AuthMode
+import com.example.gustoria.viewmodel.RecipeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
@@ -78,7 +82,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    data class Searched(val recipeId: String? = null)
+    object Searched
 }
 
 @Serializable
@@ -88,6 +92,12 @@ object Create
 data class Edit(val recipeId: String)
 @Serializable
 data class RecipeDetails(val recipeId: String)
+@Serializable
+data class AddReview(val recipeId: String)
+@Serializable
+data class ReviewsList(val recipeId: String)
+@Serializable
+data class OtherProfile(val userId: String)
 
 @Serializable
 object Profile {
@@ -133,11 +143,11 @@ fun GustoriaApp(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val sharedSearchRecipeViewModel: RecipeViewModel = viewModel(
-        factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)
+    val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
     )
-    val sharedCollectionViewModel: RecipeCollectionViewModel = viewModel(
-        factory = RecipeCollectionViewModel.factory(recipeRepository, userRepository)
+    val sharedCollectionViewModel: com.example.gustoria.viewmodel.RecipeCollectionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.factory(recipeRepository, userRepository)
     )
 
     Scaffold(
@@ -247,7 +257,37 @@ fun GustoriaApp(
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
                         navCtrl = navController,
-                        viewModel = viewModel<RecipeViewModel>(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository))
+                        recipeRepository = recipeRepository,
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
+                    )
+                }
+
+                composable<AddReview> { backStackEntry ->
+                    val args: AddReview = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewFormScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository
+                    )
+                }
+
+                composable<ReviewsList> { backStackEntry ->
+                    val args: ReviewsList = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewsListScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
+                    )
+                }
+
+                composable<OtherProfile> { backStackEntry ->
+                    val args: OtherProfile = backStackEntry.toRoute()
+                    OtherProfileScreen(
+                        userRepo = userRepository,
+                        viewedUserId = args.userId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
 

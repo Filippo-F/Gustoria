@@ -23,7 +23,7 @@ class HomeViewModel(
     private val allRecipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // ricette consigliatenon possedute dall'utente corrente (sezione "Recommended for you")
+    // ricette consigliate non possedute dall'utente corrente (sezione "Recommended for you")
     val recommendedRecipes: StateFlow<List<Recipe>> = allRecipes
         .map { list -> list.filter { it.ownerId != SessionManager.CURRENT_LOGGED_IN_USER_ID } }
         .stateIn(
