@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.example.gustoria.Create
 import com.example.gustoria.Edit
 import com.example.gustoria.Favourite
+import com.example.gustoria.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
@@ -67,6 +68,7 @@ fun RecipeCollectionScreen(
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
     val filters by vm.filters.collectAsStateWithLifecycle()
     val currentTab by vm.currentTab.collectAsStateWithLifecycle()
+    val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
 
     val actions = remember(navController) { RecipeCollectionActions(navController) }
 
@@ -104,14 +106,17 @@ fun RecipeCollectionScreen(
             .isFavouriteFlow(selectedRecipe!!.id)
             .collectAsStateWithLifecycle(initialValue = false)
 
-        RecipeDetailsScreen(
+        RecipeDetailsContent(
             navCtrl = navController,
             recipe = selectedRecipe!!,
-            isOwner = currentTab == 2, // Only Owner
+            isOwner = vm.isOwnedByCurrentUser(selectedRecipe!!),
             isFavourite = isFav,
             onToggleFavourite = { vm.toggleFavourite(selectedRecipe!!.id) },
             onBackClick = { vm.selectRecipe(null) },
-            onDeleteClick = { vm.delete(selectedRecipe!!.id) },
+            onDeleteClick = {
+                vm.delete(selectedRecipe!!.id)
+                vm.selectRecipe(null)
+            },
             onDuplicateClick = {
                 vm.duplicateRecipe(selectedRecipe!!) { newId ->
                     actions.onEditRecipe(newId)
@@ -135,7 +140,7 @@ private fun RecipeCollectionListContent(
     onTabSelected: (Int) -> Unit,
     onCreateNewRecipe: () -> Unit,
     onEditRecipe: (String) -> Unit,
-    onRecipeClick: (Recipe) -> Unit,
+    onRecipeClick: (String) -> Unit,
     onDeleteRecipe: (String) -> Unit,
     onNameQueryChange: (String) -> Unit,
     onIngredientQueryChange: (String) -> Unit,
@@ -293,7 +298,7 @@ private fun RecipeCollectionListContent(
                     gridItems(recipes, key = { it.id }) { recipe ->
                         RecipeCard(
                             recipe = recipe,
-                            onClick = { onRecipeClick(recipe) }
+                            onClick = { onRecipeClick(recipe.id) }
                         )
                     }
                 }

@@ -95,6 +95,7 @@ fun RecipeScreen(
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
+    val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
 
     val actions = remember(navCtrl) {
         RecipeScreenActions(navCtrl)
@@ -130,14 +131,17 @@ fun RecipeScreen(
             .isFavouriteFlow(selectedRecipe!!.id)
             .collectAsStateWithLifecycle(initialValue = false)
 
-        RecipeDetailsScreen(
+        RecipeDetailsContent(
             navCtrl = navCtrl,
             recipe = selectedRecipe!!,
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
             isFavourite = isFav,
             onToggleFavourite = { viewModel.toggleFavourite(selectedRecipe!!.id) },
             onBackClick = { viewModel.selectRecipe(null) },
-            onDeleteClick = { viewModel.deleteRecipe(selectedRecipe!!.id) },
+            onDeleteClick = {
+                viewModel.deleteRecipe(selectedRecipe!!.id)
+                viewModel.selectRecipe(null)
+            },
             onDuplicateClick = {
                 viewModel.duplicateRecipe(selectedRecipe!!) { newId ->
                     actions.onEditRecipe(newId)

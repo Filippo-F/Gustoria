@@ -29,6 +29,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gustoria.viewmodel.RecipeViewModel
+import com.example.gustoria.Edit
+import com.example.gustoria.RecipeDetails
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.R
@@ -42,6 +46,7 @@ fun RecipeDetailsScreen(
     viewModel: RecipeViewModel
 ) {
     val recipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
+    val isFavourite by viewModel.isFavouriteFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
 
     LaunchedEffect(recipeId) {
         viewModel.selectRecipe(recipeId)
@@ -52,6 +57,8 @@ fun RecipeDetailsScreen(
             navCtrl = navCtrl,
             recipe = r,
             isOwner = viewModel.isOwnedByCurrentUser(r),
+            isFavourite = isFavourite,
+            onToggleFavourite = { viewModel.toggleFavourite(r.id) },
             onBackClick = { navCtrl.popBackStack() },
             onDeleteClick = {
                 viewModel.deleteRecipe(r.id)

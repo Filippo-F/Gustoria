@@ -37,6 +37,10 @@ import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gustoria.ui.recipe.RecipeDetailsScreen
+import com.example.gustoria.viewmodel.RecipeViewModel
+import com.example.gustoria.viewmodel.RecipeCollectionViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -74,7 +78,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    object Searched
+    data class Searched(val recipeId: String? = null)
 }
 
 @Serializable
@@ -129,11 +133,11 @@ fun GustoriaApp(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
+    val sharedSearchRecipeViewModel: RecipeViewModel = viewModel(
+        factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)
     )
-    val sharedCollectionViewModel: com.example.gustoria.viewmodel.RecipeCollectionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.factory(recipeRepository, userRepository)
+    val sharedCollectionViewModel: RecipeCollectionViewModel = viewModel(
+        factory = RecipeCollectionViewModel.factory(recipeRepository, userRepository)
     )
 
     Scaffold(
@@ -243,7 +247,7 @@ fun GustoriaApp(
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
                         navCtrl = navController,
-                        viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
+                        viewModel = viewModel<RecipeViewModel>(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository))
                     )
                 }
 

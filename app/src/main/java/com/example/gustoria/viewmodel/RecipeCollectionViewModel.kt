@@ -3,6 +3,8 @@ package com.example.gustoria.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -46,6 +48,15 @@ class RecipeCollectionViewModel(
     private val _currentTab = MutableStateFlow(0)
     val currentTab: StateFlow<Int> = _currentTab.asStateFlow()
 
+    private val _selectedRecipeId = MutableStateFlow<String?>(null)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val selectedRecipe: StateFlow<Recipe?> = _selectedRecipeId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(null)
+            else repo.getRecipeById(id)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     fun setTab(index: Int) {
         _currentTab.value = index
         resetFilters()
@@ -78,6 +89,14 @@ class RecipeCollectionViewModel(
         }
     }
     fun resetFilters() { _filters.value = RecipeFilters() }
+
+    fun selectRecipe(recipeId: String?) {
+        _selectedRecipeId.value = recipeId
+    }
+
+    fun isOwnedByCurrentUser(recipe: Recipe): Boolean {
+        return recipe.ownerId == userId
+    }
 
     fun delete(id: String) {
         viewModelScope.launch {
