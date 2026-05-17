@@ -164,8 +164,23 @@ fun GustoriaApp(
                 navigation<Search>(startDestination = Search.FeaturedSearch) {
                     composable<Search.FeaturedSearch> {
                         com.example.gustoria.ui.FeaturedSearchScreen(
-                            onSearchClick = { navController.navigate(Search.Searching) },
+                            recipeVm = sharedSearchRecipeViewModel,   // VM condiviso
+                            onSearchClick = {
+                                navController.navigate(Search.Searching)
+                            },
                             onCategoryClick = { categoryName ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(categoryName)
+                                navController.navigate(Search.Searched())
+                            },
+                            onRecentSearchClick = { query ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(query)
+                                navController.navigate(Search.Searched())
+                            },
+                            onTrendingTagClick = { tag ->
+                                sharedSearchRecipeViewModel.resetFilters()
+                                sharedSearchRecipeViewModel.updateNameQuery(tag.removePrefix("#"))
                                 navController.navigate(Search.Searched())
                             }
                         )

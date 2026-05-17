@@ -34,6 +34,9 @@ import com.example.gustoria.viewmodel.SearchViewModel
 fun FeaturedSearchScreen(
     onSearchClick: () -> Unit,
     onCategoryClick: (String) -> Unit,
+    onRecentSearchClick: (String) -> Unit = {},
+    onTrendingTagClick: (String) -> Unit = {},
+    recipeVm: com.example.gustoria.viewmodel.RecipeViewModel? = null,
     vm: SearchViewModel = viewModel(factory = SearchViewModel.factory())
 ) {
     val recentSearches by vm.recentSearches.collectAsStateWithLifecycle()
@@ -94,7 +97,7 @@ fun FeaturedSearchScreen(
                                     modifier = Modifier
                                         .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
                                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .clickable { /* TODO */ }
+                                        .clickable { onTrendingTagClick(tag) }
                                 ) {
                                     Text(text = tag, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                 }
@@ -122,7 +125,7 @@ fun FeaturedSearchScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { /* TODO */ },
+                            .clickable { onRecentSearchClick(recent.title) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(

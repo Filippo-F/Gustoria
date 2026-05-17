@@ -27,8 +27,14 @@ class SearchViewModel : ViewModel() {
 
     // 3. Trending Categories
     val trendingCategories = listOf(
-        TrendingCategory("c1", "Seasonal Harvest", null),
-        TrendingCategory("c2", "Quick Weeknight Dinners", null)
+        TrendingCategory("c1", "Spaghetti", null),
+        TrendingCategory("c2", "Pizza", null),
+        TrendingCategory("c3", "Sushi", null),
+        TrendingCategory("c4", "Salad", null),
+        TrendingCategory("c5", "Soup", null),
+        TrendingCategory("c6", "Risotto", null),
+        TrendingCategory("c7", "Burger", null),
+        TrendingCategory("c8", "Tiramisù", null)
     )
 
     // Search Query State

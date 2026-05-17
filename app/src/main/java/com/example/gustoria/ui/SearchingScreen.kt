@@ -137,10 +137,11 @@ fun SearchingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .toggleable(
-                            value = ingredient in selectedIngredients,
-                            role = Role.Checkbox,
+                            value = filters.ingredientQuery == ingredient,
+                            role = Role.RadioButton,       // radio??
                             onValueChange = { isChecked ->
-                                selectedIngredients = if (isChecked) selectedIngredients + ingredient else selectedIngredients - ingredient
+                                if (isChecked) vm.updateIngredientQuery(ingredient)
+                                else vm.updateIngredientQuery("")
                             }
                         )
                         .padding(vertical = 8.dp),

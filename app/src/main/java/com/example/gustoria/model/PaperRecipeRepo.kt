@@ -20,6 +20,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
 
     private val _placeholderRecipes = listOf(
         Recipe(
+            id = "recipe_spaghetti_pomodoro",
             ownerId = "101",
             name = "Spaghetti Pomodoro",
             imageUri = "file:///android_asset/pasta.jpg",
@@ -36,6 +37,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Classic Roman pasta dish."
         ),
         Recipe(
+            id = "recipe_margherita_pizza",
             ownerId = "101",
             name = "Margherita Pizza",
             imageUri = "file:///android_asset/margherita.jpg",
@@ -54,6 +56,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "The queen of Italian pizzas."
         ),
         Recipe(
+            id = "recipe_lasagna_bolognese",
             ownerId = "101",
             name = "Lasagna Bolognese",
             cost = "€€",
@@ -71,6 +74,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Hearty layers of pasta and meat sauce."
         ),
         Recipe(
+            id = "recipe_risotto_milanese",
             ownerId = "101",
             name = "Risotto alla Milanese",
             cost = "€€",
@@ -88,6 +92,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Golden saffron risotto."
         ),
         Recipe(
+            id = "recipe_tiramisu",
             ownerId = "101",
             name = "Tiramisù",
             cost = "€€",
@@ -105,6 +110,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "The most famous Italian dessert."
         ),
         Recipe(
+            id = "recipe_sushi_rolls",
             ownerId = "202",
             name = "Sushi Rolls",
             cost = "€€€",
@@ -122,6 +128,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Fresh salmon and avocado rolls."
         ),
         Recipe(
+            id = "recipe_beef_burger",
             ownerId = "202",
             name = "Beef Burger",
             cost = "€€",
@@ -139,6 +146,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Juicy homemade burger."
         ),
         Recipe(
+            id = "recipe_caesar_salad",
             ownerId = "202",
             name = "Caesar Salad",
             cost = "€€",
@@ -156,6 +164,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Classic salad with creamy dressing."
         ),
         Recipe(
+            id = "recipe_pad_thai",
             ownerId = "202",
             name = "Pad Thai",
             cost = "€€",
@@ -173,6 +182,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Popular Thai street food."
         ),
         Recipe(
+            id = "recipe_french_onion_soup",
             ownerId = "202",
             name = "French Onion Soup",
             cost = "€€",
