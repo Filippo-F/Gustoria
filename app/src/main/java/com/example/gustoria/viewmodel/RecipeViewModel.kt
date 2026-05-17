@@ -18,9 +18,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import com.example.gustoria.domain.UserRepoInterface
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class RecipeViewModel(
-    private val recipeRepository: RecipeRepoInterface
+    private val recipeRepository: RecipeRepoInterface,
+    private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
     val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
@@ -83,7 +87,18 @@ class RecipeViewModel(
         _filters.value = RecipeFilters()
     }
 
+    fun isFavouriteFlow(recipeId: String): Flow<Boolean> =
+        userRepo.isFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
 
+    fun toggleFavourite(recipeId: String) {
+        viewModelScope.launch {
+            val isFav = userRepo
+                .isFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+                .first()
+            if (isFav) userRepo.removeFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+            else userRepo.addFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+        }
+    }
     fun deleteRecipe(recipeId: String) {
         viewModelScope.launch {
             recipeRepository.deleteRecipe(recipeId)
@@ -109,12 +124,13 @@ class RecipeViewModel(
 
     companion object {
         fun provideFactory(
-            recipeRepository: RecipeRepoInterface
+            recipeRepository: RecipeRepoInterface,
+            userRepository: UserRepoInterface
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    RecipeViewModel(recipeRepository) as T
+                    RecipeViewModel(recipeRepository, userRepository) as T
             }
     }
 }

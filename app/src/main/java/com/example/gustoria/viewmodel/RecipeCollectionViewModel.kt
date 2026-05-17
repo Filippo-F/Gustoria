@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalUuidApi::class)
 class RecipeCollectionViewModel(
@@ -97,6 +98,8 @@ class RecipeCollectionViewModel(
         }
     }
 
+    fun isFavouriteFlow(recipeId: String): Flow<Boolean> =
+        userRepo.isFavourite(userId, recipeId)
     fun toggleFavourite(recipeId: String) {
         viewModelScope.launch {
             val isFav = userRepo

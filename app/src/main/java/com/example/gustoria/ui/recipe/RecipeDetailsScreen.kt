@@ -60,6 +60,8 @@ class RecipeDetailsActions(val navController: NavHostController) {
         navController.navigate(ReviewsList(recipeId))
     }
 }
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 
 @Composable
 fun RecipeDetailsScreen(
@@ -116,6 +118,8 @@ fun RecipeDetailsContent(
     avgRating: Float,
     userRepository: UserRepoInterface,
     isOwner: Boolean,
+    isFavourite: Boolean,
+    onToggleFavourite: () -> Unit,
     onBackClick: () -> Unit,
     onWriteReview: () -> Unit,
     onViewReviews: () -> Unit,
@@ -181,58 +185,77 @@ fun RecipeDetailsContent(
                         )
                     }
 
-                    // Options Button (at the Top End, similar to Favorite in example)
-                    Box(
+                    // Top-end actions: heart (favourites button) + options menu
+                    Row(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Heart (favourite) button
                         IconButton(
-                            onClick = { showTopMenu = true },
+                            onClick = onToggleFavourite,
                             modifier = Modifier
                                 .background(Color.Black.copy(alpha = 0.3f), CircleShape)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Options",
-                                tint = Color.White
+                                imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = if (isFavourite) "Remove from favourites" else "Add to favourites",
+                                tint = if (isFavourite) MaterialTheme.colorScheme.error else Color.White
                             )
                         }
-                        DropdownMenu(
-                            expanded = showTopMenu,
-                            onDismissRequest = { showTopMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Duplicate Recipe", color = Color.Black) },
-                                onClick = {
-                                    showTopMenu = false
-                                    showDuplicateDialog = true
-                                },
-                                leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null, tint = Color.Black) }
-                            )
-                            if (isOwner) {
+
+                        Spacer(Modifier.width(8.dp))
+
+                        // Options (MoreVert) button + its DropdownMenu
+                        Box {
+                            IconButton(
+                                onClick = { showTopMenu = true },
+                                modifier = Modifier
+                                    .background(Color.Black.copy(alpha = 0.3f), CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Options",
+                                    tint = Color.White
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showTopMenu,
+                                onDismissRequest = { showTopMenu = false }
+                            ) {
                                 DropdownMenuItem(
-                                    text = { Text("Edit Recipe", color = Color.Black) },
+                                    text = { Text("Duplicate Recipe", color = Color.Black) },
                                     onClick = {
                                         showTopMenu = false
-                                        onEditClick()
+                                        showDuplicateDialog = true
                                     },
-                                    leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null, tint = Color.Black) }
+                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null, tint = Color.Black) }
                                 )
-                                DropdownMenuItem(
-                                    text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
-                                    onClick = {
-                                        showTopMenu = false
-                                        showDeleteDialog = true
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.error
-                                        )
-                                    }
-                                )
+                                if (isOwner) {
+                                    DropdownMenuItem(
+                                        text = { Text("Edit Recipe", color = Color.Black) },
+                                        onClick = {
+                                            showTopMenu = false
+                                            onEditClick()
+                                        },
+                                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null, tint = Color.Black) }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
+                                        onClick = {
+                                            showTopMenu = false
+                                            showDeleteDialog = true
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

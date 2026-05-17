@@ -25,7 +25,14 @@ class PaperUserRepo: UserRepoInterface {
             username = "user101",
             email = "user101@example.com",
             phoneNumber = "+39 123 4567890",
-            cookingRole = CookingRole.HOME_COOK
+            cookingRole = CookingRole.HOME_COOK,
+            savedRecipesIds = listOf(
+                "recipe_spaghetti_pomodoro",
+                "recipe_lasagna_bolognese",
+                "recipe_risotto_milanese",
+                "recipe_margherita_pizza",
+                "recipe_tiramisu"
+            )
         ),
         User(
             internalId = "202",
@@ -34,7 +41,14 @@ class PaperUserRepo: UserRepoInterface {
             username = "user202",
             email = "user202@example.com",
             phoneNumber = "+39 098 7654321",
-            cookingRole = CookingRole.FOOD_LOVER
+            cookingRole = CookingRole.FOOD_LOVER,
+            savedRecipesIds = listOf(
+                "recipe_sushi_rolls",
+                "recipe_caesar_salad",
+                "recipe_pad_thai",
+                "recipe_french_onion_soup",
+                "recipe_beef_burger"
+            )
         )
     )
 
