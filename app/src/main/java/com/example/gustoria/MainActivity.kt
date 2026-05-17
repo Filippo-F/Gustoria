@@ -29,13 +29,18 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.model.PaperReviewRepo
 import com.example.gustoria.model.PaperUserRepo
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
-import com.example.gustoria.ui.SearchingScreen
+import com.example.gustoria.ui.recipe.RecipeDetailsScreen
+import com.example.gustoria.ui.recipe.RecipeScreen
+import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.ui.user.SignOutDialogue
 import com.example.gustoria.ui.user.OtherProfileScreen
+import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.viewmodel.AuthMode
 import com.example.gustoria.viewmodel.RecipeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -206,28 +211,18 @@ fun GustoriaApp(
                         )
                     }
                     composable<Search.Searching> {
-                        val filters by sharedSearchRecipeViewModel.filters.collectAsStateWithLifecycle()
-                        val recipes by sharedSearchRecipeViewModel.filteredRecipes.collectAsStateWithLifecycle()
-
-                        SearchingScreen(
-                            filters = filters,
-                            resultCount = recipes.size,
-                            onClose = { navController.popBackStack() },
-                            onShowResultsClick = { navController.navigate(Search.Searched()) },
-                            onResetFilters = sharedSearchRecipeViewModel::resetFilters,
-                            onToggleDifficulty = sharedSearchRecipeViewModel::toggleDifficulty,
-                            onToggleCost = sharedSearchRecipeViewModel::toggleCost,
-                            onNameQueryChange = sharedSearchRecipeViewModel::updateNameQuery,
-                            onIngredientQueryChange = sharedSearchRecipeViewModel::updateIngredientQuery
-                        )
+                        Column {
+                            Text("Searching...")
+                            Button(onClick = {navController.navigate(Search.Searched)}){Text("Confirm")}
+                        }
                     }
                     composable<Search.Searched> { backStackEntry ->
-                        val searched: Search.Searched = backStackEntry.toRoute()
-                        com.example.gustoria.ui.recipe.RecipeScreen(
+                        val args: Search.Searched = backStackEntry.toRoute()
+                        RecipeScreen(
                             navCtrl = navController,
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
-                            initialRecipeId = searched.recipeId,
+                            initialRecipeId = args.recipeId,
                             viewModel = sharedSearchRecipeViewModel
                         )
                     }
@@ -344,12 +339,10 @@ fun GustoriaApp(
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
-                            Column(
-                            ) {
-                                Text("Profile Info Overview")
-                                Button(onClick = { navController.navigate(Profile.ProfileInfo.CulinaryPreference) }) {Text("Set Culinary Preference") }
-                                Button(onClick = { navController.navigate(Profile.ProfileInfo.DietPreference) }) {Text("Set Diet Preference") }
-                            }
+                            com.example.gustoria.ui.user.ProfileInfoScreen(
+                                navController = navController,
+                                userRepo = userRepository
+                            )
                         }
                         dialog<Profile.ProfileInfo.CulinaryPreference> {
                             Text("Culinary Preference")
@@ -359,13 +352,13 @@ fun GustoriaApp(
                         }
                     }
                     composable<Profile.Settings> {
-                        Text("Settings")
+                        com.example.gustoria.ui.user.SettingsScreen(navController = navController)
                     }
-                    composable<Profile.HelpAndFeedback> {
-                        Text("Help & Feedback")
+                    dialog<Profile.HelpAndFeedback> {
+                        HelpAndFeedbackDialogue(navController = navController)
                     }
                     dialog<Profile.SignOut> {
-                        Text("Sign Out")
+                        SignOutDialogue(navController = navController)
                     }
                 }
             }

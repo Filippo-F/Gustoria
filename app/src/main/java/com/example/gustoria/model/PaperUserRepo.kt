@@ -21,6 +21,9 @@ class PaperUserRepo: UserRepoInterface {
         User(
             internalId = "101",
             nickname = "User 101",
+            firstName = "First",
+            lastName = "User",
+            password = "password123",
             fullName = "First User",
             username = "user101",
             email = "user101@example.com",
@@ -37,6 +40,9 @@ class PaperUserRepo: UserRepoInterface {
         User(
             internalId = "202",
             nickname = "User 202",
+            firstName = "Second",
+            lastName = "User",
+            password = "password456",
             fullName = "Second User",
             username = "user202",
             email = "user202@example.com",
