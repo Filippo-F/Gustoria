@@ -35,6 +35,10 @@ import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.SearchingScreen
 import com.example.gustoria.ui.user.OwnedProfileScreen
+import com.example.gustoria.ui.user.OtherProfileScreen
+import com.example.gustoria.viewmodel.AuthMode
+import com.example.gustoria.viewmodel.RecipeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -84,6 +88,12 @@ object Create
 data class Edit(val recipeId: String)
 @Serializable
 data class RecipeDetails(val recipeId: String)
+@Serializable
+data class AddReview(val recipeId: String)
+@Serializable
+data class ReviewsList(val recipeId: String)
+@Serializable
+data class OtherProfile(val userId: String)
 
 @Serializable
 object Profile {
@@ -243,7 +253,37 @@ fun GustoriaApp(
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
                         navCtrl = navController,
-                        viewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository))
+                        recipeRepository = recipeRepository,
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
+                    )
+                }
+
+                composable<AddReview> { backStackEntry ->
+                    val args: AddReview = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewFormScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository
+                    )
+                }
+
+                composable<ReviewsList> { backStackEntry ->
+                    val args: ReviewsList = backStackEntry.toRoute()
+                    com.example.gustoria.ui.review.ReviewsListScreen(
+                        recipeId = args.recipeId,
+                        navController = navController,
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
+                    )
+                }
+
+                composable<OtherProfile> { backStackEntry ->
+                    val args: OtherProfile = backStackEntry.toRoute()
+                    OtherProfileScreen(
+                        userRepo = userRepository,
+                        viewedUserId = args.userId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
 

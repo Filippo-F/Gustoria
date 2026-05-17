@@ -15,7 +15,26 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PaperReviewRepo: ReviewRepoInterface {
-    private val _placeholderReview : List<Review> = emptyList()
+    private val _placeholderReviews = listOf(
+        Review(
+            userId = "101",
+            recipeId = "",
+            description = "Delicious and easy to follow; loved it!",
+            rating = 5.0f,
+            likes = 3,
+            photoUri = null,
+            timestamp = ""
+        ),
+        Review(
+            userId = "202",
+            recipeId = "",
+            description = "Nice flavors, I reduced the salt and it worked well.",
+            rating = 4.0f,
+            likes = 1,
+            photoUri = null,
+            timestamp = ""
+        )
+    )
 
     private val reviewBook = Paper.book("reviews")
 
@@ -39,8 +58,13 @@ class PaperReviewRepo: ReviewRepoInterface {
     init {
         scope.launch {
             if (reviewBook.allKeys.isEmpty()) {
-                _placeholderReview.forEach { reviewBook.write(it.id, it) }
-                _reviews.update { _placeholderReview }
+                val recipeKeys = Paper.book("recipes").allKeys
+                val prepared = _placeholderReviews.mapIndexed { idx, r ->
+                    val recipeId = recipeKeys.getOrNull(idx) ?: ""
+                    r.copy(recipeId = recipeId, timestamp = System.currentTimeMillis().toString())
+                }
+                prepared.forEach { reviewBook.write(it.id, it) }
+                _reviews.update { prepared }
             }
         }
     }
