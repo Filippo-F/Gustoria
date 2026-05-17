@@ -31,9 +31,8 @@ fun SearchingScreen(
     onResetFilters: () -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onToggleCost: (String) -> Unit,
-    onNameQueryChange: (String) -> Unit = {},
-    onIngredientQueryChange: (String) -> Unit = {},
-    showTextSearchInputs: Boolean = false
+    onNameQueryChange: (String) -> Unit,
+    onIngredientQueryChange: (String) -> Unit
 ) {
     val timeOptions = listOf("Any", "< 15m", "< 30m", "< 60m")
     val cuisineOptions = listOf("Italian", "Mexican", "Japanese", "Indian")
@@ -81,30 +80,28 @@ fun SearchingScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
         ) {
-            // 1. TEXT SEARCH (Only shown for Favorites tab)
-            if (showTextSearchInputs) {
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = filters.nameQuery,
-                    onValueChange = onNameQueryChange,
-                    label = { Text("Search by name") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Color.Black, unfocusedTextColor = Color.Black)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = filters.ingredientQuery,
-                    onValueChange = onIngredientQueryChange,
-                    label = { Text("Search by ingredient") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Color.Black, unfocusedTextColor = Color.Black)
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+            // search by name & ingredient
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = filters.nameQuery,
+                onValueChange = onNameQueryChange,
+                label = { Text("Search by name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Color.Black, unfocusedTextColor = Color.Black)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = filters.ingredientQuery,
+                onValueChange = onIngredientQueryChange,
+                label = { Text("Search by ingredient") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Color.Black, unfocusedTextColor = Color.Black)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // 2. DIFFICULTY
+            //DIFFICULTY
             FilterSectionTitle("Difficulty")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ALL_DIFFICULTIES.forEach { diff ->
@@ -119,7 +116,7 @@ fun SearchingScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 3. TIME
+            //time
             FilterSectionTitle("Time")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 timeOptions.forEach { time ->
@@ -134,7 +131,7 @@ fun SearchingScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 4. COST
+            // cost
             FilterSectionTitle("Cost")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ALL_COSTS.forEach { cost ->
@@ -149,7 +146,7 @@ fun SearchingScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 5. CUISINE TYPE
+            // cusine type
             FilterSectionTitle("Cuisine Type")
             cuisineOptions.forEach { cuisine ->
                 Row(

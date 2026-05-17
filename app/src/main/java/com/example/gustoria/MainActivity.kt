@@ -204,8 +204,7 @@ fun GustoriaApp(
                             onToggleDifficulty = sharedSearchRecipeViewModel::toggleDifficulty,
                             onToggleCost = sharedSearchRecipeViewModel::toggleCost,
                             onNameQueryChange = sharedSearchRecipeViewModel::updateNameQuery,
-                            onIngredientQueryChange = sharedSearchRecipeViewModel::updateIngredientQuery,
-                            showTextSearchInputs = false
+                            onIngredientQueryChange = sharedSearchRecipeViewModel::updateIngredientQuery
                         )
                     }
                     composable<Search.Searched> { backStackEntry ->
@@ -278,8 +277,7 @@ fun GustoriaApp(
                             onToggleDifficulty = sharedCollectionViewModel::toggleDifficulty,
                             onToggleCost = sharedCollectionViewModel::toggleCost,
                             onNameQueryChange = sharedCollectionViewModel::setNameQuery,
-                            onIngredientQueryChange = sharedCollectionViewModel::setIngredientQuery,
-                            showTextSearchInputs = true // Enabled for favorites tab
+                            onIngredientQueryChange = sharedCollectionViewModel::setIngredientQuery
                         )
                     }
                 }
