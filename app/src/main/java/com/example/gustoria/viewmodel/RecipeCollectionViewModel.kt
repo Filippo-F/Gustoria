@@ -11,7 +11,6 @@ import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.recipe.RecipeFilters
 import com.example.gustoria.ui.recipe.applyFilters
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -44,7 +43,7 @@ class RecipeCollectionViewModel(
     private val createdRecipes: StateFlow<List<Recipe>> = repo.getRecipeByOwner(userId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Keep track of current tab (tab corrente) (0: Saved, 1: Tried, 2: Created)
+    // Keep track of current tab (0: Saved, 1: Tried, 2: Created)
     private val _currentTab = MutableStateFlow(0)
     val currentTab: StateFlow<Int> = _currentTab.asStateFlow()
 
@@ -123,7 +122,7 @@ class RecipeCollectionViewModel(
         viewModelScope.launch {
             val isFav = userRepo
                 .isFavourite(userId, recipeId)
-                .first()  // legge il valore corrente una volta
+                .first()  // Read current value once
             if (isFav) userRepo.removeFavourite(userId, recipeId)
             else userRepo.addFavourite(userId, recipeId)
         }

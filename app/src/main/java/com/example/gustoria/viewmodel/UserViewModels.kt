@@ -29,7 +29,7 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-//placeholders data (poi da sostituire)
+//placeholders data (to substitute later)
 data class UserCollection(
     val title: String,
     val subtitle: String
@@ -40,7 +40,7 @@ data class UserActivity(
     val subtitle: String
 )
 
-// Data class variables visible to all ViewModels (commentato per cambio logica)
+// Data class variables visible to all ViewModels (commented out for changed logic)
 /*private val loggedInUser = mutableStateOf(
     UserClass(
         fullName = "Mario Rossi",
@@ -64,12 +64,12 @@ class OwnedProfileViewModel(
     private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
-    // Stato dell'utente loggato preso dal repo (può essere null inizialm)
+    // State of logged user taken from repo (can be null initially)
     val user: StateFlow<User?> = userRepo
         .getUserById(SessionManager.CURRENT_LOGGED_IN_USER_ID)
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    // Bozza modificabile durante l'editing
+    // Draft modifiable during editing
     var editableUser by mutableStateOf<User?>(null)
         private set
 

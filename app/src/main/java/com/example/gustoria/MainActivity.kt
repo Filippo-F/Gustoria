@@ -16,12 +16,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.Button
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
@@ -41,13 +38,7 @@ import com.example.gustoria.ui.user.OwnedProfileScreen
 import com.example.gustoria.ui.user.SignOutDialogue
 import com.example.gustoria.ui.user.OtherProfileScreen
 import com.example.gustoria.ui.SearchingScreen
-import com.example.gustoria.viewmodel.AuthMode
-import com.example.gustoria.viewmodel.RecipeViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.gustoria.ui.recipe.RecipeDetailsScreen
-import com.example.gustoria.viewmodel.RecipeCollectionViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeRepository: RecipeRepoInterface
@@ -144,8 +135,6 @@ fun GustoriaApp(
     reviewRepository: ReviewRepoInterface
 ) {
     val navController = rememberNavController()
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = currentBackStackEntry?.destination
     val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
     )

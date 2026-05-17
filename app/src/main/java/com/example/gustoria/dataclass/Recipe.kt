@@ -1,6 +1,5 @@
 package com.example.gustoria.dataclass
 
-import com.example.gustoria.dataclass.CookingRole
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

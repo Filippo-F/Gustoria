@@ -19,15 +19,15 @@ interface UserRepoInterface {
     // Delete specified user
     suspend fun deleteUser(userId: String)
 
-    // Restituisce elenco ID delle ricette preferite (favourites) di un utente
+    // Return list of IDs of user's favourites
     fun getFavouriteRecipeIds(userId: String): Flow<List<String>>
 
-    // Aggiunge una ricetta ai favourites dell'utente
+    // Adds a recipe to favourite
     suspend fun addFavourite(userId: String, recipeId: String)
 
-    // Rimuove una ricetta dai favourites
+    // Removes recipe from favourites
     suspend fun removeFavourite(userId: String, recipeId: String)
 
-    //true se quella ricetta è nei favourites dell'utente
+    // True only if recipe is in user's favourites
     fun isFavourite(userId: String, recipeId: String): Flow<Boolean>
 }
