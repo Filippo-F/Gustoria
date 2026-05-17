@@ -79,6 +79,13 @@ class OwnedProfileViewModel(
     var isEditing by mutableStateOf(false)
         private set
 
+    var cuisinePreferencesText by mutableStateOf("")
+        private set
+    var dietaryRestrictionsText by mutableStateOf("")
+        private set
+    var favoriteIngredientsText by mutableStateOf("")
+        private set
+
     // State for individual field editing in ProfileInfoScreen
     var editingNickname by mutableStateOf(false)
         private set
@@ -105,12 +112,18 @@ class OwnedProfileViewModel(
         validation = ProfileValidation()
         isEditing = true
         resetFieldEditingStates()
+        cuisinePreferencesText = editableUser?.cuisinePreferences?.joinToString(", ") ?: ""
+        dietaryRestrictionsText = editableUser?.dietaryRestrictions?.joinToString(", ") ?: ""
+        favoriteIngredientsText = editableUser?.favoriteIngredients?.joinToString(", ") ?: ""
     }
     fun cancelEditing() {
         editableUser = user.value
         validation = ProfileValidation()
         isEditing = false
         resetFieldEditingStates()
+        cuisinePreferencesText = editableUser?.cuisinePreferences?.joinToString(", ") ?: ""
+        dietaryRestrictionsText = editableUser?.dietaryRestrictions?.joinToString(", ") ?: ""
+        favoriteIngredientsText = editableUser?.favoriteIngredients?.joinToString(", ") ?: ""
     }
 
     private fun resetFieldEditingStates() {
@@ -272,14 +285,17 @@ class OwnedProfileViewModel(
     }
 
     fun setCuisinePreferencesFromText(text: String) {
+        cuisinePreferencesText = text
         editableUser = editableUser?.copy(cuisinePreferences = text.toTagList())
     }
 
     fun setDietaryRestrictionsFromText(text: String) {
+        dietaryRestrictionsText = text
         editableUser = editableUser?.copy(dietaryRestrictions = text.toTagList())
     }
 
     fun setFavoriteIngredientsFromText(text: String) {
+        favoriteIngredientsText = text
         editableUser = editableUser?.copy(favoriteIngredients = text.toTagList())
     }
 

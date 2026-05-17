@@ -39,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -67,6 +68,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.domain.UserRepoInterface
+import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
@@ -298,21 +300,94 @@ fun ProfileInfoScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                 )
 
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Culinary Preference Section
+                Text(
+                    text = "Culinary Preference",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                InfoSectionItem(
+                    title = "Favorite Cuisine",
+                    description = "Your favorite types of food (comma separated)",
+                    titleColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.cuisinePreferencesText,
+                        onValueChange = { viewModel.setCuisinePreferencesFromText(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        placeholder = { Text("e.g. Italian, Japanese, Mexican") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.secondary
+                        )
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
+
+                InfoSectionItem(
+                    title = "Diet Preference",
+                    description = "Any dietary restrictions or preferences (comma separated)",
+                    titleColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.dietaryRestrictionsText,
+                        onValueChange = { viewModel.setDietaryRestrictionsFromText(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        placeholder = { Text("e.g. Vegan, Gluten-free") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.secondary
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                InfoSectionItem(
+                    title = "Favorite Ingredients",
+                    description = "Ingredients you love to use (comma separated)",
+                    titleColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.favoriteIngredientsText,
+                        onValueChange = { viewModel.setFavoriteIngredientsFromText(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        placeholder = { Text("e.g. Garlic, Basil, Olive Oil") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.secondary
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // Public Profile Section
                 Text(
                     text = "Public Profile",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 InfoSectionItem(
                     title = "Cooking Role",
                     description = "Your expertise level",
-                    isError = viewModel.validation.cookingRoleError.isNotBlank()
+                    isError = viewModel.validation.cookingRoleError.isNotBlank(),
+                    titleColor = MaterialTheme.colorScheme.tertiary
                 ) {
                     var expanded by remember { mutableStateOf(false) }
                     Box(modifier = Modifier.fillMaxWidth()) {
@@ -334,7 +409,12 @@ fun ProfileInfoScreen(
                             supportingText = if (viewModel.validation.cookingRoleError.isNotBlank()) {
                                 { Text(viewModel.validation.cookingRoleError) }
                             } else null,
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                                focusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                cursorColor = MaterialTheme.colorScheme.tertiary
+                            )
                         )
                         DropdownMenu(
                             expanded = expanded,
@@ -359,7 +439,8 @@ fun ProfileInfoScreen(
                 InfoSectionItem(
                     title = "Bio",
                     description = "A short story about your culinary journey",
-                    isError = viewModel.validation.descriptionError.isNotBlank()
+                    isError = viewModel.validation.descriptionError.isNotBlank(),
+                    titleColor = MaterialTheme.colorScheme.tertiary
                 ) {
                     OutlinedTextField(
                         value = draft.description,
@@ -370,7 +451,12 @@ fun ProfileInfoScreen(
                             { Text(viewModel.validation.descriptionError) }
                         } else null,
                         minLines = 3,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                            focusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                            cursorColor = MaterialTheme.colorScheme.tertiary
+                        )
                     )
                 }
 
@@ -508,6 +594,7 @@ fun InfoSectionItem(
     title: String,
     description: String,
     isError: Boolean = false,
+    titleColor: Color = MaterialTheme.colorScheme.primary,
     content: @Composable () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -515,7 +602,7 @@ fun InfoSectionItem(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            color = if (isError) MaterialTheme.colorScheme.error else titleColor
         )
         Text(
             text = description,
