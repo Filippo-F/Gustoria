@@ -231,7 +231,8 @@ fun GustoriaApp(
                     com.example.gustoria.ui.review.ReviewsListScreen(
                         recipeId = args.recipeId,
                         navController = navController,
-                        reviewRepository = reviewRepository
+                        reviewRepository = reviewRepository,
+                        userRepository = userRepository
                     )
                 }
 
