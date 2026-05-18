@@ -49,5 +49,9 @@ object PreviewUtils {
         override suspend fun addFavourite(userId: String, recipeId: String) {}
         override suspend fun removeFavourite(userId: String, recipeId: String) {}
         override fun isFavourite(userId: String, recipeId: String): Flow<Boolean> = flowOf(false)
+        override fun getTriedRecipeIds(userId: String): Flow<List<String>> = flowOf(emptyList())
+        override suspend fun addTriedRecipe(userId: String, recipeId: String) {}
+        override suspend fun removeTriedRecipe(userId: String, recipeId: String) {}
+        override fun isTried(userId: String, recipeId: String): Flow<Boolean> = flowOf(false)
     }
 }
