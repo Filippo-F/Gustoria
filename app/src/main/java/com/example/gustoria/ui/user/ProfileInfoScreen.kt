@@ -244,7 +244,7 @@ fun ProfileInfoScreen(
                     error = viewModel.validation.nicknameError
                 )
 
-                // First Name
+                //name
                 AccountInfoItem(
                     label = "Name",
                     value = draft.firstName,
@@ -254,7 +254,7 @@ fun ProfileInfoScreen(
                     error = viewModel.validation.firstNameError
                 )
 
-                // Last Name
+                // last name
                 AccountInfoItem(
                     label = "Surname",
                     value = draft.lastName,
