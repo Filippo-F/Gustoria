@@ -64,6 +64,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.CameraXScreen
@@ -133,13 +135,21 @@ fun ProfileInfoScreen(
     }
 
     if (showCameraScreen.value) {
-        CameraXScreen(
-            onImageCaptured = { uriString ->
-                viewModel.setProfileImageUri(uriString)
-                showCameraScreen.value = false
-            },
-            onCancel = { showCameraScreen.value = false }
-        )
+        Dialog(
+            onDismissRequest = { showCameraScreen.value = false },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false
+            )
+        ) {
+            CameraXScreen(
+                onImageCaptured = { uriString ->
+                    viewModel.setProfileImageUri(uriString)
+                    showCameraScreen.value = false
+                },
+                onCancel = { showCameraScreen.value = false }
+            )
+        }
     } else {
         Scaffold(
             topBar = {

@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.gustoria.SessionManager
 import com.example.gustoria.dataclass.Review
@@ -71,13 +73,21 @@ fun ReviewFormScreen(
 
     //show camera screen (if requested) or show the form
     if (showCameraScreen.value) {
-        CameraXScreen(
-            onImageCaptured = { uriString ->
-                photoUri = uriString
-                showCameraScreen.value = false
-            },
-            onCancel = { showCameraScreen.value = false }
-        )
+        Dialog(
+            onDismissRequest = { showCameraScreen.value = false },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false
+            )
+        ) {
+            CameraXScreen(
+                onImageCaptured = { uriString ->
+                    photoUri = uriString
+                    showCameraScreen.value = false
+                },
+                onCancel = { showCameraScreen.value = false }
+            )
+        }
     } else {
         Scaffold(
             topBar = {
