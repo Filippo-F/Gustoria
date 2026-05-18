@@ -1,5 +1,6 @@
 package com.example.gustoria.model
 
+import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.domain.ReviewRepoInterface
 import io.paperdb.Paper
@@ -57,13 +58,18 @@ class PaperReviewRepo: ReviewRepoInterface {
     init {
         scope.launch {
             if (reviewBook.allKeys.isEmpty()) {
-                val recipeKeys = Paper.book("recipes").allKeys
-                //la prima ricetta (indice 0) per tutti i placeholder
-                val firstRecipeId = recipeKeys.getOrNull(0) ?: ""
+                val recipeBook = Paper.book("recipes")
+                val allRecipes = recipeBook.allKeys.mapNotNull {key ->
+                    recipeBook.read<Recipe>(key)
+                }
 
-                val prepared = _placeholderReviews.map { r ->
+                val recipeOwnedBy101 = allRecipes.find{it.ownerId == "101"}?.id?: "recipe_spaghetti_pomodoro"
+                val recipeNotOwnedBy101 = allRecipes.find{it.ownerId != "101"}?.id?: "recipe_sushi_rolls"
+
+                val prepared = _placeholderReviews.mapIndexed {index, r ->
+                    val targetRecipeId = if (index != 0) recipeOwnedBy101 else recipeNotOwnedBy101
                     r.copy(
-                        recipeId = firstRecipeId, //assegna la stessa ricetta a entrambe le reviews
+                        recipeId = targetRecipeId,
                         timestamp = System.currentTimeMillis().toString()
                     )
                 }
