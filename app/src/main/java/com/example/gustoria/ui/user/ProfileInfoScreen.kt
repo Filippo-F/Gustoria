@@ -169,7 +169,7 @@ fun ProfileInfoScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                // Header: Photo and Nickname
+                //Header: photo and nickname
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -235,7 +235,7 @@ fun ProfileInfoScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Account Information Section
+                // Account information
                 Text(
                     text = "Account Information",
                     style = MaterialTheme.typography.headlineSmall,
@@ -297,7 +297,7 @@ fun ProfileInfoScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
 
-                // Phone Number
+                // Phone number
                 AccountInfoItem(
                     label = "Phone Number",
                     value = draft.phoneNumber,
@@ -310,7 +310,7 @@ fun ProfileInfoScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Culinary Preference Section
+                // Culinary preference section
                 Text(
                     text = "Culinary Preference",
                     style = MaterialTheme.typography.headlineSmall,
@@ -382,7 +382,7 @@ fun ProfileInfoScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Public Profile Section
+                // Public profile section
                 Text(
                     text = "Public Profile",
                     style = MaterialTheme.typography.headlineSmall,

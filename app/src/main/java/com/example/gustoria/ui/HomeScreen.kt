@@ -44,7 +44,7 @@ import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.ui.utils.PreviewUtils
 import com.example.gustoria.viewmodel.HomeViewModel
 
-// categorie mostrate nella Home (sezione 2)
+// categorie mostrate nella home (explore) - sezione 2
 private val homeCategories = listOf(
     "All", "Quick Meals", "Vegan", "Italian", "Gluten-Free", "Desserts", "Vegetarian"
 )
@@ -157,7 +157,7 @@ fun HomeScreen(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { category ->
                     viewModel.selectCategory(category)
-                    // TODO: navigazione a Search filtrata per categoria
+                    // to do - ricerca filtrata per categoria
                 }
             )
             Spacer(Modifier.height(16.dp))
@@ -184,8 +184,6 @@ fun HomeScreen(
         }
     }
 }
-
-// Composable privati
 
 @Composable
 private fun HomeSectionHeader(title: String) {

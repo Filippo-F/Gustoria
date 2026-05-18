@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.gustoria.SessionManager
 
-//validation state
 data class ProfileValidation(
     val nicknameError: String = "",
     val firstNameError: String = "",
@@ -29,7 +28,7 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-//placeholders data (to substitute later)
+//placeholders data
 data class UserCollection(
     val title: String,
     val subtitle: String
@@ -40,36 +39,16 @@ data class UserActivity(
     val subtitle: String
 )
 
-// Data class variables visible to all ViewModels (commented out for changed logic)
-/*private val loggedInUser = mutableStateOf(
-    UserClass(
-        fullName = "Mario Rossi",
-        nickname = "SuperChef",
-        email = "chef@gustoria.it",
-        description = "Simple ingredients, great passion, amazing food.",
-        phoneNumber = "+39 333 1234567",
-        cookingRole = CookingRole.HOME_COOK,
-
-        cuisinePreferences = listOf("Italian", "Japanese"),
-        dietaryRestrictions = listOf("Vegan"),
-        favoriteIngredients = listOf("Garlic", "Nuts"),
-
-        numberOfRecipes = 42,
-        numberOfFollowers = 1200,
-        numberOfLikes = 850
-    )
-)*/
-
 class OwnedProfileViewModel(
     private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
-    // State of logged user taken from repo (can be null initially)
+    //state of logged user taken from repo (can be null initially)
     val user: StateFlow<User?> = userRepo
         .getUserById(SessionManager.CURRENT_LOGGED_IN_USER_ID)
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    // Draft modifiable during editing
+    // bozza modifiable durante l'editing
     var editableUser by mutableStateOf<User?>(null)
         private set
 
@@ -362,22 +341,3 @@ class OtherProfileViewModel(
             }
     }
 }
-
-/*
-class RecipeViewModel : ViewModel() {
-    //var recipe by viewRecipe
-
-    var isFavorite by mutableStateOf(false)
-        private set
-
-    var isMade by mutableStateOf(false)
-        private set
-
-    fun toggleFavorite() {
-        isFavorite = !isFavorite
-    }
-
-    fun toggleMade() {
-        isMade = !isMade
-    }
-} */
