@@ -34,10 +34,13 @@ class RecipeCollectionViewModel(
         allRecipes.filter { it.id in favouriteIds }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // 2. Mocked Tried Recipes (Easy Difficulty)
-    private val triedRecipes: StateFlow<List<Recipe>> = repo.getAllRecipes()
-        .map { list -> list.filter { it.difficulty == "Easy" } }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    // 2. Tried Recipes
+    private val triedRecipes: StateFlow<List<Recipe>> = combine(
+        repo.getAllRecipes(),
+        userRepo.getTriedRecipeIds(userId)
+    ) { allRecipes, triedIds ->
+        allRecipes.filter { it.id in triedIds }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // 3. Created Recipes (Owned by User)
     private val createdRecipes: StateFlow<List<Recipe>> = repo.getRecipeByOwner(userId)
@@ -125,6 +128,17 @@ class RecipeCollectionViewModel(
                 .first()  // Read current value once
             if (isFav) userRepo.removeFavourite(userId, recipeId)
             else userRepo.addFavourite(userId, recipeId)
+        }
+    }
+
+    fun isTriedFlow(recipeId: String): Flow<Boolean> =
+        userRepo.isTried(userId, recipeId)
+
+    fun toggleTried(recipeId: String) {
+        viewModelScope.launch {
+            val tried = userRepo.isTried(userId, recipeId).first()
+            if (tried) userRepo.removeTriedRecipe(userId, recipeId)
+            else userRepo.addTriedRecipe(userId, recipeId)
         }
     }
     companion object {

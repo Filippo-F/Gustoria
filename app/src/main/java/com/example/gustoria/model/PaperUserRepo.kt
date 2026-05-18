@@ -169,4 +169,56 @@ class PaperUserRepo: UserRepoInterface {
             }
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
+
+
+    override fun getTriedRecipeIds(userId: String): Flow<List<String>> =
+        _users
+            .map { list -> list.find { it.internalId == userId }?.triedRecipesIds ?: emptyList() }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+
+    override suspend fun addTriedRecipe(
+        userId: String,
+        recipeId: String
+    ) = withContext(Dispatchers.IO) {
+        val current = _users.value.find { it.internalId == userId } ?: return@withContext
+        if (recipeId in current.triedRecipesIds) return@withContext
+
+        val updated = current.copy(
+            triedRecipesIds = current.triedRecipesIds + recipeId
+        )
+        userBook.write(userId, updated)
+        _users.update { list ->
+            list.map { if (it.internalId == userId) updated else it }
+        }
+    }
+
+    override suspend fun removeTriedRecipe(
+        userId: String,
+        recipeId: String
+    ) = withContext(Dispatchers.IO) {
+        val current = _users.value.find { it.internalId == userId } ?: return@withContext
+        if (recipeId !in current.triedRecipesIds) return@withContext
+
+        val updated = current.copy(
+            triedRecipesIds = current.triedRecipesIds - recipeId
+        )
+        userBook.write(userId, updated)
+        _users.update { list ->
+            list.map { if (it.internalId == userId) updated else it }
+        }
+    }
+
+    override fun isTried(
+        userId: String,
+        recipeId: String
+    ): Flow<Boolean> =
+        _users
+            .map { list ->
+                list.find { it.internalId == userId }
+                    ?.triedRecipesIds
+                    ?.contains(recipeId) == true
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
 }

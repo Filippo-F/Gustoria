@@ -72,6 +72,7 @@ fun RecipeDetailsScreen(
     reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
     val isFavourite by recipeViewModel.isFavouriteFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
+    val isTried by recipeViewModel.isTriedFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
     val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
     val reviews by reviewViewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
     val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
@@ -92,6 +93,8 @@ fun RecipeDetailsScreen(
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
             onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
+            isTried = isTried,
+            onToggleTried = { recipeViewModel.toggleTried(r.id) },
             onBackClick = actions.navigateBack,
             onWriteReview = { actions.onWriteReview(r.id) },
             onViewReviews = { actions.onViewReviews(r.id) },
@@ -121,6 +124,8 @@ fun RecipeDetailsContent(
     isOwner: Boolean,
     isFavourite: Boolean,
     onToggleFavourite: () -> Unit,
+    isTried: Boolean,
+    onToggleTried: () -> Unit,
     onBackClick: () -> Unit,
     onWriteReview: () -> Unit,
     onViewReviews: () -> Unit,
@@ -131,7 +136,6 @@ fun RecipeDetailsContent(
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     var showDuplicateDialog by rememberSaveable { mutableStateOf(false) }
     var showTopMenu by remember { mutableStateOf(false) }
-    var isMade by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     Scaffold(
@@ -323,22 +327,22 @@ fun RecipeDetailsContent(
                         modifier = Modifier.padding(start = 12.dp)
                     ) {
                         IconButton(
-                            onClick = { isMade = !isMade },
+                            onClick = onToggleTried, // Changed from { isMade = !isMade }
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                imageVector = if (isMade) Icons.Default.Check else Icons.Default.RadioButtonUnchecked,
+                                imageVector = if (isTried) Icons.Default.Check else Icons.Default.RadioButtonUnchecked,
                                 contentDescription = "Toggle completion",
-                                tint = if (isMade) MaterialTheme.colorScheme.primary else Color.Gray,
+                                tint = if (isTried) MaterialTheme.colorScheme.primary else Color.Gray,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = if (isMade) "Cooked!" else "Mark as cooked?",
+                            text = if (isTried) "Cooked!" else "Mark as cooked?",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (isMade) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.7f)
+                            color = if (isTried) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.7f)
                         )
                     }
 

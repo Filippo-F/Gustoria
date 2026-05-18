@@ -30,4 +30,16 @@ interface UserRepoInterface {
 
     // True only if recipe is in user's favourites
     fun isFavourite(userId: String, recipeId: String): Flow<Boolean>
+
+    // Return list of IDs of user's tried recipes
+    fun getTriedRecipeIds(userId: String): Flow<List<String>>
+
+    // Adds a recipe to tried list (Mark as Cooked)
+    suspend fun addTriedRecipe(userId: String, recipeId: String)
+
+    // Removes recipe from tried list
+    suspend fun removeTriedRecipe(userId: String, recipeId: String)
+
+    // True only if recipe is in user's tried list
+    fun isTried(userId: String, recipeId: String): Flow<Boolean>
 }

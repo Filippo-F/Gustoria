@@ -99,6 +99,24 @@ class RecipeViewModel(
             else userRepo.addFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
         }
     }
+
+
+    fun isTriedFlow(recipeId: String): Flow<Boolean> =
+        userRepo.isTried(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+
+    fun toggleTried(recipeId: String) {
+        viewModelScope.launch {
+            val hasTried = userRepo
+                .isTried(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+                .first()
+
+            if (hasTried) {
+                userRepo.removeTriedRecipe(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+            } else {
+                userRepo.addTriedRecipe(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+            }
+        }
+    }
     fun deleteRecipe(recipeId: String) {
         viewModelScope.launch {
             recipeRepository.deleteRecipe(recipeId)
@@ -123,14 +141,14 @@ class RecipeViewModel(
     }
 
     companion object {
-        fun provideFactory(
-            recipeRepository: RecipeRepoInterface,
-            userRepository: UserRepoInterface
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    RecipeViewModel(recipeRepository, userRepository) as T
-            }
+            fun provideFactory(
+                recipeRepository: RecipeRepoInterface,
+                userRepository: UserRepoInterface
+            ): ViewModelProvider.Factory =
+                object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                        RecipeViewModel(recipeRepository, userRepository) as T
+                }
+        }
     }
-}

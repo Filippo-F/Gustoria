@@ -131,12 +131,18 @@ fun RecipeScreen(
             .isFavouriteFlow(selectedRecipe!!.id)
             .collectAsStateWithLifecycle(initialValue = false)
 
+        val isTried by viewModel
+            .isTriedFlow(selectedRecipe!!.id)
+            .collectAsStateWithLifecycle(initialValue = false)
+
         RecipeDetailsContent(
             navCtrl = navCtrl,
             recipe = selectedRecipe!!,
             isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
             isFavourite = isFav,
             onToggleFavourite = { viewModel.toggleFavourite(selectedRecipe!!.id) },
+            isTried = isTried,
+            onToggleTried = { viewModel.toggleTried(selectedRecipe!!.id) },
             onBackClick = { viewModel.selectRecipe(null) },
             onDeleteClick = {
                 viewModel.deleteRecipe(selectedRecipe!!.id)
