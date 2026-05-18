@@ -59,7 +59,7 @@ fun ReviewsListScreen(
     viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
     val actions = remember(navController) { ReviewsListActions(navController) }
-    val reviews by viewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
+    val reviews by remember(recipeId) { viewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
 
     val average = remember(reviews) {
         if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
@@ -111,7 +111,7 @@ fun ReviewsListScreen(
                                     Icon(
                                         imageVector = Icons.Default.Star,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -180,7 +180,7 @@ fun ReviewsListScreen(
 
 @Composable
 fun ReviewRow(review: Review, userRepository: UserRepoInterface, onProfileClick: (String) -> Unit) {
-    val user by userRepository.getUserById(review.userId).collectAsStateWithLifecycle(initialValue = null)
+    val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
         "You"
     } else {
@@ -235,7 +235,7 @@ fun ReviewRow(review: Review, userRepository: UserRepoInterface, onProfileClick:
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(18.dp)
                         )
                     }

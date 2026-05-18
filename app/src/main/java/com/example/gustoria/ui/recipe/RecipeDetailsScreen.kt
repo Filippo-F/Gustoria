@@ -72,10 +72,10 @@ fun RecipeDetailsScreen(
     recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)),
     reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
-    val isFavourite by recipeViewModel.isFavouriteFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
-    val isTried by recipeViewModel.isTriedFlow(recipeId).collectAsStateWithLifecycle(initialValue = false)
+    val isFavourite by remember(recipeId) { recipeViewModel.isFavouriteFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
+    val isTried by remember(recipeId) { recipeViewModel.isTriedFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
     val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
-    val reviews by reviewViewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
+    val reviews by remember(recipeId) { reviewViewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
     val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
 
     val actions = remember(navCtrl) { RecipeDetailsActions(navCtrl) }
@@ -494,7 +494,7 @@ fun RecipeDetailsContent(
                                         Icon(
                                             imageVector = Icons.Default.Star,
                                             contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.secondary,
+                                            tint = MaterialTheme.colorScheme.tertiary,
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
@@ -536,70 +536,7 @@ fun RecipeDetailsContent(
                     Spacer(modifier = Modifier.height(18.dp))
 
                     reviews.take(2).forEach { review ->
-                        val user by userRepository.getUserById(review.userId).collectAsStateWithLifecycle(initialValue = null)
-                        val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
-                            "You"
-                        } else {
-                            user?.fullName ?: review.userId
-                        }
-                        val initials = if (displayName == "You") {
-                            "Y"
-                        } else {
-                            displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
-                        }
-
-                        Surface(
-                            shape = RoundedCornerShape(18.dp),
-                            tonalElevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = initials,
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Column {
-                                        Text(
-                                            text = displayName,
-                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        repeat(review.rating.coerceIn(0f, 5f).toInt()) {
-                                            Icon(
-                                                imageVector = Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.secondary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = review.description,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
+                        ReviewItem(review = review, userRepository = userRepository)
                     }
                 }
             }
@@ -630,6 +567,77 @@ fun RecipeDetailsContent(
                 onDismiss = {
                     showDuplicateDialog = false
                 }
+            )
+        }
+    }
+}
+
+@Composable
+fun ReviewItem(
+    review: Review,
+    userRepository: UserRepoInterface
+) {
+    val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
+    val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+        "You"
+    } else {
+        user?.fullName ?: review.userId
+    }
+    val initials = if (displayName == "You") {
+        "Y"
+    } else {
+        displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+    }
+
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        tonalElevation = 2.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = initials,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    repeat(review.rating.coerceIn(0f, 5f).toInt()) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = review.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

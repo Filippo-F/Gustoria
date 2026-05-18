@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 private val DarkColorScheme = darkColorScheme(
     primary = StitchDarkPrimary,
     secondary = StitchDarkSecondary,
-    tertiary = Pink80
+    tertiary = StitchTertiary
 )
 
 private val LightColorScheme = lightColorScheme(
