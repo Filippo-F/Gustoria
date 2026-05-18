@@ -38,6 +38,9 @@ import com.example.gustoria.Edit
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.AddReview
 import com.example.gustoria.ReviewsList
+import com.example.gustoria.OtherProfile
+import com.example.gustoria.Profile
+import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
@@ -58,6 +61,14 @@ class RecipeDetailsActions(val navController: NavHostController) {
 
     val onViewReviews: (String) -> Unit = { recipeId ->
         navController.navigate(ReviewsList(recipeId))
+    }
+
+    val navigateToProfile: (String) -> Unit = { userId ->
+        navController.navigate(OtherProfile(userId))
+    }
+
+    val navigateToOwnedProfile: () -> Unit = {
+        navController.navigate(Profile)
     }
 }
 
@@ -100,6 +111,15 @@ fun RecipeDetailsScreen(
             onBackClick = backAction,
             onWriteReview = { actions.onWriteReview(r.id) },
             onViewReviews = { actions.onViewReviews(r.id) },
+            onProfileClick = { userId ->
+                if (userId.isNotBlank()) {
+                    if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+                        actions.navigateToOwnedProfile()
+                    } else {
+                        actions.navigateToProfile(userId)
+                    }
+                }
+            },
             onDeleteClick = {
                 recipeViewModel.deleteRecipe(r.id)
                 backAction()
@@ -131,6 +151,7 @@ fun RecipeDetailsContent(
     onBackClick: () -> Unit,
     onWriteReview: () -> Unit,
     onViewReviews: () -> Unit,
+    onProfileClick: (String) -> Unit,
     onDeleteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
     onEditClick: () -> Unit
@@ -536,7 +557,11 @@ fun RecipeDetailsContent(
                     Spacer(modifier = Modifier.height(18.dp))
 
                     reviews.take(2).forEach { review ->
-                        ReviewItem(review = review, userRepository = userRepository)
+                        ReviewItem(
+                            review = review,
+                            userRepository = userRepository,
+                            onProfileClick = onProfileClick
+                        )
                     }
                 }
             }
@@ -575,7 +600,8 @@ fun RecipeDetailsContent(
 @Composable
 fun ReviewItem(
     review: Review,
-    userRepository: UserRepoInterface
+    userRepository: UserRepoInterface,
+    onProfileClick: (String) -> Unit
 ) {
     val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
@@ -599,7 +625,11 @@ fun ReviewItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(enabled = review.userId.isNotBlank()) {
+                        onProfileClick(review.userId)
+                    }
             ) {
                 Box(
                     modifier = Modifier
