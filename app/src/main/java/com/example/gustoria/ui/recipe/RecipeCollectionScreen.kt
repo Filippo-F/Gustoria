@@ -28,6 +28,7 @@ import com.example.gustoria.Favourite
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.recipe.components.RecipeCard
@@ -59,6 +60,7 @@ class RecipeCollectionActions(val navController: NavHostController) {
 fun RecipeCollectionScreen(
     recipeRepository: RecipeRepoInterface,
     userRepository: UserRepoInterface,
+    reviewRepository: ReviewRepoInterface,
     initialTab: Int = 0,
     navController: NavHostController,
     vm: RecipeCollectionViewModel = viewModel(
@@ -101,43 +103,13 @@ fun RecipeCollectionScreen(
             onOpenFilters = actions.onOpenFilters
         )
     } else {
-        // Check if recipe is in favourites
-        val isFav by vm
-            .isFavouriteFlow(selectedRecipe!!.id)
-            .collectAsStateWithLifecycle(initialValue = false)
-
-        val isTried by vm
-            .isTriedFlow(selectedRecipe!!.id)
-            .collectAsStateWithLifecycle(initialValue = false)
-
-        RecipeDetailsContent(
+        RecipeDetailsScreen(
+            recipeId = selectedRecipe!!.id,
             navCtrl = navController,
-            recipe = selectedRecipe!!,
-            isOwner = vm.isOwnedByCurrentUser(selectedRecipe!!),
-            isFavourite = isFav,
-            onToggleFavourite = { vm.toggleFavourite(selectedRecipe!!.id) },
-            isTried = isTried,
-            onToggleTried = { vm.toggleTried(selectedRecipe!!.id) },
-            onBackClick = { vm.selectRecipe(null) },
-            onDeleteClick = {
-                vm.delete(selectedRecipe!!.id)
-                vm.selectRecipe(null)
-            },
-            onDuplicateClick = {
-                vm.duplicateRecipe(selectedRecipe!!) { newId ->
-                    actions.onEditRecipe(newId)
-                    vm.selectRecipe(null)
-                }
-            },
-            onEditClick = {
-                actions.onEditRecipe(selectedRecipe!!.id)
-                vm.selectRecipe(null)
-            },
+            recipeRepository = recipeRepository,
+            reviewRepository = reviewRepository,
             userRepository = userRepository,
-            reviews = emptyList(),
-            avgRating = selectedRecipe!!.rating,
-            onWriteReview = { },
-            onViewReviews = { }
+            onBack = { vm.selectRecipe(null) }
         )
     }
 }

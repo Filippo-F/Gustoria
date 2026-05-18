@@ -1,8 +1,10 @@
 package com.example.gustoria.ui.utils
 
 import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.dataclass.Review
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -53,5 +55,15 @@ object PreviewUtils {
         override suspend fun addTriedRecipe(userId: String, recipeId: String) {}
         override suspend fun removeTriedRecipe(userId: String, recipeId: String) {}
         override fun isTried(userId: String, recipeId: String): Flow<Boolean> = flowOf(false)
+    }
+
+    fun createFakeReviewRepo() = object : ReviewRepoInterface {
+        override fun getReviewsByRecipe(recipeId: String): Flow<List<Review>> = flowOf(emptyList())
+        override fun getReviewsByUser(userId: String): Flow<List<Review>> = flowOf(emptyList())
+        override fun getReviewById(reviewId: String): Flow<Review?> = flowOf(null)
+        override fun getAllReviews(): Flow<List<Review>> = flowOf(emptyList())
+        override suspend fun addReview(review: Review) {}
+        override suspend fun updateReview(reviewId: String, review: Review) {}
+        override suspend fun deleteReview(reviewId: String) {}
     }
 }

@@ -68,6 +68,7 @@ fun RecipeDetailsScreen(
     recipeRepository: RecipeRepoInterface,
     reviewRepository: ReviewRepoInterface,
     userRepository: UserRepoInterface,
+    onBack: (() -> Unit)? = null,
     recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)),
     reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
 ) {
@@ -78,6 +79,7 @@ fun RecipeDetailsScreen(
     val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
 
     val actions = remember(navCtrl) { RecipeDetailsActions(navCtrl) }
+    val backAction = onBack ?: actions.navigateBack
 
     LaunchedEffect(recipeId) {
         recipeViewModel.selectRecipe(recipeId)
@@ -88,19 +90,19 @@ fun RecipeDetailsScreen(
             navCtrl = navCtrl,
             recipe = r,
             reviews = reviews,
-            avgRating = if (average > 0f) average else r.rating,
+            avgRating = average,
             userRepository = userRepository,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
             onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
             isTried = isTried,
             onToggleTried = { recipeViewModel.toggleTried(r.id) },
-            onBackClick = actions.navigateBack,
+            onBackClick = backAction,
             onWriteReview = { actions.onWriteReview(r.id) },
             onViewReviews = { actions.onViewReviews(r.id) },
             onDeleteClick = {
                 recipeViewModel.deleteRecipe(r.id)
-                navCtrl.popBackStack()
+                backAction()
             },
             onDuplicateClick = {
                 recipeViewModel.duplicateRecipe(r) { newId ->

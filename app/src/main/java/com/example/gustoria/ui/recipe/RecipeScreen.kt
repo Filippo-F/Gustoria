@@ -43,25 +43,28 @@ import com.example.gustoria.Edit
 import com.example.gustoria.Home
 import com.example.gustoria.Search
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
+import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.ui.utils.PreviewUtils
-import com.example.gustoria.domain.UserRepoInterface
 
 @MultiPreview
 @Composable
 fun RecipeScreenPreview() {
     val fakeRepo = PreviewUtils.createFakeRecipeRepo()
     val fakeUserRepo = PreviewUtils.createFakeUserRepo()
+    val fakeReviewRepo = PreviewUtils.createFakeReviewRepo()
 
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(
             navCtrl = rememberNavController(),
             recipeRepository = fakeRepo,
-            userRepository = fakeUserRepo
+            userRepository = fakeUserRepo,
+            reviewRepository = fakeReviewRepo
         )
     }
 }
@@ -88,6 +91,7 @@ fun RecipeScreen(
     navCtrl: NavHostController,
     recipeRepository: RecipeRepoInterface,
     userRepository: UserRepoInterface,
+    reviewRepository: ReviewRepoInterface,
     initialRecipeId: String? = null,
     viewModel: RecipeViewModel = viewModel(
         factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)
@@ -126,39 +130,13 @@ fun RecipeScreen(
             }
         )
     } else {
-        val isFav by viewModel
-            .isFavouriteFlow(selectedRecipe!!.id)
-            .collectAsStateWithLifecycle(initialValue = false)
-
-        val isTried by viewModel
-            .isTriedFlow(selectedRecipe!!.id)
-            .collectAsStateWithLifecycle(initialValue = false)
-
-        RecipeDetailsContent(
+        RecipeDetailsScreen(
+            recipeId = selectedRecipe!!.id,
             navCtrl = navCtrl,
-            recipe = selectedRecipe!!,
-            isOwner = viewModel.isOwnedByCurrentUser(selectedRecipe!!),
-            isFavourite = isFav,
-            onToggleFavourite = { viewModel.toggleFavourite(selectedRecipe!!.id) },
-            isTried = isTried,
-            onToggleTried = { viewModel.toggleTried(selectedRecipe!!.id) },
-            onBackClick = { viewModel.selectRecipe(null) },
-            onDeleteClick = {
-                viewModel.deleteRecipe(selectedRecipe!!.id)
-                viewModel.selectRecipe(null)
-            },
-            onDuplicateClick = {
-                viewModel.duplicateRecipe(selectedRecipe!!) { newId ->
-                    actions.onEditRecipe(newId)
-                    viewModel.selectRecipe(null)
-                }
-            },
-            onEditClick = { actions.onEditRecipe(selectedRecipe!!.id) },
+            recipeRepository = recipeRepository,
+            reviewRepository = reviewRepository,
             userRepository = userRepository,
-            reviews = emptyList(),
-            avgRating = selectedRecipe!!.rating,
-            onWriteReview = { },
-            onViewReviews = { }
+            onBack = { viewModel.selectRecipe(null) }
         )
     }
 }

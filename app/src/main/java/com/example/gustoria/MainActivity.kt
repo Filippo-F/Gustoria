@@ -231,6 +231,7 @@ fun GustoriaApp(
                             navCtrl = navController,
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
+                            reviewRepository = reviewRepository,
                             initialRecipeId = args.recipeId,
                             viewModel = sharedSearchRecipeViewModel
                         )
@@ -298,6 +299,7 @@ fun GustoriaApp(
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
+                            reviewRepository = reviewRepository,
                             initialTab = 0,
                             navController = navController,
                             vm = sharedCollectionViewModel
@@ -307,6 +309,7 @@ fun GustoriaApp(
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
+                            reviewRepository = reviewRepository,
                             initialTab = 1,
                             navController = navController,
                             vm = sharedCollectionViewModel
@@ -316,6 +319,7 @@ fun GustoriaApp(
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
                             recipeRepository = recipeRepository,
                             userRepository = userRepository,
+                            reviewRepository = reviewRepository,
                             initialTab = 2,
                             navController = navController,
                             vm = sharedCollectionViewModel
