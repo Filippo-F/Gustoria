@@ -60,7 +60,6 @@ class PaperUserRepo: UserRepoInterface {
 
     private val userBook = Paper.book("users")
 
-    // In memory state
     private val _users = MutableStateFlow<List<User>>(loadInitialUsers())
 
     private fun loadInitialUsers(): List<User> {
