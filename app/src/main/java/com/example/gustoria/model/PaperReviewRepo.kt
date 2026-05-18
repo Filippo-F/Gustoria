@@ -58,21 +58,16 @@ class PaperReviewRepo: ReviewRepoInterface {
     init {
         scope.launch {
             if (reviewBook.allKeys.isEmpty()) {
-                val recipeBook = Paper.book("recipes")
-                val allRecipes = recipeBook.allKeys.mapNotNull {key ->
-                    recipeBook.read<Recipe>(key)
-                }
-
-                val recipeOwnedBy101 = allRecipes.find{it.ownerId == "101"}?.id?: "recipe_spaghetti_pomodoro"
-                val recipeNotOwnedBy101 = allRecipes.find{it.ownerId != "101"}?.id?: "recipe_sushi_rolls"
-
-                val prepared = _placeholderReviews.mapIndexed {index, r ->
-                    val targetRecipeId = if (index != 0) recipeOwnedBy101 else recipeNotOwnedBy101
-                    r.copy(
-                        recipeId = targetRecipeId,
+                val prepared = listOf(
+                    _placeholderReviews[0].copy(
+                        recipeId = "recipe_spaghetti_pomodoro",  // di user101
+                        timestamp = System.currentTimeMillis().toString()
+                    ),
+                    _placeholderReviews[1].copy(
+                        recipeId = "recipe_sushi_rolls",          // di user202
                         timestamp = System.currentTimeMillis().toString()
                     )
-                }
+                )
                 prepared.forEach { reviewBook.write(it.id, it) }
                 _reviews.update { prepared }
             }
