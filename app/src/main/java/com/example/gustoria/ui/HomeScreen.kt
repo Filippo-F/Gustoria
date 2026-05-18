@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.gustoria.Notifications
 import com.example.gustoria.Profile
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
@@ -69,6 +70,9 @@ class HomeActions(val navCtrl: NavHostController) {
     // naviga direttamente ai dettagli della ricetta
     val navigateToRecipeDetails: (String) -> Unit = { recipeId ->
         navCtrl.navigate(RecipeDetails(recipeId))
+    }
+    val navigateToNotifications: () -> Unit = {
+        navCtrl.navigate(Notifications)
     }
 }
 
@@ -114,7 +118,7 @@ fun HomeScreen(
                     }
                 },
                 trailingContent = {
-                    IconButton(onClick = { /* TODO: navigazione */ }) {
+                    IconButton(onClick = actions.navigateToNotifications) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
                             contentDescription = "Notifications",

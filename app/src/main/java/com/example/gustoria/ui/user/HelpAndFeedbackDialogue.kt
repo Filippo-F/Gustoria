@@ -13,6 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.gustoria.Notifications
+import com.example.gustoria.Profile
+import com.example.gustoria.RecipeDetails
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 
@@ -24,17 +27,17 @@ fun HelpAndFeedbackDialoguePreview() {
     }
 }
 
-data class HelpAndFeedbackActions(
-    val onNavigateBack: () -> Unit = {}
-)
+class HelpAndFeedbackActions(val navCtrl: NavHostController) {
+    val onNavigateBack: () -> Unit = {
+        navCtrl.popBackStack()
+    }
+}
 
 @Composable
 fun HelpAndFeedbackDialogue(navController: NavHostController) {
     val context = LocalContext.current
     val actions = remember(navController) {
-        HelpAndFeedbackActions(
-            onNavigateBack = { navController.popBackStack() }
-        )
+        HelpAndFeedbackActions(navController)
     }
 
     Surface(

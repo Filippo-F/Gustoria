@@ -36,8 +36,11 @@ import com.example.gustoria.ui.recipe.RecipeScreen
 import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
 import com.example.gustoria.ui.user.SignOutDialogue
+import com.example.gustoria.ui.user.SettingsScreen
+import com.example.gustoria.ui.user.ProfileInfoScreen
 import com.example.gustoria.ui.user.OtherProfileScreen
 import com.example.gustoria.ui.SearchingScreen
+import com.example.gustoria.ui.notifications.NotificationScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -68,6 +71,9 @@ class MainActivity : ComponentActivity() {
 
 @Serializable
 object Home
+
+@Serializable
+object Notifications
 
 @Serializable
 object Search {
@@ -172,6 +178,10 @@ fun GustoriaApp(
                         recipeRepository = recipeRepository,
                         userRepository = userRepository
                     )
+                }
+
+                composable<Notifications> {
+                    NotificationScreen(navController = navController)
                 }
 
 
@@ -338,7 +348,7 @@ fun GustoriaApp(
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
-                            com.example.gustoria.ui.user.ProfileInfoScreen(
+                            ProfileInfoScreen(
                                 navController = navController,
                                 userRepo = userRepository
                             )
@@ -351,7 +361,7 @@ fun GustoriaApp(
                         }
                     }
                     composable<Profile.Settings> {
-                        com.example.gustoria.ui.user.SettingsScreen(navController = navController)
+                        SettingsScreen(navController = navController)
                     }
                     dialog<Profile.HelpAndFeedback> {
                         HelpAndFeedbackDialogue(navController = navController)
