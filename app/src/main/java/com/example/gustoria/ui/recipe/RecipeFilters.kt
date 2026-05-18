@@ -2,15 +2,6 @@ package com.example.gustoria.ui.recipe
 
 import com.example.gustoria.dataclass.Recipe
 
-/*
- "at least 4 filtering elements":
-  1. by name (search bar)
-  2. by ingredient
-  3. by cost range
-  4. by difficulty
-  5. by max cooking time (?)
-*/
-
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",

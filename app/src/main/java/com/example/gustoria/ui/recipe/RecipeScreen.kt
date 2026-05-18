@@ -126,7 +126,6 @@ fun RecipeScreen(
             }
         )
     } else {
-        //controlla se la ricetta è nei favourites
         val isFav by viewModel
             .isFavouriteFlow(selectedRecipe!!.id)
             .collectAsStateWithLifecycle(initialValue = false)

@@ -113,7 +113,7 @@ fun ReviewFormScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Image Preview & Upload Button Box
+                // Image Preview + Upload Button Box
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -183,7 +183,7 @@ fun ReviewFormScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Write your review & tips (DOs and DON'Ts)") },
+                    label = { Text("Write your review and tips (DOs and DON'Ts)") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(140.dp)

@@ -132,7 +132,7 @@ class PaperUserRepo: UserRepoInterface {
         recipeId: String
     ) = withContext(Dispatchers.IO) {
         val current = _users.value.find { it.internalId == userId } ?: return@withContext
-        if (recipeId in current.savedRecipesIds) return@withContext   // idempotente
+        if (recipeId in current.savedRecipesIds) return@withContext
         val updated = current.copy(
             savedRecipesIds = current.savedRecipesIds + recipeId
         )
@@ -147,7 +147,7 @@ class PaperUserRepo: UserRepoInterface {
         recipeId: String
     ) = withContext(Dispatchers.IO) {
         val current = _users.value.find { it.internalId == userId } ?: return@withContext
-        if (recipeId !in current.savedRecipesIds) return@withContext  // niente da fare
+        if (recipeId !in current.savedRecipesIds) return@withContext
         val updated = current.copy(
             savedRecipesIds = current.savedRecipesIds - recipeId
         )

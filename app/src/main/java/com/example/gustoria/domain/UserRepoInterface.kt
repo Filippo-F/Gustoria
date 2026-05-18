@@ -4,19 +4,19 @@ import com.example.gustoria.dataclass.User
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepoInterface {
-    //get all users
+    // Get all users
     fun getAllUsers(): Flow<List<User>>
 
-    //get a specific user by unique ID
+    // Get a specific user by unique ID
     fun getUserById(userId: String): Flow<User?>
 
-    // create a new user
+    // Create a new user
     suspend fun createUser(user: User)
 
-    // update user profile infos and preferences
+    // Update user profile infos and preferences
     suspend fun updateUser(userId: String, user: User)
 
-    // delete user
+    // Delete user
     suspend fun deleteUser(userId: String)
 
     // Return list of IDs of user's favourites

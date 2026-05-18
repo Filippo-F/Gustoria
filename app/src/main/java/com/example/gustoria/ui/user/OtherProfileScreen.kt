@@ -118,7 +118,7 @@ fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole, de
             fontWeight = FontWeight.Bold
         )
 
-        //nickname + cookingRole
+        // Nickname + cookingRole
         Text(
             text = buildString {
                 append(nickname)
@@ -297,9 +297,7 @@ fun OtherProfileScreen(
 
     Scaffold(
         bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                /* AppBottomNavBar gestita in MainActivity!! */
-            }
+            Box(modifier = Modifier.navigationBarsPadding()) { }
         }
     ) { innerPadding ->
         Column(
@@ -320,7 +318,6 @@ fun OtherProfileScreen(
                 onClickExtra = {}
             )
 
-            // Stato di caricamento: utente non ancora emesso dal repo
             val u = user
             if (u == null) {
                 Box(

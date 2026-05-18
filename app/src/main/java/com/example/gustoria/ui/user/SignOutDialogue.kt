@@ -54,7 +54,6 @@ fun SignOutDialogue(navController: NavHostController) {
             Button(
                 onClick = {
                     Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
-                    // Here you would typically clear user session
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth(),
