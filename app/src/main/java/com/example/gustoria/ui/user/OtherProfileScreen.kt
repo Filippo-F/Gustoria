@@ -53,10 +53,12 @@ import com.example.gustoria.ui.utils.MultiPreview
 @MultiPreview
 @Composable
 fun OtherProfileScreenPreview() {
-    val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
+    val fakeUserRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
+    val fakeRecipeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeRecipeRepo()
     GustoriaTheme(dynamicColor = false) {
         OtherProfileScreen(
-            userRepo = fakeRepo,
+            userRepo = fakeUserRepo,
+            recipeRepo = fakeRecipeRepo,
             viewedUserId = "101",
             onBack = {},
         )
@@ -286,14 +288,16 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 @Composable
 fun OtherProfileScreen(
     userRepo: com.example.gustoria.domain.UserRepoInterface,
+    recipeRepo: com.example.gustoria.domain.RecipeRepoInterface,
     viewedUserId: String,
     onBack: () -> Unit = {},
     viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = OtherProfileViewModel.factory(userRepo, viewedUserId)
+        factory = OtherProfileViewModel.factory(userRepo, recipeRepo, viewedUserId)
     )
 ) {
     val tabs = listOf("Collections", "Recent Activity")
     val user by viewModel.user.collectAsStateWithLifecycle()
+    val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
@@ -376,7 +380,7 @@ fun OtherProfileScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ValueBox(u.numberOfRecipes, "Recipes")
+                        ValueBox(recipeCount, "Recipes")
                         ValueBox(u.numberOfFollowers, "Followers")
                         ValueBox(u.numberOfLikes, "Likes")
                     }

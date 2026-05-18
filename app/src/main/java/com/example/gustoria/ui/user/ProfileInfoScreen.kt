@@ -82,7 +82,8 @@ fun ProfileInfoScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         ProfileInfoScreen(
             navController = rememberNavController(),
-            userRepo = PreviewUtils.createFakeUserRepo()
+            userRepo = PreviewUtils.createFakeUserRepo(),
+            recipeRepo = PreviewUtils.createFakeRecipeRepo()
         )
     }
 }
@@ -97,7 +98,8 @@ class ProfileInfoActions(val navController: NavHostController) {
 fun ProfileInfoScreen(
     navController: NavHostController,
     userRepo: UserRepoInterface,
-    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.factory(userRepo))
+    recipeRepo: com.example.gustoria.domain.RecipeRepoInterface,
+    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.factory(userRepo, recipeRepo))
 ) {
     val actions = remember(navController) { ProfileInfoActions(navController) }
     val userState by viewModel.user.collectAsStateWithLifecycle()

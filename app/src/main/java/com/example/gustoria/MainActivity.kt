@@ -289,6 +289,7 @@ fun GustoriaApp(
                     val args: OtherProfile = backStackEntry.toRoute()
                     OtherProfileScreen(
                         userRepo = userRepository,
+                        recipeRepo = recipeRepository,
                         viewedUserId = args.userId,
                         onBack = { navController.popBackStack() }
                     )
@@ -347,6 +348,7 @@ fun GustoriaApp(
                     composable<Profile.OverallProfile> {
                         OwnedProfileScreen(
                             userRepo = userRepository,
+                            recipeRepo = recipeRepository,
                             navController = navController
                         )
                     }
@@ -354,7 +356,8 @@ fun GustoriaApp(
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
                             ProfileInfoScreen(
                                 navController = navController,
-                                userRepo = userRepository
+                                userRepo = userRepository,
+                                recipeRepo = recipeRepository
                             )
                         }
                         dialog<Profile.ProfileInfo.CulinaryPreference> {

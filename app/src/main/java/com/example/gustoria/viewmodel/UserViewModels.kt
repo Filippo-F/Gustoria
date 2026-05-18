@@ -9,9 +9,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.dataclass.User
+import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.gustoria.SessionManager
@@ -40,13 +42,19 @@ data class UserActivity(
 )
 
 class OwnedProfileViewModel(
-    private val userRepo: UserRepoInterface
+    private val userRepo: UserRepoInterface,
+    private val recipeRepo: RecipeRepoInterface
 ) : ViewModel() {
 
     //state of logged user taken from repo (can be null initially)
     val user: StateFlow<User?> = userRepo
         .getUserById(SessionManager.CURRENT_LOGGED_IN_USER_ID)
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val recipeCount: StateFlow<Int> = recipeRepo
+        .getRecipeByOwner(SessionManager.CURRENT_LOGGED_IN_USER_ID)
+        .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // bozza modifiable durante l'editing
     var editableUser by mutableStateOf<User?>(null)
@@ -286,11 +294,11 @@ class OwnedProfileViewModel(
         split(",").map { it.trim() }.filter { it.isNotBlank() }
 
     companion object {
-        fun factory(userRepo: UserRepoInterface): ViewModelProvider.Factory =
+        fun factory(userRepo: UserRepoInterface, recipeRepo: RecipeRepoInterface): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    OwnedProfileViewModel(userRepo) as T
+                    OwnedProfileViewModel(userRepo, recipeRepo) as T
             }
     }
 }
@@ -298,12 +306,18 @@ class OwnedProfileViewModel(
 
 class OtherProfileViewModel(
     private val userRepo: UserRepoInterface,
+    private val recipeRepo: RecipeRepoInterface,
     private val viewedUserId: String
 ) : ViewModel() {
 
     val user: StateFlow<User?> = userRepo
         .getUserById(viewedUserId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val recipeCount: StateFlow<Int> = recipeRepo
+        .getRecipeByOwner(viewedUserId)
+        .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // Per ora placeholder hardcoded, in seguito popolato da Review/Recipe repos
     val collections = listOf(
@@ -332,12 +346,13 @@ class OtherProfileViewModel(
     companion object {
         fun factory(
             userRepo: UserRepoInterface,
+            recipeRepo: RecipeRepoInterface,
             viewedUserId: String
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    OtherProfileViewModel(userRepo, viewedUserId) as T
+                    OtherProfileViewModel(userRepo, recipeRepo, viewedUserId) as T
             }
     }
 }

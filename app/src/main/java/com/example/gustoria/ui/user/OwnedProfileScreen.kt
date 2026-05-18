@@ -57,10 +57,12 @@ import com.example.gustoria.viewmodel.OwnedProfileViewModel
 @MultiPreview
 @Composable
 fun OwnedProfileScreenPreview() {
-    val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
+    val fakeUserRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
+    val fakeRecipeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeRecipeRepo()
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
-            userRepo = fakeRepo,
+            userRepo = fakeUserRepo,
+            recipeRepo = fakeRecipeRepo,
             navController = rememberNavController()
         )
     }
@@ -87,9 +89,10 @@ class OwnedProfileActions(private val navController: NavHostController) {
 @Composable
 fun OwnedProfileScreen(
     userRepo: com.example.gustoria.domain.UserRepoInterface,
+    recipeRepo: com.example.gustoria.domain.RecipeRepoInterface,
     navController: NavHostController,
     viewModel: OwnedProfileViewModel = viewModel(
-        factory = OwnedProfileViewModel.factory(userRepo)
+        factory = OwnedProfileViewModel.factory(userRepo, recipeRepo)
     )
 ) {
     val configuration = LocalConfiguration.current
@@ -97,6 +100,7 @@ fun OwnedProfileScreen(
 
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val userState by viewModel.user.collectAsStateWithLifecycle()
+    val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -121,6 +125,7 @@ fun OwnedProfileScreen(
 
             PresentationPane(
                 user = currentUser,
+                recipeCount = recipeCount,
                 isLandscape = isLandscape,
                 onNavigateToProfileInfo = actions.onNavigateToProfileInfo,
                 onNavigateToSettings = actions.onNavigateToSettings,
@@ -134,6 +139,7 @@ fun OwnedProfileScreen(
 @Composable
 fun PresentationPane(
     user: User,
+    recipeCount: Int,
     isLandscape: Boolean,
     onNavigateToProfileInfo: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
@@ -258,7 +264,7 @@ fun PresentationPane(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileValueBox(user.numberOfRecipes, "Recipes")
+                ProfileValueBox(recipeCount, "Recipes")
                 ProfileValueBox(user.numberOfFollowers, "Followers")
                 ProfileValueBox(user.numberOfLikes, "Likes")
             }
