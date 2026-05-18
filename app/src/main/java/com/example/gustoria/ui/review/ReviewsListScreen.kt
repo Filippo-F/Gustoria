@@ -101,7 +101,7 @@ fun ReviewsListScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
-                            text = String.format("%.1f", average),
+                            text = String.format(java.util.Locale.ROOT, "%.1f", average),
                             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
                             color = MaterialTheme.colorScheme.primary
                         )

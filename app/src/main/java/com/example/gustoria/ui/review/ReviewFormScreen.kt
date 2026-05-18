@@ -55,7 +55,7 @@ fun ReviewFormScreen(
     val showCameraScreen = remember { mutableStateOf(false) }
     val actions = remember(navController) { ReviewFormActions(navController) }
 
-    // Launchers for Image Selection and Camera Permissions
+    // image selection and camera permissions
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
@@ -69,7 +69,7 @@ fun ReviewFormScreen(
         else Toast.makeText(context, "Camera Permission Denied!", Toast.LENGTH_SHORT).show()
     }
 
-    // Show Camera Screen if requested, otherwise show the Form
+    //show camera screen (if requested) or show the form
     if (showCameraScreen.value) {
         CameraXScreen(
             onImageCaptured = { uriString ->
@@ -113,7 +113,7 @@ fun ReviewFormScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Image Preview + Upload Button Box
+                //image preview and upload button
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,7 +137,7 @@ fun ReviewFormScreen(
                         )
                     }
 
-                    // Add/Change Photo Button
+                    //add/change photo
                     IconButton(
                         onClick = { showImageMenu.value = true },
                         modifier = Modifier
@@ -152,7 +152,7 @@ fun ReviewFormScreen(
                         )
                     }
 
-                    // Dropdown for Camera vs Gallery
+                    //dropdown for camera vs gallery
                     DropdownMenu(
                         expanded = showImageMenu.value,
                         onDismissRequest = { showImageMenu.value = false }

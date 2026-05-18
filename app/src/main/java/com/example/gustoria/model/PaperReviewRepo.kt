@@ -37,8 +37,7 @@ class PaperReviewRepo: ReviewRepoInterface {
     )
 
     private val reviewBook = Paper.book("reviews")
-
-    // In memory state
+    
     private val _reviews = MutableStateFlow<List<Review>>(loadInitialReviews())
 
     private fun loadInitialReviews(): List<Review> {
@@ -54,14 +53,19 @@ class PaperReviewRepo: ReviewRepoInterface {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // First time load
+    //first time load
     init {
         scope.launch {
             if (reviewBook.allKeys.isEmpty()) {
                 val recipeKeys = Paper.book("recipes").allKeys
-                val prepared = _placeholderReviews.mapIndexed { idx, r ->
-                    val recipeId = recipeKeys.getOrNull(idx) ?: ""
-                    r.copy(recipeId = recipeId, timestamp = System.currentTimeMillis().toString())
+                //la prima ricetta (indice 0) per tutti i placeholder
+                val firstRecipeId = recipeKeys.getOrNull(0) ?: ""
+
+                val prepared = _placeholderReviews.map { r ->
+                    r.copy(
+                        recipeId = firstRecipeId, //assegna la stessa ricetta a entrambe le reviews
+                        timestamp = System.currentTimeMillis().toString()
+                    )
                 }
                 prepared.forEach { reviewBook.write(it.id, it) }
                 _reviews.update { prepared }
