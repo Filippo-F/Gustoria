@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
