@@ -1,8 +1,8 @@
 package com.example.gustoria
 
 import android.app.Application
-import com.example.gustoria.model.AppContainer
-import com.example.gustoria.model.DefaultAppContainer
+import com.example.gustoria.data.AppContainer
+import com.example.gustoria.data.DefaultAppContainer
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth

@@ -1,4 +1,4 @@
-package com.example.gustoria.model
+package com.example.gustoria.data.paperRepo
 
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.dataclass.Recipe

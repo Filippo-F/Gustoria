@@ -1,6 +1,5 @@
-package com.example.gustoria.model
+package com.example.gustoria.data.paperRepo
 
-import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.domain.ReviewRepoInterface
 import io.paperdb.Paper

@@ -45,10 +45,7 @@ import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
-import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.SessionManager
-import com.example.gustoria.domain.ReviewRepoInterface
-import com.example.gustoria.domain.UserRepoInterface
+import com.example.gustoria.data.auth.SessionManager
 
 class RecipeDetailsActions(val navController: NavHostController) {
     val navigateBack: () -> Unit = {

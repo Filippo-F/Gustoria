@@ -27,9 +27,8 @@ import androidx.navigation.NavHostController
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
-import com.example.gustoria.SessionManager
+import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.dataclass.Review
-import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.ReviewViewModel

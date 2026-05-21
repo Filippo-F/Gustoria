@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
-import com.example.gustoria.SessionManager
+import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.recipe.ALL_COSTS
 import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES

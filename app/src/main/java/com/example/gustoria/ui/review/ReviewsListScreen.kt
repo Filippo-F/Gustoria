@@ -26,10 +26,8 @@ import coil.compose.AsyncImage
 import com.example.gustoria.AddReview
 import com.example.gustoria.OtherProfile
 import com.example.gustoria.Profile
-import com.example.gustoria.SessionManager
+import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.dataclass.Review
-import com.example.gustoria.domain.ReviewRepoInterface
-import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.viewmodel.ReviewViewModel
 
 class ReviewsListActions(private val navController: NavHostController) {

@@ -1,4 +1,4 @@
-package com.example.gustoria.model
+package com.example.gustoria.data
 
 import android.content.Context
 import androidx.credentials.CredentialManager
@@ -6,6 +6,10 @@ import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
+import com.example.gustoria.data.paperRepo.PaperLikeRepo
+import com.example.gustoria.data.paperRepo.PaperRecipeRepo
+import com.example.gustoria.data.paperRepo.PaperReviewRepo
+import com.example.gustoria.data.paperRepo.PaperUserRepo
 import com.google.firebase.firestore.FirebaseFirestore
 
 interface AppContainer {
