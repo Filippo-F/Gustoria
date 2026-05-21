@@ -8,10 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.model.PaperRecipeRepo
 import com.example.gustoria.ui.theme.GustoriaTheme
-import io.paperdb.Paper
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import com.example.gustoria.ui.AppBottomNavBar
@@ -22,10 +19,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.example.gustoria.domain.ReviewRepoInterface
-import com.example.gustoria.domain.UserRepoInterface
-import com.example.gustoria.model.PaperReviewRepo
-import com.example.gustoria.model.PaperUserRepo
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import com.example.gustoria.ui.HomeScreen
@@ -44,25 +37,14 @@ import com.example.gustoria.ui.notifications.NotificationScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
-    private lateinit var recipeRepository: RecipeRepoInterface
-    private lateinit var userRepository: UserRepoInterface
-    private lateinit var reviewRepository: ReviewRepoInterface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        Paper.init(applicationContext)
-        recipeRepository = PaperRecipeRepo()
-        userRepository = PaperUserRepo()
-        reviewRepository = PaperReviewRepo()
 
         setContent {
             GustoriaTheme {
-                GustoriaApp(
-                    recipeRepository = recipeRepository,
-                    userRepository = userRepository,
-                    reviewRepository = reviewRepository
-                )
+                GustoriaApp()
             }
         }
     }
@@ -135,17 +117,13 @@ object Favourite {
 }
 
 @Composable
-fun GustoriaApp(
-    recipeRepository: RecipeRepoInterface,
-    userRepository: UserRepoInterface,
-    reviewRepository: ReviewRepoInterface
-) {
+fun GustoriaApp() {
     val navController = rememberNavController()
     val sharedSearchRecipeViewModel: com.example.gustoria.viewmodel.RecipeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = com.example.gustoria.viewmodel.RecipeViewModel.provideFactory(recipeRepository, userRepository)
+        factory = com.example.gustoria.viewmodel.RecipeViewModel.Factory
     )
     val sharedCollectionViewModel: com.example.gustoria.viewmodel.RecipeCollectionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.factory(recipeRepository, userRepository)
+        factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.Factory
     )
 
     Scaffold(
@@ -167,16 +145,13 @@ fun GustoriaApp(
                     dialogProperties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
                 ) {
                     AuthenticationDialogue(
-                        userRepo = userRepository,
                         onAuthSuccess = {},
                     )
 
                 }
                 composable<Home> {
                     HomeScreen(
-                        navCtrl = navController,
-                        recipeRepository = recipeRepository,
-                        userRepository = userRepository
+                        navCtrl = navController
                     )
                 }
 
@@ -229,9 +204,6 @@ fun GustoriaApp(
                         val args: Search.Searched = backStackEntry.toRoute()
                         RecipeScreen(
                             navCtrl = navController,
-                            recipeRepository = recipeRepository,
-                            userRepository = userRepository,
-                            reviewRepository = reviewRepository,
                             initialRecipeId = args.recipeId,
                             viewModel = sharedSearchRecipeViewModel
                         )
@@ -241,7 +213,6 @@ fun GustoriaApp(
                 composable<Create> {
                     EditRecipeScreen(
                         navController = navController,
-                        recipeRepository = recipeRepository,
                         recipeId = null
                     )
                 }
@@ -250,7 +221,6 @@ fun GustoriaApp(
                     val edit: Edit = backStackEntry.toRoute()
                     EditRecipeScreen(
                         navController = navController,
-                        recipeRepository = recipeRepository,
                         recipeId = edit.recipeId
                     )
                 }
@@ -259,10 +229,7 @@ fun GustoriaApp(
                     val args: RecipeDetails = backStackEntry.toRoute()
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
-                        navCtrl = navController,
-                        recipeRepository = recipeRepository,
-                        reviewRepository = reviewRepository,
-                        userRepository = userRepository
+                        navCtrl = navController
                     )
                 }
 
@@ -270,8 +237,7 @@ fun GustoriaApp(
                     val args: AddReview = backStackEntry.toRoute()
                     com.example.gustoria.ui.review.ReviewFormScreen(
                         recipeId = args.recipeId,
-                        navController = navController,
-                        reviewRepository = reviewRepository
+                        navController = navController
                     )
                 }
 
@@ -279,17 +245,13 @@ fun GustoriaApp(
                     val args: ReviewsList = backStackEntry.toRoute()
                     com.example.gustoria.ui.review.ReviewsListScreen(
                         recipeId = args.recipeId,
-                        navController = navController,
-                        reviewRepository = reviewRepository,
-                        userRepository = userRepository
+                        navController = navController
                     )
                 }
 
                 composable<OtherProfile> { backStackEntry ->
                     val args: OtherProfile = backStackEntry.toRoute()
                     OtherProfileScreen(
-                        userRepo = userRepository,
-                        recipeRepo = recipeRepository,
                         viewedUserId = args.userId,
                         onBack = { navController.popBackStack() }
                     )
@@ -298,9 +260,6 @@ fun GustoriaApp(
                 navigation<Favourite>(startDestination = Favourite.Saved) {
                     composable<Favourite.Saved> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            recipeRepository = recipeRepository,
-                            userRepository = userRepository,
-                            reviewRepository = reviewRepository,
                             initialTab = 0,
                             navController = navController,
                             vm = sharedCollectionViewModel
@@ -308,9 +267,6 @@ fun GustoriaApp(
                     }
                     composable<Favourite.Tried> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            recipeRepository = recipeRepository,
-                            userRepository = userRepository,
-                            reviewRepository = reviewRepository,
                             initialTab = 1,
                             navController = navController,
                             vm = sharedCollectionViewModel
@@ -318,9 +274,6 @@ fun GustoriaApp(
                     }
                     composable<Favourite.Created> {
                         com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            recipeRepository = recipeRepository,
-                            userRepository = userRepository,
-                            reviewRepository = reviewRepository,
                             initialTab = 2,
                             navController = navController,
                             vm = sharedCollectionViewModel
@@ -347,17 +300,13 @@ fun GustoriaApp(
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
                         OwnedProfileScreen(
-                            userRepo = userRepository,
-                            recipeRepo = recipeRepository,
                             navController = navController
                         )
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
                             ProfileInfoScreen(
-                                navController = navController,
-                                userRepo = userRepository,
-                                recipeRepo = recipeRepository
+                                navController = navController
                             )
                         }
                         dialog<Profile.ProfileInfo.CulinaryPreference> {

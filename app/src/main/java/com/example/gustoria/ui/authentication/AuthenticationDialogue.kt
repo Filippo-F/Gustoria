@@ -34,18 +34,16 @@ import com.example.gustoria.viewmodel.AuthenticationViewModel
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    val fakeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
     GustoriaTheme(dynamicColor = false) {
-        AuthenticationDialogue(userRepo = fakeRepo, onAuthSuccess = {})
+        AuthenticationDialogue(onAuthSuccess = {})
     }
 }
 
 @Composable
 fun AuthenticationDialogue(
-    userRepo: UserRepoInterface,
     onAuthSuccess: (String) -> Unit,
     vm: AuthenticationViewModel = viewModel(
-        factory = AuthenticationViewModel.factory(userRepo)
+        factory = AuthenticationViewModel.Factory
     )
 ) {
     val state by vm.state.collectAsStateWithLifecycle()

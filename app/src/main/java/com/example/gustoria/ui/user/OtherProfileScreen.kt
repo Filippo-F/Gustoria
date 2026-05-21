@@ -53,12 +53,8 @@ import com.example.gustoria.ui.utils.MultiPreview
 @MultiPreview
 @Composable
 fun OtherProfileScreenPreview() {
-    val fakeUserRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
-    val fakeRecipeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeRecipeRepo()
     GustoriaTheme(dynamicColor = false) {
         OtherProfileScreen(
-            userRepo = fakeUserRepo,
-            recipeRepo = fakeRecipeRepo,
             viewedUserId = "101",
             onBack = {},
         )
@@ -287,12 +283,10 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(
-    userRepo: com.example.gustoria.domain.UserRepoInterface,
-    recipeRepo: com.example.gustoria.domain.RecipeRepoInterface,
     viewedUserId: String,
     onBack: () -> Unit = {},
     viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = OtherProfileViewModel.factory(userRepo, recipeRepo, viewedUserId)
+        factory = OtherProfileViewModel.factory(viewedUserId)
     )
 ) {
     val tabs = listOf("Collections", "Recent Activity")

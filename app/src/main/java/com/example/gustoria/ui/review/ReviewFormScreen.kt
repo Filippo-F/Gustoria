@@ -45,8 +45,7 @@ class ReviewFormActions(private val navController: NavHostController) {
 fun ReviewFormScreen(
     recipeId: String,
     navController: NavHostController,
-    reviewRepository: ReviewRepoInterface,
-    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
+    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
 ) {
     var rating by remember { mutableStateOf(5f) }
     var description by remember { mutableStateOf("") }

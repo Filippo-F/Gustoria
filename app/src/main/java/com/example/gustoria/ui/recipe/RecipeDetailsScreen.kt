@@ -76,12 +76,9 @@ class RecipeDetailsActions(val navController: NavHostController) {
 fun RecipeDetailsScreen(
     recipeId: String,
     navCtrl: NavHostController,
-    recipeRepository: RecipeRepoInterface,
-    reviewRepository: ReviewRepoInterface,
-    userRepository: UserRepoInterface,
     onBack: (() -> Unit)? = null,
-    recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)),
-    reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
+    recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.Factory),
+    reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
 ) {
     val isFavourite by remember(recipeId) { recipeViewModel.isFavouriteFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
     val isTried by remember(recipeId) { recipeViewModel.isTriedFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
@@ -102,7 +99,6 @@ fun RecipeDetailsScreen(
             recipe = r,
             reviews = reviews,
             avgRating = average,
-            userRepository = userRepository,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
             onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
@@ -142,7 +138,6 @@ fun RecipeDetailsContent(
     recipe: Recipe,
     reviews: List<Review>,
     avgRating: Float,
-    userRepository: UserRepoInterface,
     isOwner: Boolean,
     isFavourite: Boolean,
     onToggleFavourite: () -> Unit,
@@ -559,7 +554,6 @@ fun RecipeDetailsContent(
                     reviews.take(2).forEach { review ->
                         ReviewItem(
                             review = review,
-                            userRepository = userRepository,
                             onProfileClick = onProfileClick
                         )
                     }
@@ -600,9 +594,10 @@ fun RecipeDetailsContent(
 @Composable
 fun ReviewItem(
     review: Review,
-    userRepository: UserRepoInterface,
     onProfileClick: (String) -> Unit
 ) {
+    val application = (androidx.compose.ui.platform.LocalContext.current.applicationContext as com.example.gustoria.GustoriaApplication)
+    val userRepository = application.container.userRepository
     val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
         "You"

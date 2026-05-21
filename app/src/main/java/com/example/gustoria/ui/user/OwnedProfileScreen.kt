@@ -57,12 +57,8 @@ import com.example.gustoria.viewmodel.OwnedProfileViewModel
 @MultiPreview
 @Composable
 fun OwnedProfileScreenPreview() {
-    val fakeUserRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeUserRepo()
-    val fakeRecipeRepo = com.example.gustoria.ui.utils.PreviewUtils.createFakeRecipeRepo()
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
-            userRepo = fakeUserRepo,
-            recipeRepo = fakeRecipeRepo,
             navController = rememberNavController()
         )
     }
@@ -88,11 +84,9 @@ class OwnedProfileActions(private val navController: NavHostController) {
 
 @Composable
 fun OwnedProfileScreen(
-    userRepo: com.example.gustoria.domain.UserRepoInterface,
-    recipeRepo: com.example.gustoria.domain.RecipeRepoInterface,
     navController: NavHostController,
     viewModel: OwnedProfileViewModel = viewModel(
-        factory = OwnedProfileViewModel.factory(userRepo, recipeRepo)
+        factory = OwnedProfileViewModel.Factory
     )
 ) {
     val configuration = LocalConfiguration.current

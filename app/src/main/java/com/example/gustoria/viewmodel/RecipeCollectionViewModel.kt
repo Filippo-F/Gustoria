@@ -2,7 +2,11 @@ package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.gustoria.GustoriaApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import com.example.gustoria.dataclass.Recipe
@@ -142,13 +146,13 @@ class RecipeCollectionViewModel(
         }
     }
     companion object {
-        fun factory(
-            repo: RecipeRepoInterface,
-            userRepo: UserRepoInterface
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                RecipeCollectionViewModel(repo, userRepo) as T
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val recipeRepository = application.container.recipeRepository
+                val userRepository = application.container.userRepository
+                RecipeCollectionViewModel(recipeRepository, userRepository)
+            }
         }
     }
 }

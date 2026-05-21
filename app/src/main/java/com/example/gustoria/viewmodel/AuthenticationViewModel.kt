@@ -2,7 +2,11 @@ package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,11 +143,12 @@ class AuthenticationViewModel(
     }
 
     companion object {
-        fun factory(userRepo: UserRepoInterface): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    AuthenticationViewModel(userRepo) as T
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val userRepository = application.container.userRepository
+                AuthenticationViewModel(userRepository)
             }
+        }
     }
 }

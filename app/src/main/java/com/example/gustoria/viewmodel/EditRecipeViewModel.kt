@@ -2,7 +2,11 @@ package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.SessionManager
@@ -236,12 +240,12 @@ class EditRecipeViewModel(
     // Factory used to create the ViewModel
     companion object {
         fun factory(
-            recipeRepository: RecipeRepoInterface,
             recipeId: String?
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return EditRecipeViewModel(recipeRepository, recipeId) as T
+        ): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val recipeRepository = application.container.recipeRepository
+                EditRecipeViewModel(recipeRepository, recipeId)
             }
         }
     }

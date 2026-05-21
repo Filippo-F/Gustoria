@@ -55,16 +55,9 @@ import com.example.gustoria.ui.utils.PreviewUtils
 @MultiPreview
 @Composable
 fun RecipeScreenPreview() {
-    val fakeRepo = PreviewUtils.createFakeRecipeRepo()
-    val fakeUserRepo = PreviewUtils.createFakeUserRepo()
-    val fakeReviewRepo = PreviewUtils.createFakeReviewRepo()
-
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(
-            navCtrl = rememberNavController(),
-            recipeRepository = fakeRepo,
-            userRepository = fakeUserRepo,
-            reviewRepository = fakeReviewRepo
+            navCtrl = rememberNavController()
         )
     }
 }
@@ -89,12 +82,9 @@ class RecipeScreenActions(val navCtrl : NavHostController) {
 @Composable
 fun RecipeScreen(
     navCtrl: NavHostController,
-    recipeRepository: RecipeRepoInterface,
-    userRepository: UserRepoInterface,
-    reviewRepository: ReviewRepoInterface,
     initialRecipeId: String? = null,
     viewModel: RecipeViewModel = viewModel(
-        factory = RecipeViewModel.provideFactory(recipeRepository, userRepository)
+        factory = RecipeViewModel.Factory
     )
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
@@ -133,9 +123,6 @@ fun RecipeScreen(
         RecipeDetailsScreen(
             recipeId = selectedRecipe!!.id,
             navCtrl = navCtrl,
-            recipeRepository = recipeRepository,
-            reviewRepository = reviewRepository,
-            userRepository = userRepository,
             onBack = { viewModel.selectRecipe(null) }
         )
     }

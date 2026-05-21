@@ -37,7 +37,7 @@ fun FeaturedSearchScreen(
     onRecentSearchClick: (String) -> Unit = {},
     onTrendingTagClick: (String) -> Unit = {},
     recipeVm: com.example.gustoria.viewmodel.RecipeViewModel? = null,
-    vm: SearchViewModel = viewModel(factory = SearchViewModel.factory())
+    vm: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
 ) {
     val recentSearches by vm.recentSearches.collectAsStateWithLifecycle()
 

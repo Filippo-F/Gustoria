@@ -54,9 +54,7 @@ class ReviewsListActions(private val navController: NavHostController) {
 fun ReviewsListScreen(
     recipeId: String,
     navController: NavHostController,
-    reviewRepository: ReviewRepoInterface,
-    userRepository: UserRepoInterface,
-    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.provideFactory(reviewRepository))
+    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
 ) {
     val actions = remember(navController) { ReviewsListActions(navController) }
     val reviews by remember(recipeId) { viewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
@@ -162,7 +160,7 @@ fun ReviewsListScreen(
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     items(reviews, key = { it.id }) { review ->
-                        ReviewRow(review = review, userRepository = userRepository, onProfileClick = { userId ->
+                        ReviewRow(review = review, onProfileClick = { userId ->
                             if (userId.isNotBlank()) {
                                 if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
                                     actions.navigateToOwnedProfile()
@@ -179,7 +177,9 @@ fun ReviewsListScreen(
 }
 
 @Composable
-fun ReviewRow(review: Review, userRepository: UserRepoInterface, onProfileClick: (String) -> Unit) {
+fun ReviewRow(review: Review, onProfileClick: (String) -> Unit) {
+    val application = (androidx.compose.ui.platform.LocalContext.current.applicationContext as com.example.gustoria.GustoriaApplication)
+    val userRepository = application.container.userRepository
     val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
         "You"

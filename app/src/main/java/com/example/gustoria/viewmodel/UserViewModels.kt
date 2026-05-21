@@ -6,7 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -294,12 +298,14 @@ class OwnedProfileViewModel(
         split(",").map { it.trim() }.filter { it.isNotBlank() }
 
     companion object {
-        fun factory(userRepo: UserRepoInterface, recipeRepo: RecipeRepoInterface): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    OwnedProfileViewModel(userRepo, recipeRepo) as T
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val userRepository = application.container.userRepository
+                val recipeRepository = application.container.recipeRepository
+                OwnedProfileViewModel(userRepository, recipeRepository)
             }
+        }
     }
 }
 
@@ -345,14 +351,14 @@ class OtherProfileViewModel(
 
     companion object {
         fun factory(
-            userRepo: UserRepoInterface,
-            recipeRepo: RecipeRepoInterface,
             viewedUserId: String
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    OtherProfileViewModel(userRepo, recipeRepo, viewedUserId) as T
+        ): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val userRepository = application.container.userRepository
+                val recipeRepository = application.container.recipeRepository
+                OtherProfileViewModel(userRepository, recipeRepository, viewedUserId)
             }
+        }
     }
 }

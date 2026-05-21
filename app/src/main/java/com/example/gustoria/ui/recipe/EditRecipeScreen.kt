@@ -43,12 +43,9 @@ class EditRecipeActions(private val navController: NavHostController) {
 @MultiPreview
 @Composable
 fun EditRecipeScreenPreview() {
-    val fakeRepo = PreviewUtils.createFakeRecipeRepo()
-
     GustoriaTheme(dynamicColor = false) {
         EditRecipeScreen(
             navController = rememberNavController(),
-            recipeRepository = fakeRepo,
             recipeId = "preview_id"
         )
     }
@@ -58,11 +55,10 @@ fun EditRecipeScreenPreview() {
 @Composable
 fun EditRecipeScreen(
     navController: NavHostController,
-    recipeRepository: RecipeRepoInterface,
     recipeId: String?,
     vm: EditRecipeViewModel = viewModel(
         key = recipeId ?: "create_mode", // If recipeId is null, we're in create mode
-        factory = EditRecipeViewModel.factory(recipeRepository, recipeId)
+        factory = EditRecipeViewModel.factory(recipeId)
     )
 ) {
     val state by vm.state.collectAsStateWithLifecycle()

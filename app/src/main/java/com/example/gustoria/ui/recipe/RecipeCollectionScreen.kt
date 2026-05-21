@@ -58,13 +58,10 @@ class RecipeCollectionActions(val navController: NavHostController) {
 
 @Composable
 fun RecipeCollectionScreen(
-    recipeRepository: RecipeRepoInterface,
-    userRepository: UserRepoInterface,
-    reviewRepository: ReviewRepoInterface,
     initialTab: Int = 0,
     navController: NavHostController,
     vm: RecipeCollectionViewModel = viewModel(
-        factory = RecipeCollectionViewModel.factory(recipeRepository, userRepository)
+        factory = RecipeCollectionViewModel.Factory
     )
 ) {
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
@@ -106,9 +103,6 @@ fun RecipeCollectionScreen(
         RecipeDetailsScreen(
             recipeId = selectedRecipe!!.id,
             navCtrl = navController,
-            recipeRepository = recipeRepository,
-            reviewRepository = reviewRepository,
-            userRepository = userRepository,
             onBack = { vm.selectRecipe(null) }
         )
     }

@@ -55,9 +55,7 @@ private val homeCategories = listOf(
 fun HomeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         HomeScreen(
-            navCtrl = rememberNavController(),
-            recipeRepository = PreviewUtils.createFakeRecipeRepo(),
-            userRepository = PreviewUtils.createFakeUserRepo()
+            navCtrl = rememberNavController()
         )
     }
 }
@@ -79,10 +77,8 @@ class HomeActions(val navCtrl: NavHostController) {
 @Composable
 fun HomeScreen(
     navCtrl: NavHostController,
-    recipeRepository: RecipeRepoInterface,
-    userRepository: UserRepoInterface,
     viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModel.provideFactory(recipeRepository, userRepository)
+        factory = HomeViewModel.Factory
     )
 ) {
     val actions = remember(navCtrl) { HomeActions(navCtrl) }
