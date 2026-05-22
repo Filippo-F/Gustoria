@@ -19,12 +19,18 @@ import com.example.gustoria.ui.utils.MultiPreview
 @Composable
 fun SignOutDialoguePreview() {
     GustoriaTheme {
-        SignOutDialogue(navController = rememberNavController())
+        SignOutDialogue(
+            onSignOut = {},
+            onDismiss = {}
+        )
     }
 }
 
 @Composable
-fun SignOutDialogue(navController: NavHostController) {
+fun SignOutDialogue(
+    onSignOut: () -> Unit,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
 
     Surface(
@@ -54,7 +60,7 @@ fun SignOutDialogue(navController: NavHostController) {
             Button(
                 onClick = {
                     Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
-                    navController.popBackStack()
+                    onSignOut()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -66,7 +72,7 @@ fun SignOutDialogue(navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(8.dp))
             TextButton(
-                onClick = { navController.popBackStack() },
+                onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Cancel")

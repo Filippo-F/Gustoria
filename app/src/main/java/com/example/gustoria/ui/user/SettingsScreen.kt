@@ -35,21 +35,22 @@ import com.example.gustoria.viewmodel.SettingsViewModel
 fun SettingsScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         SettingsScreen(
-            navController = rememberNavController()
+            viewModel = viewModel(),
+            onBack = {}
         )
     }
 }
 
 @Composable
 fun SettingsScreen(
-    navController: NavHostController,
-    viewModel: SettingsViewModel = viewModel()
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
             ThreeItemTopNavbar(
                 title = "Settings",
-                onBack = { navController.popBackStack() },
+                onBack = onBack,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)

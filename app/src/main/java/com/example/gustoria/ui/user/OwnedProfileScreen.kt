@@ -47,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.Profile
+import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
@@ -59,42 +59,29 @@ import com.example.gustoria.viewmodel.OwnedProfileViewModel
 fun OwnedProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         OwnedProfileScreen(
-            navController = rememberNavController()
+            user = null,
+            recipeCount = 0,
+            onBack = {},
+            onNavigateToProfileInfo = {},
+            onNavigateToSettings = {},
+            onNavigateToHelp = {},
+            onSignOut = {}
         )
-    }
-}
-
-class OwnedProfileActions(private val navController: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navController.popBackStack()
-    }
-    val onNavigateToProfileInfo: () -> Unit = {
-        navController.navigate(Profile.ProfileInfo.OverallProfileInfo)
-    }
-    val onNavigateToSettings: () -> Unit = {
-        navController.navigate(Profile.Settings)
-    }
-    val onNavigateToHelp: () -> Unit = {
-        navController.navigate(Profile.HelpAndFeedback)
-    }
-    val onSignOut: () -> Unit = {
-        navController.navigate(Profile.SignOut)
     }
 }
 
 @Composable
 fun OwnedProfileScreen(
-    navController: NavHostController,
-    viewModel: OwnedProfileViewModel = viewModel(
-        factory = OwnedProfileViewModel.Factory
-    )
+    user: User?,
+    recipeCount: Int,
+    onBack: () -> Unit,
+    onNavigateToProfileInfo: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToHelp: () -> Unit,
+    onSignOut: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
-    val actions = remember(navController) { OwnedProfileActions(navController) }
-
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val userState by viewModel.user.collectAsStateWithLifecycle()
-    val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -103,13 +90,12 @@ fun OwnedProfileScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 title = "My Profile",
-                onBack = { actions.navigateBack() }
+                onBack = onBack
             )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            val currentUser = userState
-            if (currentUser == null) {
+            if (user == null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -118,13 +104,13 @@ fun OwnedProfileScreen(
             }
 
             PresentationPane(
-                user = currentUser,
+                user = user,
                 recipeCount = recipeCount,
                 isLandscape = isLandscape,
-                onNavigateToProfileInfo = actions.onNavigateToProfileInfo,
-                onNavigateToSettings = actions.onNavigateToSettings,
-                onNavigateToHelp = actions.onNavigateToHelp,
-                onSignOut = actions.onSignOut
+                onNavigateToProfileInfo = onNavigateToProfileInfo,
+                onNavigateToSettings = onNavigateToSettings,
+                onNavigateToHelp = onNavigateToHelp,
+                onSignOut = onSignOut
             )
         }
     }

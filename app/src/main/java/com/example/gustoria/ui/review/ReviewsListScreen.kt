@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.gustoria.AddReview
 import com.example.gustoria.OtherProfile
-import com.example.gustoria.Profile
+import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.viewmodel.ReviewViewModel

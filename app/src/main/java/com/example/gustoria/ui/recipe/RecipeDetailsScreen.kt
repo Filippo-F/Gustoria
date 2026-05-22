@@ -39,7 +39,7 @@ import com.example.gustoria.RecipeDetails
 import com.example.gustoria.AddReview
 import com.example.gustoria.ReviewsList
 import com.example.gustoria.OtherProfile
-import com.example.gustoria.Profile
+import com.example.gustoria.ui.navigation.Profile
 import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe

@@ -81,28 +81,24 @@ import com.example.gustoria.viewmodel.OwnedProfileViewModel
 fun ProfileInfoScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         ProfileInfoScreen(
-            navController = rememberNavController()
+            user = null,
+            viewModel = viewModel(factory = OwnedProfileViewModel.Factory),
+            onBack = {},
+            onSave = {}
         )
-    }
-}
-
-class ProfileInfoActions(val navController: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navController.popBackStack()
     }
 }
 
 @Composable
 fun ProfileInfoScreen(
-    navController: NavHostController,
-    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
+    user: com.example.gustoria.dataclass.User?,
+    viewModel: OwnedProfileViewModel,
+    onBack: () -> Unit,
+    onSave: () -> Unit
 ) {
-    val actions = remember(navController) { ProfileInfoActions(navController) }
-    val userState by viewModel.user.collectAsStateWithLifecycle()
-
     // Initialize editing draft when user data is loaded
-    LaunchedEffect(userState) {
-        if (viewModel.editableUser == null && userState != null) {
+    LaunchedEffect(user) {
+        if (viewModel.editableUser == null && user != null) {
             viewModel.startEditing()
         }
     }
@@ -153,10 +149,7 @@ fun ProfileInfoScreen(
             topBar = {
                 ThreeItemTopNavbar(
                     title = "Profile Info",
-                    onBack = {
-                        viewModel.cancelEditing()
-                        actions.navigateBack()
-                    }
+                    onBack = onBack
                 )
             }
         ) { innerPadding ->
@@ -473,10 +466,7 @@ fun ProfileInfoScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     OutlinedButton(
-                        onClick = {
-                            viewModel.cancelEditing()
-                            actions.navigateBack()
-                        },
+                        onClick = onBack,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -486,7 +476,7 @@ fun ProfileInfoScreen(
                         onClick = {
                             viewModel.validateAndSave()
                             if (viewModel.validation.isValid) {
-                                actions.navigateBack()
+                                onSave()
                             }
                         },
                         modifier = Modifier.weight(1f),

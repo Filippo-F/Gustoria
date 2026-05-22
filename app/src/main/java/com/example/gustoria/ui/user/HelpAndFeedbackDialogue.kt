@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.Notifications
-import com.example.gustoria.Profile
+import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
@@ -23,22 +23,13 @@ import com.example.gustoria.ui.utils.MultiPreview
 @Composable
 fun HelpAndFeedbackDialoguePreview() {
     GustoriaTheme {
-        HelpAndFeedbackDialogue(navController = rememberNavController())
-    }
-}
-
-class HelpAndFeedbackActions(val navCtrl: NavHostController) {
-    val onNavigateBack: () -> Unit = {
-        navCtrl.popBackStack()
+        HelpAndFeedbackDialogue(onDismiss = {})
     }
 }
 
 @Composable
-fun HelpAndFeedbackDialogue(navController: NavHostController) {
+fun HelpAndFeedbackDialogue(onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val actions = remember(navController) {
-        HelpAndFeedbackActions(navController)
-    }
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -74,7 +65,7 @@ fun HelpAndFeedbackDialogue(navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(8.dp))
             TextButton(
-                onClick = actions.onNavigateBack,
+                onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Close")

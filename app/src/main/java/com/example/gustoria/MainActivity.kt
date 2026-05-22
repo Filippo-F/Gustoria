@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
-import com.example.gustoria.ui.AppBottomNavBar
+import com.example.gustoria.ui.navigation.AppBottomNavBar
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.remember
@@ -28,15 +28,25 @@ import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
-import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
-import com.example.gustoria.ui.user.OwnedProfileScreen
-import com.example.gustoria.ui.user.SignOutDialogue
-import com.example.gustoria.ui.user.SettingsScreen
-import com.example.gustoria.ui.user.ProfileInfoScreen
 import com.example.gustoria.ui.user.OtherProfileScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.SearchingScreen
+import com.example.gustoria.ui.navigation.Favourite
+import com.example.gustoria.ui.navigation.FavouriteCreatedDestination
+import com.example.gustoria.ui.navigation.FavouriteFilteringDestination
+import com.example.gustoria.ui.navigation.FavouriteSavedDestination
+import com.example.gustoria.ui.navigation.FavouriteTriedDestination
+import com.example.gustoria.ui.navigation.FeaturedSearchDestination
 import com.example.gustoria.ui.navigation.GustoriaNavigationActions
+import com.example.gustoria.ui.navigation.OverallProfileDestination
+import com.example.gustoria.ui.navigation.Profile
+import com.example.gustoria.ui.navigation.ProfileInfoDestination
+import com.example.gustoria.ui.navigation.Search
+import com.example.gustoria.ui.navigation.SearchedDestination
+import com.example.gustoria.ui.navigation.SearchingDestination
+import com.example.gustoria.ui.navigation.SettingsDestination
+import com.example.gustoria.ui.navigation.HelpAndFeedbackDestination
+import com.example.gustoria.ui.navigation.SignOutDestination
 import com.example.gustoria.ui.notifications.NotificationScreen
 import kotlinx.serialization.Serializable
 
@@ -66,16 +76,6 @@ object Home
 object Notifications
 
 @Serializable
-object Search {
-    @Serializable
-    object FeaturedSearch
-    @Serializable
-    object Searching
-    @Serializable
-    data class Searched(val recipeId: String? = null)
-}
-
-@Serializable
 object Create
 
 @Serializable
@@ -90,39 +90,7 @@ data class ReviewsList(val recipeId: String)
 data class OtherProfile(val userId: String)
 
 @Serializable
-object Profile {
-    @Serializable
-    object OverallProfile
-    @Serializable
-    object ProfileInfo {
-        @Serializable
-        object OverallProfileInfo
-        @Serializable
-        object CulinaryPreference
-        @Serializable
-        object DietPreference
-    }
-    @Serializable
-    object Settings
-    @Serializable
-    object HelpAndFeedback
-    @Serializable
-    object SignOut
-}
-@Serializable
 object Authentication
-
-@Serializable
-object Favourite {
-    @Serializable
-    object Saved
-    @Serializable
-    object Tried
-    @Serializable
-    object Created
-    @Serializable
-    object Filtering
-}
 
 @Composable
 fun GustoriaApp(
@@ -133,7 +101,8 @@ fun GustoriaApp(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
                 AppBottomNavBar(
-                    navCtrl = navController
+                    navCtrl = navController,
+                    navActions = navActions
                 )
             }
         },
@@ -168,54 +137,26 @@ fun GustoriaApp(
                         val parentEntry = remember(backStackEntry) {
                             navController.getBackStackEntry<Search>()
                         }
-                        val searchVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
+                        val recipeVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeViewModel.Factory
                         )
-
-                        com.example.gustoria.ui.FeaturedSearchScreen(
-                            recipeVm = searchVm,
-                            onSearchClick = {
-                                navController.navigate(Search.Searching)
-                            },
-                            onCategoryClick = { categoryName ->
-                                searchVm.resetFilters()
-                                searchVm.updateNameQuery(categoryName)
-                                navController.navigate(Search.Searched())
-                            },
-                            onRecentSearchClick = { query ->
-                                searchVm.resetFilters()
-                                searchVm.updateNameQuery(query)
-                                navController.navigate(Search.Searched())
-                            },
-                            onTrendingTagClick = { tag ->
-                                searchVm.resetFilters()
-                                searchVm.updateNameQuery(tag.removePrefix("#"))
-                                navController.navigate(Search.Searched())
-                            }
+                        FeaturedSearchDestination(
+                            navActions = navActions,
+                            recipeViewModel = recipeVm
                         )
                     }
                     composable<Search.Searching> { backStackEntry ->
                         val parentEntry = remember(backStackEntry) {
                             navController.getBackStackEntry<Search>()
                         }
-                        val searchVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
+                        val recipeVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeViewModel.Factory
                         )
-                        val filters by searchVm.filters.collectAsStateWithLifecycle()
-                        val recipes by searchVm.filteredRecipes.collectAsStateWithLifecycle()
-
-                        SearchingScreen(
-                            filters = filters,
-                            resultCount = recipes.size,
-                            onClose = { navController.popBackStack() },
-                            onShowResultsClick = { navController.navigate(Search.Searched()) },
-                            onResetFilters = searchVm::resetFilters,
-                            onToggleDifficulty = searchVm::toggleDifficulty,
-                            onToggleCost = searchVm::toggleCost,
-                            onNameQueryChange = searchVm::updateNameQuery,
-                            onIngredientQueryChange = searchVm::updateIngredientQuery
+                        SearchingDestination(
+                            navActions = navActions,
+                            viewModel = recipeVm
                         )
                     }
                     composable<Search.Searched> { backStackEntry ->
@@ -223,15 +164,14 @@ fun GustoriaApp(
                         val parentEntry = remember(backStackEntry) {
                             navController.getBackStackEntry<Search>()
                         }
-                        val searchVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
+                        val recipeVm: com.example.gustoria.viewmodel.RecipeViewModel = viewModel(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeViewModel.Factory
                         )
-
-                        RecipeScreen(
-                            navCtrl = navController,
-                            initialRecipeId = args.recipeId,
-                            viewModel = searchVm
+                        SearchedDestination(
+                            recipeId = args.recipeId,
+                            navActions = navActions,
+                            viewModel = recipeVm
                         )
                     }
                 }
@@ -292,10 +232,9 @@ fun GustoriaApp(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.Factory
                         )
-                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            initialTab = 0,
-                            navController = navController,
-                            vm = collectionVm
+                        FavouriteSavedDestination(
+                            navActions = navActions,
+                            viewModel = collectionVm
                         )
                     }
                     composable<Favourite.Tried> { backStackEntry ->
@@ -306,10 +245,9 @@ fun GustoriaApp(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.Factory
                         )
-                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            initialTab = 1,
-                            navController = navController,
-                            vm = collectionVm
+                        FavouriteTriedDestination(
+                            navActions = navActions,
+                            viewModel = collectionVm
                         )
                     }
                     composable<Favourite.Created> { backStackEntry ->
@@ -320,10 +258,9 @@ fun GustoriaApp(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.Factory
                         )
-                        com.example.gustoria.ui.recipe.RecipeCollectionScreen(
-                            initialTab = 2,
-                            navController = navController,
-                            vm = collectionVm
+                        FavouriteCreatedDestination(
+                            navActions = navActions,
+                            viewModel = collectionVm
                         )
                     }
                     composable<Favourite.Filtering> { backStackEntry ->
@@ -334,34 +271,20 @@ fun GustoriaApp(
                             parentEntry,
                             factory = com.example.gustoria.viewmodel.RecipeCollectionViewModel.Factory
                         )
-                        val filters by collectionVm.filters.collectAsStateWithLifecycle()
-                        val recipes by collectionVm.recipesToShow.collectAsStateWithLifecycle()
-
-                        SearchingScreen(
-                            filters = filters,
-                            resultCount = recipes.size,
-                            onClose = { navController.popBackStack() },
-                            onShowResultsClick = { navController.popBackStack() }, // Goes back to list
-                            onResetFilters = collectionVm::resetFilters,
-                            onToggleDifficulty = collectionVm::toggleDifficulty,
-                            onToggleCost = collectionVm::toggleCost,
-                            onNameQueryChange = collectionVm::setNameQuery,
-                            onIngredientQueryChange = collectionVm::setIngredientQuery
+                        FavouriteFilteringDestination(
+                            navActions = navActions,
+                            viewModel = collectionVm
                         )
                     }
                 }
 
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
-                        OwnedProfileScreen(
-                            navController = navController
-                        )
+                        OverallProfileDestination(navActions)
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
                         composable<Profile.ProfileInfo.OverallProfileInfo> {
-                            ProfileInfoScreen(
-                                navController = navController
-                            )
+                            ProfileInfoDestination(navActions)
                         }
                         dialog<Profile.ProfileInfo.CulinaryPreference> {
                             Text("Culinary Preference")
@@ -371,13 +294,13 @@ fun GustoriaApp(
                         }
                     }
                     composable<Profile.Settings> {
-                        SettingsScreen(navController = navController)
+                        SettingsDestination(navActions)
                     }
                     dialog<Profile.HelpAndFeedback> {
-                        HelpAndFeedbackDialogue(navController = navController)
+                        HelpAndFeedbackDestination(navActions)
                     }
                     dialog<Profile.SignOut> {
-                        SignOutDialogue(navController = navController)
+                        SignOutDestination(navActions)
                     }
                 }
             }

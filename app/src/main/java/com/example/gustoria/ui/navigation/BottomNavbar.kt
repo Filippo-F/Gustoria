@@ -1,4 +1,4 @@
-package com.example.gustoria.ui
+package com.example.gustoria.ui.navigation
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,44 +28,15 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.gustoria.Create
-import com.example.gustoria.Favourite
-import com.example.gustoria.Favourite.Saved
 import com.example.gustoria.Home
-import com.example.gustoria.Profile
-import com.example.gustoria.Search
-
-class BottomNavBarActions (
-    val navCtrl : NavHostController
-) {
-    val navigateHome: () -> Unit = {
-        navCtrl.navigate(Home)
-    }
-    val navigateSearch: () -> Unit = {
-        navCtrl.navigate(Search)
-    }
-    val navigateCreate: () -> Unit = {
-        navCtrl.navigate(Create)
-    }
-    val navigateFavourite: () -> Unit = {
-        navCtrl.navigate(Saved)
-    }
-    val navigateProfile: () -> Unit = {
-        navCtrl.navigate(Profile)
-    }
-    val navigateBack: () -> Unit = {
-        navCtrl.popBackStack()
-    }
-}
 
 @Composable
 fun AppBottomNavBar(
     navCtrl: NavHostController,
+    navActions: GustoriaNavigationActions
 ) {
     val currentBackStackEntry by navCtrl.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val actions = remember(navCtrl) {
-        BottomNavBarActions(navCtrl)
-    }
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -78,35 +48,35 @@ fun AppBottomNavBar(
             label = "EXPLORE",
             selected = currentDestination?.hasRoute<Home>() == true,
             isCreate = false,
-            onClick = actions.navigateHome
+            onClick = navActions::navigateToHome
         )
         NavItem(
             icon = Icons.Outlined.Search,
             label = "SEARCH",
             selected = currentDestination?.hierarchy?.any { it.hasRoute<Search>() } == true,
             isCreate = false,
-            onClick = actions.navigateSearch
+            onClick = navActions::navigateToSearch
         )
         NavItem(
             icon = Icons.Filled.AddCircle,
             label = "CREATE",
             selected = currentDestination?.hasRoute<Create>() == true,
             isCreate = true,
-            onClick = actions.navigateCreate
+            onClick = navActions::navigateToCreateRecipe
         )
         NavItem(
             icon = Icons.Filled.Favorite,
             label = "FAVORITES",
             selected = currentDestination?.hierarchy?.any { it.hasRoute<Favourite>() } == true,
             isCreate = false,
-            onClick = actions.navigateFavourite
+            onClick = navActions::navigateToFavouriteSaved
         )
         NavItem(
             icon = Icons.Outlined.Person,
             label = "PROFILE",
             selected = currentDestination?.hierarchy?.any { it.hasRoute<Profile>() } == true,
             isCreate = false,
-            onClick = actions.navigateProfile
+            onClick = navActions::navigateToProfile
         )
     }
 }

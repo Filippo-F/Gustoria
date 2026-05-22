@@ -30,17 +30,21 @@ import coil.compose.AsyncImage
 import com.example.gustoria.R
 import com.example.gustoria.viewmodel.SearchViewModel
 
+import com.example.gustoria.viewmodel.RecentSearch
+import com.example.gustoria.viewmodel.TrendingCategory
+
 @Composable
 fun FeaturedSearchScreen(
+    recentSearches: List<RecentSearch>,
+    trendingSearches: List<String>,
+    trendingCategories: List<TrendingCategory>,
     onSearchClick: () -> Unit,
     onCategoryClick: (String) -> Unit,
-    onRecentSearchClick: (String) -> Unit = {},
-    onTrendingTagClick: (String) -> Unit = {},
-    recipeVm: com.example.gustoria.viewmodel.RecipeViewModel? = null,
-    vm: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
+    onRecentSearchClick: (String) -> Unit,
+    onTrendingTagClick: (String) -> Unit,
+    onClearAllRecentSearches: () -> Unit,
+    onRemoveRecentSearch: (String) -> Unit
 ) {
-    val recentSearches by vm.recentSearches.collectAsStateWithLifecycle()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +93,7 @@ fun FeaturedSearchScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val chunkedTags = vm.trendingSearches.chunked(2)
+                    val chunkedTags = trendingSearches.chunked(2)
                     chunkedTags.forEach { rowTags ->
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             rowTags.forEach { tag ->
@@ -114,7 +118,7 @@ fun FeaturedSearchScreen(
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         Text("RECENT SEARCHES", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         Spacer(modifier = Modifier.weight(1f))
-                        TextButton(onClick = vm::clearAllRecentSearches, contentPadding = PaddingValues(0.dp)) {
+                        TextButton(onClick = onClearAllRecentSearches, contentPadding = PaddingValues(0.dp)) {
                             Text("CLEAR ALL", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }
@@ -139,7 +143,7 @@ fun FeaturedSearchScreen(
                             Text(text = recent.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                             Text(text = recent.subtitle, color = Color.Gray, fontSize = 10.sp)
                         }
-                        IconButton(onClick = { vm.removeRecentSearch(recent.id) }) {
+                        IconButton(onClick = { onRemoveRecentSearch(recent.id) }) {
                             Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.LightGray)
                         }
                     }
@@ -153,7 +157,7 @@ fun FeaturedSearchScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(vm.trendingCategories) { category ->
+                    items(trendingCategories) { category ->
                         Box(
                             modifier = Modifier
                                 .width(140.dp)

@@ -41,7 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.Edit
 import com.example.gustoria.Home
-import com.example.gustoria.Search
+import com.example.gustoria.ui.navigation.Search
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
@@ -57,57 +57,32 @@ import com.example.gustoria.ui.utils.PreviewUtils
 fun RecipeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         RecipeScreen(
-            navCtrl = rememberNavController()
+            recipes = emptyList(),
+            filters = RecipeFilters(),
+            onBack = {},
+            onAdjustFilters = {},
+            onRecipeClick = {},
+            onRemoveFilter = {}
         )
-    }
-}
-
-class RecipeScreenActions(val navCtrl : NavHostController) {
-    val goHome: () -> Unit = {
-        navCtrl.navigate(Home)
-    }
-
-    val navigateBack: () -> Unit = {
-        navCtrl.popBackStack()
-    }
-
-    val onEditRecipe: (String) -> Unit = { id ->
-        navCtrl.navigate(Edit(id))
-    }
-    val onAdjustFilters: () -> Unit = {
-        navCtrl.navigate(Search.Searching) { launchSingleTop = true }
     }
 }
 
 @Composable
 fun RecipeScreen(
-    navCtrl: NavHostController,
-    initialRecipeId: String? = null,
-    viewModel: RecipeViewModel = viewModel(
-        factory = RecipeViewModel.Factory
-    )
+    recipes: List<Recipe>,
+    filters: RecipeFilters,
+    onBack: () -> Unit,
+    onAdjustFilters: () -> Unit,
+    onRecipeClick: (String) -> Unit,
+    onRemoveFilter: (String) -> Unit
 ) {
-    val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
-    val filters by viewModel.filters.collectAsStateWithLifecycle()
-
-    val actions = remember(navCtrl) {
-        RecipeScreenActions(navCtrl)
-    }
-
     RecipeListContent(
-        recipes = filteredRecipes,
+        recipes = recipes,
         filters = filters,
-        onBack = actions.navigateBack,
-        onAdjustFilters = actions.onAdjustFilters,
-        onRecipeClick = { id ->
-            navCtrl.navigate(com.example.gustoria.RecipeDetails(id))
-        },
-        onRemoveFilter = { filterLabel ->
-            if (filterLabel in ALL_COSTS) viewModel.toggleCost(filterLabel)
-            else if (filterLabel in ALL_DIFFICULTIES) viewModel.toggleDifficulty(filterLabel)
-            else if (filterLabel == filters.nameQuery) viewModel.updateNameQuery("")
-            else if (filterLabel == filters.ingredientQuery) viewModel.updateIngredientQuery("")
-        }
+        onBack = onBack,
+        onAdjustFilters = onAdjustFilters,
+        onRecipeClick = onRecipeClick,
+        onRemoveFilter = onRemoveFilter
     )
 }
 

@@ -24,7 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gustoria.Create
 import com.example.gustoria.Edit
-import com.example.gustoria.Favourite
+import com.example.gustoria.ui.navigation.Favourite
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -34,66 +34,36 @@ import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
 
-class RecipeCollectionActions(val navController: NavHostController) {
-    val onCreateNewRecipe: () -> Unit = {
-        navController.navigate(Create)
-    }
-    val onEditRecipe: (String) -> Unit = { id ->
-        navController.navigate(Edit(id))
-    }
-    val onOpenFilters: () -> Unit = {
-        navController.navigate(Favourite.Filtering) { launchSingleTop = true }
-    }
-    val onTabChange: (Int) -> Unit = { tabIndex ->
-        when (tabIndex) {
-            0 -> navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
-            1 -> navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
-            2 -> navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
-        }
-    }
-    val onRecipeClick: (String) -> Unit = { id ->
-        navController.navigate(RecipeDetails(id))
-    }
-}
-
 @Composable
 fun RecipeCollectionScreen(
-    initialTab: Int = 0,
-    navController: NavHostController,
-    vm: RecipeCollectionViewModel = viewModel(
-        factory = RecipeCollectionViewModel.Factory
-    )
+    recipes: List<Recipe>,
+    filters: RecipeFilters,
+    currentTab: Int,
+    onTabSelected: (Int) -> Unit,
+    onCreateNewRecipe: () -> Unit,
+    onEditRecipe: (String) -> Unit,
+    onRecipeClick: (String) -> Unit,
+    onDeleteRecipe: (String) -> Unit,
+    onNameQueryChange: (String) -> Unit,
+    onIngredientQueryChange: (String) -> Unit,
+    onToggleCost: (String) -> Unit,
+    onToggleDifficulty: (String) -> Unit,
+    onOpenFilters: () -> Unit
 ) {
-    val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
-    val filters by vm.filters.collectAsStateWithLifecycle()
-    val currentTab by vm.currentTab.collectAsStateWithLifecycle()
-
-    val actions = remember(navController) { RecipeCollectionActions(navController) }
-
-    // Sync initial tab
-    LaunchedEffect(initialTab) {
-        vm.setTab(initialTab)
-    }
-
     RecipeCollectionListContent(
         recipes = recipes,
         filters = filters,
         currentTab = currentTab,
-        onTabSelected = {
-            vm.setTab(it)
-            actions.onTabChange(it)
-        },
-        onCreateNewRecipe = actions.onCreateNewRecipe,
-        onEditRecipe = actions.onEditRecipe,
-        onRecipeClick = { id ->
-            navController.navigate(com.example.gustoria.RecipeDetails(id))
-        },
-        onDeleteRecipe = vm::delete,
-        onNameQueryChange = vm::setNameQuery,
-        onIngredientQueryChange = vm::setIngredientQuery,
-        onToggleCost = vm::toggleCost,
-        onToggleDifficulty = vm::toggleDifficulty,
-        onOpenFilters = actions.onOpenFilters
+        onTabSelected = onTabSelected,
+        onCreateNewRecipe = onCreateNewRecipe,
+        onEditRecipe = onEditRecipe,
+        onRecipeClick = onRecipeClick,
+        onDeleteRecipe = onDeleteRecipe,
+        onNameQueryChange = onNameQueryChange,
+        onIngredientQueryChange = onIngredientQueryChange,
+        onToggleCost = onToggleCost,
+        onToggleDifficulty = onToggleDifficulty,
+        onOpenFilters = onOpenFilters
     )
 }
 
