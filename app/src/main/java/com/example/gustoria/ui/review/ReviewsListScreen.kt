@@ -23,40 +23,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.gustoria.AddReview
-import com.example.gustoria.OtherProfile
+import com.example.gustoria.ui.navigation.OtherProfile
 import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.viewmodel.ReviewViewModel
 
-class ReviewsListActions(private val navController: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navController.popBackStack()
-    }
-
-    val navigateToAddReview: (String) -> Unit = { recipeId ->
-        navController.navigate(AddReview(recipeId))
-    }
-
-    val navigateToProfile: (String) -> Unit = { userId ->
-        navController.navigate(OtherProfile(userId))
-    }
-
-    val navigateToOwnedProfile: () -> Unit = {
-        navController.navigate(Profile)
-    }
-}
-
 @Composable
 fun ReviewsListScreen(
-    recipeId: String,
-    navController: NavHostController,
-    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
+    reviews: List<Review>,
+    onBack: () -> Unit,
+    onWriteReview: () -> Unit,
+    onProfileClick: (String) -> Unit
 ) {
-    val actions = remember(navController) { ReviewsListActions(navController) }
-    val reviews by remember(recipeId) { viewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
-
     val average = remember(reviews) {
         if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
     }
@@ -68,7 +47,7 @@ fun ReviewsListScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 title = "Reviews",
-                onBack = actions.navigateBack
+                onBack = onBack
             )
         }
     ) { innerPadding ->
@@ -124,9 +103,7 @@ fun ReviewsListScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
-                        onClick = {
-                            actions.navigateToAddReview(recipeId)
-                        },
+                        onClick = onWriteReview,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
@@ -158,15 +135,7 @@ fun ReviewsListScreen(
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     items(reviews, key = { it.id }) { review ->
-                        ReviewRow(review = review, onProfileClick = { userId ->
-                            if (userId.isNotBlank()) {
-                                if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
-                                    actions.navigateToOwnedProfile()
-                                } else {
-                                    actions.navigateToProfile(userId)
-                                }
-                            }
-                        })
+                        ReviewRow(review = review, onProfileClick = onProfileClick)
                     }
                 }
             }

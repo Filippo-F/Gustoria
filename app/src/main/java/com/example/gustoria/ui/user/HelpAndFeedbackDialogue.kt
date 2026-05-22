@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.Notifications
+import com.example.gustoria.ui.navigation.Notifications
 import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.ui.theme.GustoriaTheme

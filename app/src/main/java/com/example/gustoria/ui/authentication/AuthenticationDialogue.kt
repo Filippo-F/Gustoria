@@ -35,18 +35,19 @@ import com.example.gustoria.viewmodel.AuthenticationViewModel
 @Composable
 fun AuthScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
-        AuthenticationDialogue(onAuthSuccess = {})
+        AuthenticationDialogue(
+            onAuthSuccess = {},
+            viewModel = viewModel(factory = AuthenticationViewModel.Factory)
+        )
     }
 }
 
 @Composable
 fun AuthenticationDialogue(
     onAuthSuccess: (String) -> Unit,
-    vm: AuthenticationViewModel = viewModel(
-        factory = AuthenticationViewModel.Factory
-    )
+    viewModel: AuthenticationViewModel
 ) {
-    val state by vm.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Surface(
         shape = RoundedCornerShape(28.dp),
@@ -84,22 +85,22 @@ fun AuthenticationDialogue(
             if (state.mode == AuthMode.LOGIN) {
                 LoginView(
                     state = state,
-                    onEmailChange = vm::onEmailChange,
-                    onPasswordChange = vm::onPasswordChange,
-                    onLoginClick = { vm.authenticate(onAuthSuccess) },
-                    onSwitchToRegister = { vm.switchMode(AuthMode.REGISTER) }
+                    onEmailChange = viewModel::onEmailChange,
+                    onPasswordChange = viewModel::onPasswordChange,
+                    onLoginClick = { viewModel.authenticate(onAuthSuccess) },
+                    onSwitchToRegister = { viewModel.switchMode(AuthMode.REGISTER) }
                 )
             } else {
                 RegisterView(
                     state = state,
-                    onEmailChange = vm::onEmailChange,
-                    onPasswordChange = vm::onPasswordChange,
-                    onConfirmPasswordChange = vm::onConfirmPasswordChange,
-                    onNicknameChange = vm::onNicknameChange,
-                    onNameChange = vm::onNameChange,
-                    onSurnameChange = vm::onSurnameChange,
-                    onRegisterClick = { vm.authenticate(onAuthSuccess) },
-                    onSwitchToLogin = { vm.switchMode(AuthMode.LOGIN) }
+                    onEmailChange = viewModel::onEmailChange,
+                    onPasswordChange = viewModel::onPasswordChange,
+                    onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
+                    onNicknameChange = viewModel::onNicknameChange,
+                    onNameChange = viewModel::onNameChange,
+                    onSurnameChange = viewModel::onSurnameChange,
+                    onRegisterClick = { viewModel.authenticate(onAuthSuccess) },
+                    onSwitchToLogin = { viewModel.switchMode(AuthMode.LOGIN) }
                 )
             }
         }

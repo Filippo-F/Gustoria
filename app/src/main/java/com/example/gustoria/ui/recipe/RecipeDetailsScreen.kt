@@ -36,10 +36,8 @@ import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
 import com.example.gustoria.Edit
 import com.example.gustoria.RecipeDetails
-import com.example.gustoria.AddReview
-import com.example.gustoria.ReviewsList
-import com.example.gustoria.OtherProfile
-import com.example.gustoria.ui.navigation.Profile
+import com.example.gustoria.ui.navigation.OtherProfile
+import com.example.gustoria.ui.navigation.GustoriaNavigationActions
 import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
@@ -47,32 +45,11 @@ import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
 import com.example.gustoria.data.auth.SessionManager
 
-class RecipeDetailsActions(val navController: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navController.popBackStack()
-    }
-
-    val onWriteReview: (String) -> Unit = { recipeId ->
-        navController.navigate(AddReview(recipeId))
-    }
-
-    val onViewReviews: (String) -> Unit = { recipeId ->
-        navController.navigate(ReviewsList(recipeId))
-    }
-
-    val navigateToProfile: (String) -> Unit = { userId ->
-        navController.navigate(OtherProfile(userId))
-    }
-
-    val navigateToOwnedProfile: () -> Unit = {
-        navController.navigate(Profile)
-    }
-}
-
 @Composable
 fun RecipeDetailsScreen(
     recipeId: String,
     navCtrl: NavHostController,
+    navActions: GustoriaNavigationActions,
     onBack: (() -> Unit)? = null,
     recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.Factory),
     reviewViewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
@@ -83,8 +60,7 @@ fun RecipeDetailsScreen(
     val reviews by remember(recipeId) { reviewViewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
     val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
 
-    val actions = remember(navCtrl) { RecipeDetailsActions(navCtrl) }
-    val backAction = onBack ?: actions.navigateBack
+    val backAction = onBack ?: navActions::navigateBack
 
     LaunchedEffect(recipeId) {
         recipeViewModel.selectRecipe(recipeId)
@@ -102,14 +78,14 @@ fun RecipeDetailsScreen(
             isTried = isTried,
             onToggleTried = { recipeViewModel.toggleTried(r.id) },
             onBackClick = backAction,
-            onWriteReview = { actions.onWriteReview(r.id) },
-            onViewReviews = { actions.onViewReviews(r.id) },
+            onWriteReview = { navActions.navigateToAddReview(r.id) },
+            onViewReviews = { navActions.navigateToReviewsList(r.id) },
             onProfileClick = { userId ->
                 if (userId.isNotBlank()) {
                     if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
-                        actions.navigateToOwnedProfile()
+                        navActions.navigateToProfile()
                     } else {
-                        actions.navigateToProfile(userId)
+                        navActions.navigateToOtherProfile(userId)
                     }
                 }
             },
@@ -119,12 +95,10 @@ fun RecipeDetailsScreen(
             },
             onDuplicateClick = {
                 recipeViewModel.duplicateRecipe(r) { newId ->
-                    navCtrl.navigate(Edit(newId)) {
-                        popUpTo(RecipeDetails(r.id)) { inclusive = true }
-                    }
+                    navActions.navigateToEditRecipe(newId)
                 }
             },
-            onEditClick = { navCtrl.navigate(Edit(r.id)) }
+            onEditClick = { navActions.navigateToEditRecipe(r.id) }
         )
     }
 }

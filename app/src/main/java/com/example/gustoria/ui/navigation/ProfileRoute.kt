@@ -11,7 +11,12 @@ import com.example.gustoria.ui.user.SettingsScreen
 import com.example.gustoria.ui.user.SignOutDialogue
 import com.example.gustoria.viewmodel.OwnedProfileViewModel
 import com.example.gustoria.viewmodel.SettingsViewModel
+import com.example.gustoria.ui.user.OtherProfileScreen
+import com.example.gustoria.viewmodel.OtherProfileViewModel
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class OtherProfile(val userId: String)
 
 @Serializable
 object Profile {
@@ -32,6 +37,30 @@ object Profile {
     object HelpAndFeedback
     @Serializable
     object SignOut
+}
+
+@Composable
+fun OtherProfileDestination(
+    userId: String,
+    navActions: GustoriaNavigationActions,
+    viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = OtherProfileViewModel.factory(userId)
+    )
+) {
+    val user by viewModel.user.collectAsStateWithLifecycle()
+    val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
+
+    OtherProfileScreen(
+        user = user,
+        recipeCount = recipeCount,
+        currentTab = viewModel.currentTab,
+        isFollowing = viewModel.isFollowing,
+        collections = viewModel.collections,
+        recentActivities = viewModel.recentActivities,
+        onBack = navActions::navigateBack,
+        onToggleFollow = viewModel::toggleFollow,
+        onChangeTab = viewModel::changeTab
+    )
 }
 
 @Composable

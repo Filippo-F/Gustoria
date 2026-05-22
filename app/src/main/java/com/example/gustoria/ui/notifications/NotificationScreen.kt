@@ -25,26 +25,18 @@ import com.example.gustoria.ui.utils.MultiPreview
 fun NotificationScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         NotificationScreen(
-            navController = rememberNavController()
+            onBack = {}
         )
     }
 }
 
-class NotificationActions(val navCtrl: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navCtrl.popBackStack()
-    }
-}
-
 @Composable
-fun NotificationScreen(navController: NavHostController) {
-    val actions = remember(navController) { NotificationActions(navController) }
-
+fun NotificationScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             ThreeItemTopNavbar(
                 title = "Notifications",
-                onBack = actions.navigateBack,
+                onBack = onBack,
                 modifier = Modifier.height(56.dp)
             )
         }

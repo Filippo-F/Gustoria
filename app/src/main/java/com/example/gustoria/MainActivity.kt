@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.gustoria.ui.theme.GustoriaTheme
 import androidx.compose.foundation.layout.Box
@@ -28,9 +27,11 @@ import com.example.gustoria.ui.authentication.AuthenticationDialogue
 import com.example.gustoria.ui.recipe.EditRecipeScreen
 import com.example.gustoria.ui.recipe.RecipeDetailsScreen
 import com.example.gustoria.ui.recipe.RecipeScreen
-import com.example.gustoria.ui.user.OtherProfileScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.SearchingScreen
+import com.example.gustoria.ui.navigation.AddReviewDestination
+import com.example.gustoria.ui.navigation.Authentication
+import com.example.gustoria.ui.navigation.AuthenticationDestination
 import com.example.gustoria.ui.navigation.Favourite
 import com.example.gustoria.ui.navigation.FavouriteCreatedDestination
 import com.example.gustoria.ui.navigation.FavouriteFilteringDestination
@@ -38,15 +39,23 @@ import com.example.gustoria.ui.navigation.FavouriteSavedDestination
 import com.example.gustoria.ui.navigation.FavouriteTriedDestination
 import com.example.gustoria.ui.navigation.FeaturedSearchDestination
 import com.example.gustoria.ui.navigation.GustoriaNavigationActions
+import com.example.gustoria.ui.navigation.Home
+import com.example.gustoria.ui.navigation.HomeDestination
+import com.example.gustoria.ui.navigation.Notifications
+import com.example.gustoria.ui.navigation.NotificationsDestination
 import com.example.gustoria.ui.navigation.OverallProfileDestination
 import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.ui.navigation.ProfileInfoDestination
+import com.example.gustoria.ui.navigation.Review
+import com.example.gustoria.ui.navigation.ReviewsListDestination
 import com.example.gustoria.ui.navigation.Search
 import com.example.gustoria.ui.navigation.SearchedDestination
 import com.example.gustoria.ui.navigation.SearchingDestination
 import com.example.gustoria.ui.navigation.SettingsDestination
 import com.example.gustoria.ui.navigation.HelpAndFeedbackDestination
 import com.example.gustoria.ui.navigation.SignOutDestination
+import com.example.gustoria.ui.navigation.OtherProfile
+import com.example.gustoria.ui.navigation.OtherProfileDestination
 import com.example.gustoria.ui.notifications.NotificationScreen
 import kotlinx.serialization.Serializable
 
@@ -70,27 +79,12 @@ class MainActivity : ComponentActivity() {
 
 
 @Serializable
-object Home
-
-@Serializable
-object Notifications
-
-@Serializable
 object Create
 
 @Serializable
 data class Edit(val recipeId: String)
 @Serializable
 data class RecipeDetails(val recipeId: String)
-@Serializable
-data class AddReview(val recipeId: String)
-@Serializable
-data class ReviewsList(val recipeId: String)
-@Serializable
-data class OtherProfile(val userId: String)
-
-@Serializable
-object Authentication
 
 @Composable
 fun GustoriaApp(
@@ -116,19 +110,16 @@ fun GustoriaApp(
                     // To have the dialog width not stuck at fixed size
                     dialogProperties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
                 ) {
-                    AuthenticationDialogue(
-                        onAuthSuccess = {},
+                    AuthenticationDestination(
+                        onAuthSuccess = {}
                     )
-
                 }
                 composable<Home> {
-                    HomeScreen(
-                        navCtrl = navController
-                    )
+                    HomeDestination(navActions = navActions)
                 }
 
                 composable<Notifications> {
-                    NotificationScreen(navController = navController)
+                    NotificationsDestination(navActions = navActions)
                 }
 
 
@@ -195,31 +186,50 @@ fun GustoriaApp(
                     val args: RecipeDetails = backStackEntry.toRoute()
                     RecipeDetailsScreen(
                         recipeId = args.recipeId,
-                        navCtrl = navController
+                        navCtrl = navController,
+                        navActions = navActions
                     )
                 }
 
-                composable<AddReview> { backStackEntry ->
-                    val args: AddReview = backStackEntry.toRoute()
-                    com.example.gustoria.ui.review.ReviewFormScreen(
-                        recipeId = args.recipeId,
-                        navController = navController
-                    )
-                }
+                navigation<Review>(startDestination = Review.ReviewsList("")) {
+                    composable<Review.AddReview> { backStackEntry ->
+                        val args: Review.AddReview = backStackEntry.toRoute()
+                        val parentEntry = remember(backStackEntry) {
+                            navController.getBackStackEntry<Review>()
+                        }
+                        val reviewVm: com.example.gustoria.viewmodel.ReviewViewModel = viewModel(
+                            parentEntry,
+                            factory = com.example.gustoria.viewmodel.ReviewViewModel.Factory
+                        )
+                        AddReviewDestination(
+                            recipeId = args.recipeId,
+                            navActions = navActions,
+                            viewModel = reviewVm
+                        )
+                    }
 
-                composable<ReviewsList> { backStackEntry ->
-                    val args: ReviewsList = backStackEntry.toRoute()
-                    com.example.gustoria.ui.review.ReviewsListScreen(
-                        recipeId = args.recipeId,
-                        navController = navController
-                    )
+                    composable<Review.ReviewsList> { backStackEntry ->
+                        val args: Review.ReviewsList = backStackEntry.toRoute()
+                        val parentEntry = remember(backStackEntry) {
+                            navController.getBackStackEntry<Review>()
+                        }
+                        val reviewVm: com.example.gustoria.viewmodel.ReviewViewModel = viewModel(
+                            parentEntry,
+                            factory = com.example.gustoria.viewmodel.ReviewViewModel.Factory
+                        )
+                        ReviewsListDestination(
+                            recipeId = args.recipeId,
+                            navActions = navActions,
+                            viewModel = reviewVm
+                        )
+                    }
                 }
 
                 composable<OtherProfile> { backStackEntry ->
                     val args: OtherProfile = backStackEntry.toRoute()
-                    OtherProfileScreen(
-                        viewedUserId = args.userId,
-                        onBack = { navController.popBackStack() }
+                    OtherProfileDestination(
+                        userId = args.userId,
+                        navActions = navActions
                     )
                 }
 

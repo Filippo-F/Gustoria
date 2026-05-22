@@ -32,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.Notifications
 import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
@@ -55,38 +54,27 @@ private val homeCategories = listOf(
 fun HomeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         HomeScreen(
-            navCtrl = rememberNavController()
+            recommendedRecipes = emptyList(),
+            myRecipes = emptyList(),
+            selectedCategory = "All",
+            onNavigateToProfile = {},
+            onNavigateToNotifications = {},
+            onNavigateToRecipeDetails = {},
+            onCategorySelected = {}
         )
-    }
-}
-
-class HomeActions(val navCtrl: NavHostController) {
-    // naviga al profilo utente corrente
-    val navigateToProfile: () -> Unit = {
-        navCtrl.navigate(Profile)
-    }
-    // naviga direttamente ai dettagli della ricetta
-    val navigateToRecipeDetails: (String) -> Unit = { recipeId ->
-        navCtrl.navigate(RecipeDetails(recipeId))
-    }
-    val navigateToNotifications: () -> Unit = {
-        navCtrl.navigate(Notifications)
     }
 }
 
 @Composable
 fun HomeScreen(
-    navCtrl: NavHostController,
-    viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModel.Factory
-    )
+    recommendedRecipes: List<Recipe>,
+    myRecipes: List<Recipe>,
+    selectedCategory: String,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToRecipeDetails: (String) -> Unit,
+    onCategorySelected: (String) -> Unit
 ) {
-    val actions = remember(navCtrl) { HomeActions(navCtrl) }
-
-    val recommendedRecipes by viewModel.recommendedRecipes.collectAsStateWithLifecycle()
-    val myRecipes by viewModel.myRecipes.collectAsStateWithLifecycle()
-    val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
-
     LazyColumn(modifier = Modifier.fillMaxSize()) {
 
         // variante TopNavbar
@@ -105,7 +93,7 @@ fun HomeScreen(
                     )
                 },
                 leadingContent = {
-                    IconButton(onClick = actions.navigateToProfile) {
+                    IconButton(onClick = onNavigateToProfile) {
                         Icon(
                             imageVector = Icons.Outlined.Person,
                             contentDescription = "Profile",
@@ -114,7 +102,7 @@ fun HomeScreen(
                     }
                 },
                 trailingContent = {
-                    IconButton(onClick = actions.navigateToNotifications) {
+                    IconButton(onClick = onNavigateToNotifications) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
                             contentDescription = "Notifications",
@@ -139,7 +127,7 @@ fun HomeScreen(
             } else {
                 RecommendedRow(
                     recipes = recommendedRecipes,
-                    onRecipeClick = { id -> actions.navigateToRecipeDetails(id) }
+                    onRecipeClick = onNavigateToRecipeDetails
                 )
             }
             Spacer(Modifier.height(16.dp))
@@ -151,10 +139,7 @@ fun HomeScreen(
             Spacer(Modifier.height(8.dp))
             CategoryChipsRow(
                 selectedCategory = selectedCategory,
-                onCategorySelected = { category ->
-                    viewModel.selectCategory(category)
-                    // to do - ricerca filtrata per categoria
-                }
+                onCategorySelected = onCategorySelected
             )
             Spacer(Modifier.height(16.dp))
         }
@@ -173,7 +158,7 @@ fun HomeScreen(
             } else {
                 RecentCreationsRow(
                     recipes = myRecipes,
-                    onRecipeClick = { id -> actions.navigateToRecipeDetails(id) }
+                    onRecipeClick = onNavigateToRecipeDetails
                 )
             }
             Spacer(Modifier.height(16.dp))

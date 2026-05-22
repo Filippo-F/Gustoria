@@ -2,6 +2,7 @@ package com.example.gustoria.ui.navigation
 
 import androidx.navigation.NavController
 import com.example.gustoria.ui.navigation.Favourite
+import com.example.gustoria.ui.navigation.Review
 import com.example.gustoria.ui.navigation.Search
 
 class GustoriaNavigationActions(private val navController: NavController) {
@@ -34,7 +35,15 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToHome() {
-        navController.navigate(com.example.gustoria.Home)
+        navController.navigate(Home)
+    }
+
+    fun navigateToNotifications() {
+        navController.navigate(Notifications)
+    }
+
+    fun navigateToAuthentication() {
+        navController.navigate(Authentication)
     }
 
     fun navigateToSearch() {
@@ -51,6 +60,10 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToProfile() {
         navController.navigate(com.example.gustoria.ui.navigation.Profile.OverallProfile)
+    }
+
+    fun navigateToOtherProfile(userId: String) {
+        navController.navigate(OtherProfile(userId))
     }
 
     fun navigateToCreateRecipe() {
@@ -79,5 +92,13 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToFavouriteCreated() {
         navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+    }
+
+    fun navigateToReviewsList(recipeId: String) {
+        navController.navigate(Review.ReviewsList(recipeId))
+    }
+
+    fun navigateToAddReview(recipeId: String) {
+        navController.navigate(Review.AddReview(recipeId))
     }
 }

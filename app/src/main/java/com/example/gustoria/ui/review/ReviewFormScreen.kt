@@ -33,18 +33,11 @@ import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.viewmodel.ReviewViewModel
 
-class ReviewFormActions(private val navController: NavHostController) {
-    val navigateBack: () -> Unit = {
-        navController.popBackStack()
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewFormScreen(
-    recipeId: String,
-    navController: NavHostController,
-    viewModel: ReviewViewModel = viewModel(factory = ReviewViewModel.Factory)
+    onBack: () -> Unit,
+    onPostReview: (description: String, rating: Float, photoUri: String) -> Unit
 ) {
     var rating by remember { mutableStateOf(5f) }
     var description by remember { mutableStateOf("") }
@@ -53,7 +46,6 @@ fun ReviewFormScreen(
     val context = LocalContext.current
     val showImageMenu = remember { mutableStateOf(false) }
     val showCameraScreen = remember { mutableStateOf(false) }
-    val actions = remember(navController) { ReviewFormActions(navController) }
 
     // image selection and camera permissions
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -94,7 +86,7 @@ fun ReviewFormScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     title = "Write a review",
-                    onBack = actions.navigateBack
+                    onBack = onBack
                 )
             }
         ) { innerPadding ->
@@ -201,16 +193,7 @@ fun ReviewFormScreen(
 
                 Button(
                     onClick = {
-                        val review = Review(
-                            userId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
-                            recipeId = recipeId,
-                            description = description,
-                            rating = rating,
-                            photoUri = photoUri.ifBlank { null },
-                            timestamp = System.currentTimeMillis().toString()
-                        )
-                        viewModel.addReview(review)
-                        actions.navigateBack()
+                        onPostReview(description, rating, photoUri)
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {

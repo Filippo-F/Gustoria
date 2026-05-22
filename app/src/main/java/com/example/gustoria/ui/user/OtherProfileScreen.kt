@@ -40,13 +40,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.gustoria.viewmodel.OtherProfileViewModel
 import com.example.gustoria.viewmodel.UserCollection
 import com.example.gustoria.viewmodel.UserActivity
 import com.example.gustoria.dataclass.CookingRole
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 
@@ -55,8 +52,15 @@ import com.example.gustoria.ui.utils.MultiPreview
 fun OtherProfileScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         OtherProfileScreen(
-            viewedUserId = "101",
+            user = null,
+            recipeCount = 0,
+            currentTab = 0,
+            isFollowing = false,
+            collections = emptyList(),
+            recentActivities = emptyList(),
             onBack = {},
+            onToggleFollow = {},
+            onChangeTab = {}
         )
     }
 }
@@ -280,18 +284,21 @@ fun RecentActivitySection(activities: List<UserActivity>) {
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(
-    viewedUserId: String,
-    onBack: () -> Unit = {},
-    viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = OtherProfileViewModel.factory(viewedUserId)
-    )
+    user: com.example.gustoria.dataclass.User?,
+    recipeCount: Int,
+    currentTab: Int,
+    isFollowing: Boolean,
+    collections: List<UserCollection>,
+    recentActivities: List<UserActivity>,
+    onBack: () -> Unit,
+    onToggleFollow: () -> Unit,
+    onChangeTab: (Int) -> Unit
 ) {
     val tabs = listOf("Collections", "Recent Activity")
-    val user by viewModel.user.collectAsStateWithLifecycle()
-    val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
@@ -316,31 +323,30 @@ fun OtherProfileScreen(
                 onClickExtra = {}
             )
 
-            val u = user
-            if (u == null) {
+            if (user == null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
-                return@Column
+                return@Scaffold
             }
 
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 item {
                     ProfileImage(
-                        imageUrl = u.profileImageUri,
-                        fullName = u.fullName
+                        imageUrl = user.profileImageUri,
+                        fullName = user.fullName
                     )
                 }
 
                 item {
                     ProfileInfo(
-                        fullName = u.fullName,
-                        nickname = u.nickname,
-                        cookingRole = u.cookingRole,
-                        description = u.description
+                        fullName = user.fullName,
+                        nickname = user.nickname,
+                        cookingRole = user.cookingRole,
+                        description = user.description
                     )
                 }
 
@@ -351,19 +357,19 @@ fun OtherProfileScreen(
                     ) {
                         Button(
                             modifier = Modifier.padding(8.dp),
-                            onClick = viewModel::toggleFollow,
+                            onClick = onToggleFollow,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (viewModel.isFollowing)
+                                containerColor = if (isFollowing)
                                     MaterialTheme.colorScheme.secondaryContainer
                                 else
                                     MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = if (viewModel.isFollowing)
+                                contentColor = if (isFollowing)
                                     MaterialTheme.colorScheme.onSecondaryContainer
                                 else
                                     MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         ) {
-                            Text(text = if (viewModel.isFollowing) "Unfollow" else "Follow")
+                            Text(text = if (isFollowing) "Unfollow" else "Follow")
                         }
                     }
                 }
@@ -375,15 +381,15 @@ fun OtherProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ValueBox(recipeCount, "Recipes")
-                        ValueBox(u.numberOfFollowers, "Followers")
-                        ValueBox(u.numberOfLikes, "Likes")
+                        ValueBox(user.numberOfFollowers, "Followers")
+                        ValueBox(user.numberOfLikes, "Likes")
                     }
                 }
 
 
                 item {
                     SecondaryTabRow(
-                        selectedTabIndex = viewModel.currentTab,
+                        selectedTabIndex = currentTab,
                         containerColor = MaterialTheme.colorScheme.background,
                         contentColor = MaterialTheme.colorScheme.secondary,
                         divider = {
@@ -392,17 +398,17 @@ fun OtherProfileScreen(
                     ) {
                         tabs.forEachIndexed { index, title ->
                             Tab(
-                                selected = viewModel.currentTab == index,
-                                onClick = { viewModel.changeTab(index) },
+                                selected = currentTab == index,
+                                onClick = { onChangeTab(index) },
                                 text = {
                                     Text(
                                         text = title,
                                         fontSize = 12.sp,
-                                        fontWeight = if (viewModel.currentTab == index)
+                                        fontWeight = if (currentTab == index)
                                             FontWeight.Bold
                                         else
                                             FontWeight.Normal,
-                                        color = if (viewModel.currentTab == index)
+                                        color = if (currentTab == index)
                                             MaterialTheme.colorScheme.secondary
                                         else
                                             MaterialTheme.colorScheme.onSurface
@@ -414,9 +420,9 @@ fun OtherProfileScreen(
                 }
 
                 item {
-                    when (viewModel.currentTab) {
-                        0 -> CollectionsSection(collections = viewModel.collections)
-                        1 -> RecentActivitySection(activities = viewModel.recentActivities)
+                    when (currentTab) {
+                        0 -> CollectionsSection(collections = collections)
+                        1 -> RecentActivitySection(activities = recentActivities)
                     }
                 }
             }
