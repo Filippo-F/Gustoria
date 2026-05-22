@@ -2,6 +2,7 @@ package com.example.gustoria.data.paperRepo
 
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.RecipeRepoInterface
 import io.paperdb.Paper
 import kotlinx.coroutines.CoroutineScope
@@ -189,7 +190,7 @@ class PaperRecipeRepo : RecipeRepoInterface {
             description = "Rich onion soup topped with melted cheese."
         )
     )
-    private val recipeBook = Paper.book("recipes")
+    private val recipeBook = Paper.book(Collections.RECIPES)
 
     // In memory state
     private val _recipes = MutableStateFlow<List<Recipe>>(loadInitialRecipes())

@@ -1,6 +1,7 @@
 package com.example.gustoria.data.paperRepo
 
 import com.example.gustoria.dataclass.Review
+import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.ReviewRepoInterface
 import io.paperdb.Paper
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,7 @@ class PaperReviewRepo: ReviewRepoInterface {
         )
     )
 
-    private val reviewBook = Paper.book("reviews")
+    private val reviewBook = Paper.book(Collections.REVIEWS)
     
     private val _reviews = MutableStateFlow<List<Review>>(loadInitialReviews())
 

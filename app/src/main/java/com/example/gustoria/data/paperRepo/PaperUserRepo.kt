@@ -2,6 +2,7 @@ package com.example.gustoria.data.paperRepo
 
 import com.example.gustoria.dataclass.CookingRole
 import com.example.gustoria.dataclass.User
+import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.UserRepoInterface
 import io.paperdb.Paper
 import kotlinx.coroutines.CoroutineScope
@@ -58,7 +59,7 @@ class PaperUserRepo: UserRepoInterface {
         )
     )
 
-    private val userBook = Paper.book("users")
+    private val userBook = Paper.book(Collections.USERS)
 
     private val _users = MutableStateFlow<List<User>>(loadInitialUsers())
 
