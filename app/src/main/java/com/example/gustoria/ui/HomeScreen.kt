@@ -33,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.navigation.Profile
-import com.example.gustoria.RecipeDetails
+import com.example.gustoria.ui.navigation.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface

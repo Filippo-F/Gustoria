@@ -15,7 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.navigation.Notifications
 import com.example.gustoria.ui.navigation.Profile
-import com.example.gustoria.RecipeDetails
+import com.example.gustoria.ui.navigation.RecipeDetails
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 

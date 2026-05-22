@@ -34,8 +34,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
-import com.example.gustoria.Edit
-import com.example.gustoria.RecipeDetails
+import com.example.gustoria.ui.navigation.Edit
+import com.example.gustoria.ui.navigation.RecipeDetails
 import com.example.gustoria.ui.navigation.OtherProfile
 import com.example.gustoria.ui.navigation.GustoriaNavigationActions
 import androidx.compose.foundation.clickable
@@ -48,7 +48,6 @@ import com.example.gustoria.data.auth.SessionManager
 @Composable
 fun RecipeDetailsScreen(
     recipeId: String,
-    navCtrl: NavHostController,
     navActions: GustoriaNavigationActions,
     onBack: (() -> Unit)? = null,
     recipeViewModel: RecipeViewModel = viewModel(factory = RecipeViewModel.Factory),
@@ -68,7 +67,6 @@ fun RecipeDetailsScreen(
 
     recipe?.let { r ->
         RecipeDetailsContent(
-            navCtrl = navCtrl,
             recipe = r,
             reviews = reviews,
             avgRating = average,
@@ -105,7 +103,6 @@ fun RecipeDetailsScreen(
 
 @Composable
 fun RecipeDetailsContent(
-    navCtrl: NavHostController,
     recipe: Recipe,
     reviews: List<Review>,
     avgRating: Float,

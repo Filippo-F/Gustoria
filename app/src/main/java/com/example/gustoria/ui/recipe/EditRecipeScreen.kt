@@ -45,29 +45,58 @@ class EditRecipeActions(private val navController: NavHostController) {
 fun EditRecipeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         EditRecipeScreen(
-            navController = rememberNavController(),
-            recipeId = "preview_id"
+            state = com.example.gustoria.viewmodel.EditRecipeUiState(),
+            isEditMode = false,
+            onBack = {},
+            onDelete = {},
+            onRevert = {},
+            onSave = {},
+            onUpdateImageUri = {},
+            onUpdateName = {},
+            onUpdateDescription = {},
+            onUpdateCost = {},
+            onUpdateDifficulty = {},
+            onUpdateCookingTime = {},
+            onUpdateServings = {},
+            onUpdateIngredientName = { _, _ -> },
+            onUpdateIngredientQuantity = { _, _ -> },
+            onUpdateIngredientUnit = { _, _ -> },
+            onRemoveIngredient = {},
+            onAddIngredient = {},
+            onUpdateStep = { _, _ -> },
+            onRemoveStep = {},
+            onAddStep = {}
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditRecipeScreen(
-    navController: NavHostController,
-    recipeId: String?,
-    vm: EditRecipeViewModel = viewModel(
-        key = recipeId ?: "create_mode", // If recipeId is null, we're in create mode
-        factory = EditRecipeViewModel.factory(recipeId)
-    )
+    state: com.example.gustoria.viewmodel.EditRecipeUiState,
+    isEditMode: Boolean,
+    onBack: () -> Unit,
+    onDelete: () -> Unit,
+    onRevert: () -> Unit,
+    onSave: () -> Unit,
+    onUpdateImageUri: (String) -> Unit,
+    onUpdateName: (String) -> Unit,
+    onUpdateDescription: (String) -> Unit,
+    onUpdateCost: (String) -> Unit,
+    onUpdateDifficulty: (String) -> Unit,
+    onUpdateCookingTime: (String) -> Unit,
+    onUpdateServings: (String) -> Unit,
+    onUpdateIngredientName: (Int, String) -> Unit,
+    onUpdateIngredientQuantity: (Int, String) -> Unit,
+    onUpdateIngredientUnit: (Int, String) -> Unit,
+    onRemoveIngredient: (Int) -> Unit,
+    onAddIngredient: () -> Unit,
+    onUpdateStep: (Int, String) -> Unit,
+    onRemoveStep: (Int) -> Unit,
+    onAddStep: () -> Unit
 ) {
-    val state by vm.state.collectAsStateWithLifecycle()
-    val isEditMode = vm.isEditMode
-    val actions = remember(navController) { EditRecipeActions(navController) }
-
     BackHandler {
-        vm.revertChanges()
-        actions.navigateBack()
+        onRevert()
+        onBack()
     }
 
     var showTopMenu by remember { mutableStateOf(false) }
@@ -87,8 +116,8 @@ fun EditRecipeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     title = if (isEditMode) "Edit Recipe" else "Create New Recipe",
                     onBack = {
-                        vm.revertChanges()
-                        actions.navigateBack()
+                        onRevert()
+                        onBack()
                     },
                     extraIcon = Icons.Default.MoreVert,
                     extraIconDescription = "More Options",
@@ -104,7 +133,7 @@ fun EditRecipeScreen(
                                 text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
                                 onClick = {
                                     showTopMenu = false
-                                    vm.deleteRecipe(onSuccess = actions.navigateBack)
+                                    onDelete()
                                 },
                                 leadingIcon = {
                                     Icon(
@@ -119,7 +148,7 @@ fun EditRecipeScreen(
                                 text = { Text("Clear All") },
                                 onClick = {
                                     showTopMenu = false
-                                    vm.revertChanges()
+                                    onRevert()
                                 }
                             )
                         }
@@ -166,7 +195,7 @@ fun EditRecipeScreen(
             // Image URL field
             OutlinedTextField(
                 value = state.imageUri,
-                onValueChange = vm::updateImageUri,
+                onValueChange = onUpdateImageUri,
                 label = { Text("Image URL or asset path") },
                 placeholder = { Text("file:///android_asset/pasta.jpg") },
                 singleLine = true,
@@ -180,7 +209,7 @@ fun EditRecipeScreen(
             // Name
             OutlinedTextField(
                 value = state.name,
-                onValueChange = vm::updateName,
+                onValueChange = onUpdateName,
                 label = { Text("Recipe Name *") },
                 isError = state.errors.containsKey("name"),
                 supportingText = { state.errors["name"]?.let { Text(it) } },
@@ -195,7 +224,7 @@ fun EditRecipeScreen(
             // Description
             OutlinedTextField(
                 value = state.description,
-                onValueChange = vm::updateDescription,
+                onValueChange = onUpdateDescription,
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
@@ -211,7 +240,7 @@ fun EditRecipeScreen(
                 ALL_COSTS.forEach { c ->
                     FilterChip(
                         selected = state.cost == c,
-                        onClick = { vm.updateCost(c) },
+                        onClick = { onUpdateCost(c) },
                         label = { Text(c) },
                         shape = RoundedCornerShape(16.dp),
                         colors = FilterChipDefaults.filterChipColors(
@@ -228,7 +257,7 @@ fun EditRecipeScreen(
                 ALL_DIFFICULTIES.forEach { d ->
                     FilterChip(
                         selected = state.difficulty == d,
-                        onClick = { vm.updateDifficulty(d) },
+                        onClick = { onUpdateDifficulty(d) },
                         label = { Text(d) },
                         shape = RoundedCornerShape(16.dp),
                         colors = FilterChipDefaults.filterChipColors(
@@ -246,7 +275,7 @@ fun EditRecipeScreen(
             ) {
                 OutlinedTextField(
                     value = state.cookingTimeMinutesText,
-                    onValueChange = vm::updateCookingTime,
+                    onValueChange = onUpdateCookingTime,
                     label = { Text("Time (min) *") },
                     isError = state.errors.containsKey("cookingTime"),
                     supportingText = { state.errors["cookingTime"]?.let { Text(it) } },
@@ -260,7 +289,7 @@ fun EditRecipeScreen(
 
                 OutlinedTextField(
                     value = state.servingsText,
-                    onValueChange = vm::updateServings,
+                    onValueChange = onUpdateServings,
                     label = { Text("Servings *") },
                     isError = state.errors.containsKey("servings") && state.servingsText.isBlank(),
                     supportingText = { state.errors["servings"]?.let { Text(it) } },
@@ -297,7 +326,7 @@ fun EditRecipeScreen(
                 ) {
                     OutlinedTextField(
                         value = ingredient.name,
-                        onValueChange = { vm.updateIngredientName(index, it) },
+                        onValueChange = { onUpdateIngredientName(index, it) },
                         label = { Text("Name") },
                         isError = ingredient.name.isBlank() && state.errors.containsKey("ingredients"),
                         modifier = Modifier.weight(2f),
@@ -308,7 +337,7 @@ fun EditRecipeScreen(
                     )
                     OutlinedTextField(
                         value = if (ingredient.quantity == 0) "" else ingredient.quantity.toString(),
-                        onValueChange = { vm.updateIngredientQuantity(index, it) },
+                        onValueChange = { onUpdateIngredientQuantity(index, it) },
                         label = { Text("Qty") },
                         isError = ingredient.quantity <= 0 && state.errors.containsKey("ingredients"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -320,7 +349,7 @@ fun EditRecipeScreen(
                     )
                     OutlinedTextField(
                         value = ingredient.unit,
-                        onValueChange = { vm.updateIngredientUnit(index, it) },
+                        onValueChange = { onUpdateIngredientUnit(index, it) },
                         label = { Text("Unit") },
                         isError = ingredient.unit.isBlank() && state.errors.containsKey("ingredients"),
                         modifier = Modifier.weight(1f),
@@ -329,7 +358,7 @@ fun EditRecipeScreen(
                             unfocusedTextColor = Color.Black
                         )
                     )
-                    IconButton(onClick = { vm.removeIngredient(index) }) {
+                    IconButton(onClick = { onRemoveIngredient(index) }) {
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Remove Ingredient",
@@ -339,7 +368,7 @@ fun EditRecipeScreen(
                 }
             }
             TextButton(
-                onClick = vm::addIngredient,
+                onClick = onAddIngredient,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
                 )
@@ -390,7 +419,7 @@ fun EditRecipeScreen(
                     }
                     OutlinedTextField(
                         value = step,
-                        onValueChange = { vm.updateStep(index, it) },
+                        onValueChange = { onUpdateStep(index, it) },
                         isError = step.isBlank() && state.errors.containsKey("steps"),
                         placeholder = { Text("Describe this step...") },
                         modifier = Modifier.weight(1f),
@@ -399,7 +428,7 @@ fun EditRecipeScreen(
                             unfocusedTextColor = Color.Black
                         )
                     )
-                    IconButton(onClick = { vm.removeStep(index) }) {
+                    IconButton(onClick = { onRemoveStep(index) }) {
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Remove Step",
@@ -409,7 +438,7 @@ fun EditRecipeScreen(
                 }
             }
             TextButton(
-                onClick = vm::addStep,
+                onClick = onAddStep,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
                 )
@@ -428,13 +457,13 @@ fun EditRecipeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = {
-                    vm.revertChanges()
-                    actions.navigateBack()
+                    onRevert()
+                    onBack()
                 }) {
                     Text("Cancel")
                 }
                 Spacer(Modifier.width(16.dp))
-                Button(onClick = { vm.saveRecipe(onSuccess = actions.navigateBack) }) {
+                Button(onClick = onSave) {
                     Text("Save Recipe")
                 }
             }

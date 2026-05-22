@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.gustoria.Create
-import com.example.gustoria.Edit
+import com.example.gustoria.ui.navigation.Create
+import com.example.gustoria.ui.navigation.Edit
 import com.example.gustoria.ui.navigation.Favourite
-import com.example.gustoria.RecipeDetails
+import com.example.gustoria.ui.navigation.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface

@@ -6,6 +6,7 @@ import com.example.gustoria.ui.navigation.Review
 import com.example.gustoria.ui.navigation.Search
 
 class GustoriaNavigationActions(private val navController: NavController) {
+    fun getNavController(): NavController = navController
     fun navigateBack() {
         navController.popBackStack()
     }
@@ -67,15 +68,15 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToCreateRecipe() {
-        navController.navigate(com.example.gustoria.Create)
+        navController.navigate(Create)
     }
 
     fun navigateToEditRecipe(id: String) {
-        navController.navigate(com.example.gustoria.Edit(id))
+        navController.navigate(Edit(id))
     }
 
     fun navigateToRecipeDetails(id: String) {
-        navController.navigate(com.example.gustoria.RecipeDetails(id))
+        navController.navigate(RecipeDetails(id))
     }
 
     fun navigateToFavouriteFiltering() {

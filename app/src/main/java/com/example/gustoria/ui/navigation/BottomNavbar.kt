@@ -27,7 +27,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.gustoria.Create
+import com.example.gustoria.ui.navigation.Create
 import com.example.gustoria.ui.navigation.Home
 
 @Composable
