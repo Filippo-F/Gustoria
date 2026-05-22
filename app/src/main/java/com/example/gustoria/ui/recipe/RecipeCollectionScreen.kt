@@ -67,7 +67,6 @@ fun RecipeCollectionScreen(
     val recipes by vm.recipesToShow.collectAsStateWithLifecycle()
     val filters by vm.filters.collectAsStateWithLifecycle()
     val currentTab by vm.currentTab.collectAsStateWithLifecycle()
-    val selectedRecipe by vm.selectedRecipe.collectAsStateWithLifecycle()
 
     val actions = remember(navController) { RecipeCollectionActions(navController) }
 
@@ -76,36 +75,26 @@ fun RecipeCollectionScreen(
         vm.setTab(initialTab)
     }
 
-    BackHandler(enabled = selectedRecipe != null) {
-        vm.selectRecipe(null)
-    }
-
-    if (selectedRecipe == null) {
-        RecipeCollectionListContent(
-            recipes = recipes,
-            filters = filters,
-            currentTab = currentTab,
-            onTabSelected = {
-                vm.setTab(it)
-                actions.onTabChange(it)
-            },
-            onCreateNewRecipe = actions.onCreateNewRecipe,
-            onEditRecipe = actions.onEditRecipe,
-            onRecipeClick = vm::selectRecipe,
-            onDeleteRecipe = vm::delete,
-            onNameQueryChange = vm::setNameQuery,
-            onIngredientQueryChange = vm::setIngredientQuery,
-            onToggleCost = vm::toggleCost,
-            onToggleDifficulty = vm::toggleDifficulty,
-            onOpenFilters = actions.onOpenFilters
-        )
-    } else {
-        RecipeDetailsScreen(
-            recipeId = selectedRecipe!!.id,
-            navCtrl = navController,
-            onBack = { vm.selectRecipe(null) }
-        )
-    }
+    RecipeCollectionListContent(
+        recipes = recipes,
+        filters = filters,
+        currentTab = currentTab,
+        onTabSelected = {
+            vm.setTab(it)
+            actions.onTabChange(it)
+        },
+        onCreateNewRecipe = actions.onCreateNewRecipe,
+        onEditRecipe = actions.onEditRecipe,
+        onRecipeClick = { id ->
+            navController.navigate(com.example.gustoria.RecipeDetails(id))
+        },
+        onDeleteRecipe = vm::delete,
+        onNameQueryChange = vm::setNameQuery,
+        onIngredientQueryChange = vm::setIngredientQuery,
+        onToggleCost = vm::toggleCost,
+        onToggleDifficulty = vm::toggleDifficulty,
+        onOpenFilters = actions.onOpenFilters
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -89,43 +89,26 @@ fun RecipeScreen(
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
-    val selectedRecipe by viewModel.selectedRecipe.collectAsStateWithLifecycle()
 
     val actions = remember(navCtrl) {
         RecipeScreenActions(navCtrl)
     }
 
-    LaunchedEffect(initialRecipeId) {
-        if (initialRecipeId != null) {
-            viewModel.selectRecipe(initialRecipeId)
+    RecipeListContent(
+        recipes = filteredRecipes,
+        filters = filters,
+        onBack = actions.navigateBack,
+        onAdjustFilters = actions.onAdjustFilters,
+        onRecipeClick = { id ->
+            navCtrl.navigate(com.example.gustoria.RecipeDetails(id))
+        },
+        onRemoveFilter = { filterLabel ->
+            if (filterLabel in ALL_COSTS) viewModel.toggleCost(filterLabel)
+            else if (filterLabel in ALL_DIFFICULTIES) viewModel.toggleDifficulty(filterLabel)
+            else if (filterLabel == filters.nameQuery) viewModel.updateNameQuery("")
+            else if (filterLabel == filters.ingredientQuery) viewModel.updateIngredientQuery("")
         }
-    }
-
-    BackHandler(enabled = selectedRecipe != null) {
-        viewModel.selectRecipe(null)
-    }
-
-    if (selectedRecipe == null) {
-        RecipeListContent(
-            recipes = filteredRecipes,
-            filters = filters,
-            onBack = actions.navigateBack,
-            onAdjustFilters = actions.onAdjustFilters,
-            onRecipeClick = viewModel::selectRecipe,
-            onRemoveFilter = { filterLabel ->
-                if (filterLabel in ALL_COSTS) viewModel.toggleCost(filterLabel)
-                else if (filterLabel in ALL_DIFFICULTIES) viewModel.toggleDifficulty(filterLabel)
-                else if (filterLabel == filters.nameQuery) viewModel.updateNameQuery("")
-                else if (filterLabel == filters.ingredientQuery) viewModel.updateIngredientQuery("")
-            }
-        )
-    } else {
-        RecipeDetailsScreen(
-            recipeId = selectedRecipe!!.id,
-            navCtrl = navCtrl,
-            onBack = { viewModel.selectRecipe(null) }
-        )
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
