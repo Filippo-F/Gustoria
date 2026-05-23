@@ -44,6 +44,7 @@ import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
 import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.ui.review.components.ReviewCard
 
 @Composable
 fun RecipeDetailsScreen(
@@ -520,9 +521,10 @@ fun RecipeDetailsContent(
                     Spacer(modifier = Modifier.height(18.dp))
 
                     reviews.take(2).forEach { review ->
-                        ReviewItem(
+                        ReviewCard(
                             review = review,
-                            onProfileClick = onProfileClick
+                            onProfileClick = onProfileClick,
+                            showPhoto = false
                         )
                     }
                 }
@@ -559,82 +561,6 @@ fun RecipeDetailsContent(
     }
 }
 
-@Composable
-fun ReviewItem(
-    review: Review,
-    onProfileClick: (String) -> Unit
-) {
-    val application = (androidx.compose.ui.platform.LocalContext.current.applicationContext as com.example.gustoria.GustoriaApplication)
-    val userRepository = application.container.userRepository
-    val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
-    val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
-        "You"
-    } else {
-        user?.fullName ?: review.userId
-    }
-    val initials = if (displayName == "You") {
-        "Y"
-    } else {
-        displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
-    }
-
-    Surface(
-        shape = RoundedCornerShape(18.dp),
-        tonalElevation = 2.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(enabled = review.userId.isNotBlank()) {
-                        onProfileClick(review.userId)
-                    }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = initials,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    repeat(review.rating.coerceIn(0f, 5f).toInt()) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = review.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
 
 @Composable
 fun InfoItem(
