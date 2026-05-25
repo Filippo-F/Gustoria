@@ -48,7 +48,6 @@ object SessionManagerFacade : AuthRepoInterface {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(context.getString(R.string.default_web_client_id)) // Found in generated resources from google-services.json
-                //.setServerClientId("REPLACE_ME_STRING")
                 .build()
 
             val request = GetCredentialRequest.Builder()

@@ -3,6 +3,7 @@ package com.example.gustoria.data.auth
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import com.example.gustoria.R
 import com.example.gustoria.domain.AuthRepoInterface
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -36,7 +37,7 @@ class FirebaseAuthRepository(
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setServerClientId("your-firebase-project-id") // Found in google-services.json
+                .setServerClientId(context.getString(R.string.default_web_client_id)) // Found in google-services.json
                 .build()
 
             val request = GetCredentialRequest.Builder()
