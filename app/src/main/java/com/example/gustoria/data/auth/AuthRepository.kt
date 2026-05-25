@@ -1,0 +1,78 @@
+package com.example.gustoria.data.auth
+
+import android.content.Context
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.example.gustoria.domain.AuthRepoInterface
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.tasks.await
+
+// Define UI Auth States
+sealed interface AuthState {
+    object Registering : AuthState
+    object Authenticated : AuthState
+    object AuthAsGuest : AuthState
+    object Unauthenticated : AuthState
+}
+
+class FirebaseAuthRepository(
+    private val auth: FirebaseAuth,
+    private val credentialManager: CredentialManager
+) : AuthRepoInterface {
+    private val _currentUser = MutableStateFlow(auth.currentUser?.uid)
+    override val currentUserStateFlow: StateFlow<String?> = _currentUser.asStateFlow()
+
+    init {
+        auth.addAuthStateListener { _currentUser.value = it.currentUser?.uid }
+    }
+
+    override suspend fun signIn(context: Context): Result<Unit> {
+        return try {
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId("your-firebase-project-id") // Found in google-services.json
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            val result = credentialManager.getCredential(context, request)
+            val googleIdTokenCredential =
+                GoogleIdTokenCredential.createFrom(result.credential.data)
+            val firebaseCredential =
+                GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+
+            auth.signInWithCredential(firebaseCredential).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signInAnonymous(context: Context): Result<Unit> {
+        return try {
+            auth.signInAnonymously().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override val isLoggedIn: Boolean
+        get() = _currentUser.value != null
+
+    override suspend fun logOut() {
+        auth.signOut()
+    }
+
+    override val currentUserId: String?
+        get() = currentUserState.value
+    override val currentUserState: StateFlow<String?> = _currentUser.asStateFlow()
+}
