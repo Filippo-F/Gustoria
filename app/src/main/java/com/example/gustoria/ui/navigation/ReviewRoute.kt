@@ -2,6 +2,7 @@ package com.example.gustoria.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gustoria.data.auth.SessionManager
 import com.example.gustoria.dataclass.Review
@@ -47,7 +48,7 @@ fun ReviewsListDestination(
     navActions: GustoriaNavigationActions,
     viewModel: ReviewViewModel
 ) {
-    val reviews by viewModel.reviewsForRecipe(recipeId).collectAsStateWithLifecycle()
+    val reviews by remember(recipeId) { viewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle(initialValue = null)
 
     ReviewsListScreen(
         reviews = reviews,

@@ -18,18 +18,18 @@ class ReviewViewModel(
     private val reviewRepository: ReviewRepoInterface
 ) : ViewModel() {
 
-    fun reviewsForRecipe(recipeId: String): StateFlow<List<Review>> =
+    fun reviewsForRecipe(recipeId: String): StateFlow<List<Review>?> =
         reviewRepository.getReviewsByRecipe(recipeId).stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
+            initialValue = null
         )
 
-    fun reviewsForUser(userId: String): StateFlow<List<Review>> =
+    fun reviewsForUser(userId: String): StateFlow<List<Review>?> =
         reviewRepository.getReviewsByUser(userId).stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
+            initialValue = null
         )
 
     fun addReview(review: Review) {

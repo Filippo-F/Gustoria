@@ -57,8 +57,7 @@ fun RecipeDetailsScreen(
     val isFavourite by remember(recipeId) { recipeViewModel.isFavouriteFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
     val isTried by remember(recipeId) { recipeViewModel.isTriedFlow(recipeId) }.collectAsStateWithLifecycle(initialValue = false)
     val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
-    val reviews by remember(recipeId) { reviewViewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle()
-    val average = remember(reviews) { if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
+    val reviews by remember(recipeId) { reviewViewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle(initialValue = null)
 
     val backAction = onBack ?: navActions::navigateBack
 
@@ -70,7 +69,6 @@ fun RecipeDetailsScreen(
         RecipeDetailsContent(
             recipe = r,
             reviews = reviews,
-            avgRating = average,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
             onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
@@ -105,8 +103,7 @@ fun RecipeDetailsScreen(
 @Composable
 fun RecipeDetailsContent(
     recipe: Recipe,
-    reviews: List<Review>,
-    avgRating: Float,
+    reviews: List<Review>?,
     isOwner: Boolean,
     isFavourite: Boolean,
     onToggleFavourite: () -> Unit,
@@ -124,6 +121,8 @@ fun RecipeDetailsContent(
     var showDuplicateDialog by rememberSaveable { mutableStateOf(false) }
     var showTopMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val avgRating = remember(reviews) { if (reviews.isNullOrEmpty()) 0f else reviews.map { it.rating }.average().toFloat() }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp)
@@ -292,7 +291,7 @@ fun RecipeDetailsContent(
                     VerticalDivider(modifier = Modifier.height(32.dp), color = Color.Gray.copy(alpha = 0.4f))
                     InfoItem(
                         icon = Icons.Default.Star,
-                        text = "${String.format("%.1f", avgRating)} (${reviews.size})",
+                        text = "${String.format("%.1f", avgRating)} (${reviews?.size})",
                         iconTint = MaterialTheme.colorScheme.tertiary
                     )
                 }
@@ -454,85 +453,88 @@ fun RecipeDetailsContent(
             }
 
             // Community reviews section
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Surface(
-                        tonalElevation = 4.dp,
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.fillMaxWidth()
+            if (reviews != null) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
-                        Column(modifier = Modifier.padding(20.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Community Reviews",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                                )
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Default.Star,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.tertiary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = String.format("%.1f", avgRating),
-                                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                                        )
-                                    }
-                            }
+                        Surface(
+                            tonalElevation = 4.dp,
+                            shape = RoundedCornerShape(24.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(20.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Community Reviews",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                imageVector = Icons.Default.Star,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.tertiary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = String.format("%.1f", avgRating),
+                                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                                            )
+                                        }
+                                }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                            Button(
-                                onClick = onWriteReview,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Text("WRITE A REVIEW")
-                            }
+                                Button(
+                                    onClick = onWriteReview,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(18.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text("WRITE A REVIEW")
+                                }
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                            OutlinedButton(
-                                onClick = onViewReviews,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp)
-                            ) {
-                                Text("VIEW ALL REVIEWS")
+                                OutlinedButton(
+                                    onClick = onViewReviews,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(18.dp)
+                                ) {
+                                    Text("VIEW ALL REVIEWS")
+                                }
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                        Spacer(modifier = Modifier.height(18.dp))
 
-                    reviews.take(2).forEach { review ->
-                        ReviewCard(
-                            review = review,
-                            onProfileClick = onProfileClick,
-                            showPhoto = false
-                        )
+                        reviews.take(2).forEach { review ->
+                            ReviewCard(
+                                review = review,
+                                onProfileClick = onProfileClick,
+                                showPhoto = false
+                            )
+                        }
                     }
+                }
+
+                item {
+                    Spacer(Modifier.height(32.dp))
                 }
             }
 
-            item {
-                Spacer(Modifier.height(32.dp))
-            }
         }
 
         if (showDeleteDialog) {

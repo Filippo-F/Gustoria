@@ -35,12 +35,16 @@ fun ReviewCard(
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
         "You"
     } else {
-        user?.fullName ?: review.userId
+        user?.fullName
     }
     val initials = if (displayName == "You") {
         "Y"
     } else {
-        displayName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString("").uppercase()
+        displayName?.split(" ")
+            ?.mapNotNull { it.firstOrNull() }
+            ?.take(2)
+            ?.joinToString("")
+            ?.uppercase()
     }
 
     Surface(
@@ -65,20 +69,24 @@ fun ReviewCard(
                         .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = initials,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    if (initials != null) {
+                        Text(
+                            text = initials,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-                    Text(
-                        text = displayName,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                    )
+                    if (displayName != null) {
+                        Text(
+                            text = displayName,
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))

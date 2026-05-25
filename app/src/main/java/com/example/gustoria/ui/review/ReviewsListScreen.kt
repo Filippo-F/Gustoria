@@ -19,13 +19,13 @@ import com.example.gustoria.ui.review.components.ReviewCard
 
 @Composable
 fun ReviewsListScreen(
-    reviews: List<Review>,
+    reviews: List<Review>?,
     onBack: () -> Unit,
     onWriteReview: () -> Unit,
     onProfileClick: (String) -> Unit
 ) {
     val average = remember(reviews) {
-        if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
+        if (reviews.isNullOrEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
     }
 
     Scaffold(
@@ -39,96 +39,96 @@ fun ReviewsListScreen(
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Surface(
-                tonalElevation = 2.dp,
-                shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.fillMaxWidth()
+        if (reviews != null) {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "COMMUNITY PULSE",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
+                Surface(
+                    tonalElevation = 2.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            text = String.format(java.util.Locale.ROOT, "%.1f", average),
-                            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
+                            text = "COMMUNITY PULSE",
+                            style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                repeat(5) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.tertiary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
                             Text(
-                                text = "Based on ${reviews.size} review${if (reviews.size == 1) "" else "s"}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text = String.format(java.util.Locale.ROOT, "%.1f", average),
+                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
+                                color = MaterialTheme.colorScheme.primary
                             )
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    repeat(5) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.tertiary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Based on ${reviews.size} review${if (reviews.size == 1) "" else "s"}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Button(
+                            onClick = onWriteReview,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Write a Review")
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = onWriteReview,
+                if (reviews.isEmpty()) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(16.dp)
+                            .fillMaxSize()
+                            .padding(top = 32.dp),
+                        contentAlignment = Alignment.TopCenter
                     ) {
-                        Text("Write a Review")
+                        Text(
+                            text = "No reviews yet. Be the first to share your experience!",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (reviews.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 32.dp),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Text(
-                        text = "No reviews yet. Be the first to share your experience!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    items(reviews, key = { it.id }) { review ->
-                        ReviewCard(review = review, onProfileClick = onProfileClick)
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(reviews, key = { it.id }) { review ->
+                            ReviewCard(review = review, onProfileClick = onProfileClick)
+                        }
                     }
                 }
             }
         }
     }
 }
-
-
