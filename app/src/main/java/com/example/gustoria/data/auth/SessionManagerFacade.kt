@@ -86,9 +86,7 @@ object SessionManagerFacade : AuthRepoInterface {
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             
             if (isNewUser) {
-                // If we want to distinguish registration specifically, 
-                // we could set a specific state here if needed, 
-                // but the listener will catch the transition to Authenticated.
+                // TODO: handel specific registering
             }
             
             Result.success(Unit)
