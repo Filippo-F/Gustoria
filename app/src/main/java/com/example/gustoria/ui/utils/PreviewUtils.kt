@@ -36,7 +36,6 @@ object PreviewUtils {
                 internalId = userId,
                 fullName = "Mario Rossi",
                 nickname = "SuperChef",
-                email = "chef@gustoria.it",
                 description = "Simple ingredients, great passion, amazing food.",
                 phoneNumber = "+39 333 1234567",
                 numberOfRecipes = 42,

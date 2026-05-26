@@ -26,14 +26,12 @@ data class User(
     val nickname: String = "",
     val firstName: String = "",
     val lastName: String = "",
-    val password: String = "",
     val description: String = "",
     val cookingRole: CookingRole = CookingRole.NONE,
 
     val fullName: String = "",
     val username: String = "",
 
-    val email: String = "",
     val phoneNumber: String = "",
 
     val profileImageUri: String? = null,

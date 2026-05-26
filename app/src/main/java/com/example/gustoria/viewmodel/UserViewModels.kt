@@ -26,9 +26,7 @@ data class ProfileValidation(
     val nicknameError: String = "",
     val firstNameError: String = "",
     val lastNameError: String = "",
-    val passwordError: String = "",
     val phoneError: String = "",
-    val emailError: String = "",
     val cookingRoleError: String = "",
     val descriptionError: String = "",
     val isValid: Boolean = true
@@ -84,18 +82,12 @@ class OwnedProfileViewModel(
         private set
     var editingLastName by mutableStateOf(false)
         private set
-    var editingEmail by mutableStateOf(false)
-        private set
-    var editingPassword by mutableStateOf(false)
-        private set
     var editingPhone by mutableStateOf(false)
         private set
 
     fun toggleEditingNickname() { editingNickname = !editingNickname }
     fun toggleEditingFirstName() { editingFirstName = !editingFirstName }
     fun toggleEditingLastName() { editingLastName = !editingLastName }
-    fun toggleEditingEmail() { editingEmail = !editingEmail }
-    fun toggleEditingPassword() { editingPassword = !editingPassword }
     fun toggleEditingPhone() { editingPhone = !editingPhone }
 
     fun startEditing() { // click on edit
@@ -121,8 +113,6 @@ class OwnedProfileViewModel(
         editingNickname = false
         editingFirstName = false
         editingLastName = false
-        editingEmail = false
-        editingPassword = false
         editingPhone = false
     }
 
@@ -132,9 +122,7 @@ class OwnedProfileViewModel(
         var currentNicknameError = ""
         var currentFirstNameError = ""
         var currentLastNameError = ""
-        var currentPasswordError = ""
         var currentPhoneError = ""
-        var currentEmailError = ""
         var cookingRoleError = ""
         var descriptionError = ""
 
@@ -148,12 +136,6 @@ class OwnedProfileViewModel(
 
         if (draft.lastName.isBlank()) {
             currentLastNameError = "Last name cannot be blank"
-        }
-
-        if (draft.password.isBlank()) {
-            currentPasswordError = "Password cannot be blank"
-        } else if (draft.password.length < 6) {
-            currentPasswordError = "Password must be at least 6 characters"
         }
 
         val phone = draft.phoneNumber.trim().replace(" ", "")
@@ -171,27 +153,6 @@ class OwnedProfileViewModel(
             }
         }
 
-        val email = draft.email.trim()
-        if (email.isBlank()) {
-            currentEmailError = "Email cannot be blank"
-        } else if (!email.contains("@")) {
-            currentEmailError = "Email must contain @"
-        } else if (email.count { it == '@' } != 1) {
-            currentEmailError = "Email must contain only one @"
-        } else {
-            val parts = email.split("@")
-            val localPart = parts[0]
-            val domainPart = parts[1]
-
-            if (localPart.isBlank()) {
-                currentEmailError = "Invalid email format"
-            } else if (!domainPart.contains(".")) {
-                currentEmailError = "Domain must contain a dot"
-            } else if (domainPart.startsWith(".") || domainPart.endsWith(".")) {
-                currentEmailError = "Invalid domain format"
-            }
-        }
-
         if (draft.cookingRole == CookingRole.NONE) {
             cookingRoleError = "Please select a role"
         }
@@ -204,9 +165,7 @@ class OwnedProfileViewModel(
         val formIsValid = currentNicknameError.isBlank()
                 && currentFirstNameError.isBlank()
                 && currentLastNameError.isBlank()
-                && currentPasswordError.isBlank()
                 && currentPhoneError.isBlank()
-                && currentEmailError.isBlank()
                 && cookingRoleError.isBlank()
                 && descriptionError.isBlank()
 
@@ -214,9 +173,7 @@ class OwnedProfileViewModel(
             nicknameError = currentNicknameError,
             firstNameError = currentFirstNameError,
             lastNameError = currentLastNameError,
-            passwordError = currentPasswordError,
             phoneError = currentPhoneError,
-            emailError = currentEmailError,
             cookingRoleError = cookingRoleError,
             descriptionError = descriptionError,
             isValid = formIsValid
@@ -254,20 +211,12 @@ class OwnedProfileViewModel(
         }
     }
 
-    fun setPassword(password: String) {
-        editableUser = editableUser?.copy(password = password)
-    }
-
     fun setDescription(description: String) {
         editableUser = editableUser?.copy(description = description)
     }
 
     fun setPhoneNumber(phone: String) {
         editableUser = editableUser?.copy(phoneNumber = phone)
-    }
-
-    fun setEmail(email: String) {
-        editableUser = editableUser?.copy(email = email)
     }
 
     // cookingRole  riceve sempre un CookingRole !! (per cambio logica)

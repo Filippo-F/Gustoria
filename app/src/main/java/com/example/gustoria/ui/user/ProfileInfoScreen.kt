@@ -55,7 +55,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -263,29 +262,6 @@ fun ProfileInfoScreen(
                     onEditToggle = { viewModel.toggleEditingLastName() },
                     onValueChange = { viewModel.setLastName(it) },
                     error = viewModel.validation.lastNameError
-                )
-
-                // Email
-                AccountInfoItem(
-                    label = "Email",
-                    value = draft.email,
-                    isEditing = viewModel.editingEmail,
-                    onEditToggle = { viewModel.toggleEditingEmail() },
-                    onValueChange = { viewModel.setEmail(it) },
-                    error = viewModel.validation.emailError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-                )
-
-                // Password
-                AccountInfoItem(
-                    label = "Password",
-                    value = draft.password,
-                    isEditing = viewModel.editingPassword,
-                    onEditToggle = { viewModel.toggleEditingPassword() },
-                    onValueChange = { viewModel.setPassword(it) },
-                    error = viewModel.validation.passwordError,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
 
                 // Phone number
@@ -531,7 +507,7 @@ fun AccountInfoItem(
                     )
                     if (!isEditing) {
                         Text(
-                            text = if (visualTransformation is PasswordVisualTransformation) "••••••••" else value.ifBlank { "Not set" },
+                            text = value.ifBlank { "Not set" },
                             style = MaterialTheme.typography.bodyLarge,
                             color = if (value.isBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                         )
