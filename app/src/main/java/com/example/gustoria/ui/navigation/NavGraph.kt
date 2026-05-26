@@ -1,5 +1,8 @@
 package com.example.gustoria.ui.navigation
 
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -143,7 +146,11 @@ fun GustoriaApp(
             NavHost(
                 navController = navController,
                 startDestination = Home,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                enterTransition = { fadeIn(animationSpec = snap()) },
+                exitTransition = { fadeOut(animationSpec = snap()) },
+                popEnterTransition = { fadeIn(animationSpec = snap()) },
+                popExitTransition = { fadeOut(animationSpec = snap()) }
             ){
                 dialog<Authentication>(
                     // To have the dialog width not stuck at fixed size
