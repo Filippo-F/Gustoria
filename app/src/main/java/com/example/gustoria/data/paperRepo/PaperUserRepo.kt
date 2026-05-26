@@ -26,7 +26,7 @@ class PaperUserRepo: UserRepoInterface {
             lastName = "User",
             phoneNumber = "+39 123 4567890",
             cookingRole = CookingRole.HOME_COOK,
-            savedRecipesIds = listOf(
+            favouriteRecipesIds = listOf(
                 "recipe_spaghetti_pomodoro",
                 "recipe_lasagna_bolognese",
                 "recipe_risotto_milanese",
@@ -41,7 +41,7 @@ class PaperUserRepo: UserRepoInterface {
             lastName = "User",
             phoneNumber = "+39 098 7654321",
             cookingRole = CookingRole.FOOD_LOVER,
-            savedRecipesIds = listOf(
+            favouriteRecipesIds = listOf(
                 "recipe_sushi_rolls",
                 "recipe_caesar_salad",
                 "recipe_pad_thai",
@@ -115,7 +115,7 @@ class PaperUserRepo: UserRepoInterface {
     //metodi per i favourites : get, add, remove e boolean (isFavourite: true or false)
     override fun getFavouriteRecipeIds(userId: String): Flow<List<String>> =
         _users
-            .map { list -> list.find { it.internalId == userId }?.savedRecipesIds ?: emptyList() }
+            .map { list -> list.find { it.internalId == userId }?.favouriteRecipesIds ?: emptyList() }
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
 
@@ -124,9 +124,9 @@ class PaperUserRepo: UserRepoInterface {
         recipeId: String
     ) = withContext(Dispatchers.IO) {
         val current = _users.value.find { it.internalId == userId } ?: return@withContext
-        if (recipeId in current.savedRecipesIds) return@withContext
+        if (recipeId in current.favouriteRecipesIds) return@withContext
         val updated = current.copy(
-            savedRecipesIds = current.savedRecipesIds + recipeId
+            favouriteRecipesIds = current.favouriteRecipesIds + recipeId
         )
         userBook.write(userId, updated)
         _users.update { list ->
@@ -139,9 +139,9 @@ class PaperUserRepo: UserRepoInterface {
         recipeId: String
     ) = withContext(Dispatchers.IO) {
         val current = _users.value.find { it.internalId == userId } ?: return@withContext
-        if (recipeId !in current.savedRecipesIds) return@withContext
+        if (recipeId !in current.favouriteRecipesIds) return@withContext
         val updated = current.copy(
-            savedRecipesIds = current.savedRecipesIds - recipeId
+            favouriteRecipesIds = current.favouriteRecipesIds - recipeId
         )
         userBook.write(userId, updated)
         _users.update { list ->
@@ -156,7 +156,7 @@ class PaperUserRepo: UserRepoInterface {
         _users
             .map { list ->
                 list.find { it.internalId == userId }
-                    ?.savedRecipesIds
+                    ?.favouriteRecipesIds
                     ?.contains(recipeId) == true
             }
             .distinctUntilChanged()

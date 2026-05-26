@@ -3,6 +3,7 @@ package com.example.gustoria.data
 import android.content.Context
 import androidx.credentials.CredentialManager
 import com.example.gustoria.data.auth.FirebaseAuthRepository
+import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
@@ -41,7 +42,8 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val userRepository: UserRepoInterface by lazy {
-        PaperUserRepo()
+        //PaperUserRepo()
+        FirebaseUserRepo(firestore)
     }
 
     override val reviewRepository: ReviewRepoInterface by lazy {

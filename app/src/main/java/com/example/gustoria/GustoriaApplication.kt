@@ -3,6 +3,7 @@ package com.example.gustoria
 import android.app.Application
 import com.example.gustoria.data.AppContainer
 import com.example.gustoria.data.DefaultAppContainer
+import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -25,6 +26,7 @@ class GustoriaApplication : Application() {
         auth = Firebase.auth
         // Initialize Firebase data if necessary
         MainScope().launch(Dispatchers.IO) {
+            (container.userRepository as? FirebaseUserRepo)?.initializeData()
         }
     }
 }
