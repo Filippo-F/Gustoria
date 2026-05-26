@@ -2,8 +2,10 @@ package com.example.gustoria.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
 import com.example.gustoria.ui.user.ProfileInfoScreen
@@ -13,6 +15,7 @@ import com.example.gustoria.viewmodel.OwnedProfileViewModel
 import com.example.gustoria.viewmodel.SettingsViewModel
 import com.example.gustoria.ui.user.OtherProfileScreen
 import com.example.gustoria.viewmodel.OtherProfileViewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -124,9 +127,13 @@ fun HelpAndFeedbackDestination(
 fun SignOutDestination(
     navActions: GustoriaNavigationActions
 ) {
+    val scope = rememberCoroutineScope()
     SignOutDialogue(
         onSignOut = {
-            navActions.navigateBack()
+            scope.launch {
+                SessionManagerFacade.logOut()
+                navActions.navigateToHome()
+            }
         },
         onDismiss = navActions::navigateBack
     )

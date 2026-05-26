@@ -146,7 +146,7 @@ fun GustoriaApp(
                     dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
                 ) {
                     AuthenticationDestination(
-                        onAuthSuccess = {}
+                        onAuthSuccess = { navActions.navigateBack() }
                     )
                 }
                 composable<Home> {
