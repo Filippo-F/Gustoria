@@ -41,44 +41,44 @@ fun AppBottomNavBar(
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp,
-        modifier = Modifier.height(72.dp)
-    ) {
-        NavItem(
-            icon = Icons.Outlined.Explore,
-            label = "EXPLORE",
-            selected = currentDestination?.hasRoute<Home>() == true,
-            isCreate = false,
-            onClick = navActions::navigateToHome
-        )
-        NavItem(
-            icon = Icons.Outlined.Search,
-            label = "SEARCH",
-            selected = currentDestination?.hierarchy?.any { it.hasRoute<Search>() } == true,
-            isCreate = false,
-            onClick = navActions::navigateToSearch
-        )
-        NavItem(
-            icon = Icons.Filled.AddCircle,
-            label = "CREATE",
-            selected = currentDestination?.hasRoute<Create>() == true,
-            isCreate = true,
-            onClick = navActions::navigateToCreateRecipe
-        )
-        NavItem(
-            icon = Icons.Filled.Favorite,
-            label = "FAVORITES",
-            selected = currentDestination?.hierarchy?.any { it.hasRoute<Favourite>() } == true,
-            isCreate = false,
-            onClick = navActions::navigateToFavouriteSaved
-        )
-        NavItem(
-            icon = Icons.Outlined.Person,
-            label = "PROFILE",
-            selected = currentDestination?.hierarchy?.any { it.hasRoute<Profile>() } == true,
-            isCreate = false,
-            onClick = navActions::navigateToProfile
-        )
-    }
+        content = {
+            NavItem(
+                icon = Icons.Outlined.Explore,
+                label = "EXPLORE",
+                selected = currentDestination?.hasRoute<Home>() == true,
+                isCreate = false,
+                onClick = navActions::navigateToHome
+            )
+            NavItem(
+                icon = Icons.Outlined.Search,
+                label = "SEARCH",
+                selected = currentDestination?.hierarchy?.any { it.hasRoute<Search>() } == true,
+                isCreate = false,
+                onClick = navActions::navigateToSearch
+            )
+            NavItem(
+                icon = Icons.Filled.AddCircle,
+                label = "CREATE",
+                selected = currentDestination?.hasRoute<Create>() == true,
+                isCreate = true,
+                onClick = navActions::navigateToCreateRecipe
+            )
+            NavItem(
+                icon = Icons.Filled.Favorite,
+                label = "FAVORITES",
+                selected = currentDestination?.hierarchy?.any { it.hasRoute<Favourite>() } == true,
+                isCreate = false,
+                onClick = navActions::navigateToFavouriteSaved
+            )
+            NavItem(
+                icon = Icons.Outlined.Person,
+                label = "PROFILE",
+                selected = currentDestination?.hierarchy?.any { it.hasRoute<Profile>() } == true,
+                isCreate = false,
+                onClick = navActions::navigateToProfile
+            )
+        }
+    )
 }
 
 @Composable

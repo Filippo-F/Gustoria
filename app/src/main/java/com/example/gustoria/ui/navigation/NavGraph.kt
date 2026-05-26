@@ -4,6 +4,7 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -135,12 +136,10 @@ fun GustoriaApp(
 ) {
     Scaffold(
         bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                AppBottomNavBar(
-                    navCtrl = navController,
-                    navActions = navActions
-                )
-            }
+            AppBottomNavBar(
+                navCtrl = navController,
+                navActions = navActions
+            )
         },
         content = { paddingValues ->
             NavHost(
