@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,6 +31,16 @@ class GustoriaNavigationActions(private val navController: NavController) {
     fun getNavController(): NavController = navController
     fun navigateBack() {
         navController.popBackStack()
+    }
+
+    private fun navigateWithTabHandling(route: Any) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 
     fun navigateToOverallProfileInfo() {
@@ -57,11 +68,11 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToHome() {
-        navController.navigate(Home)
+        navigateWithTabHandling(Home)
     }
 
     fun navigateToNotifications() {
-        navController.navigate(Notifications)
+        navigateWithTabHandling(Notifications)
     }
 
     fun navigateToAuthentication() {
@@ -73,7 +84,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToSearch() {
-        navController.navigate(Search.FeaturedSearch)
+        navigateWithTabHandling(Search)
     }
 
     fun navigateToSearching() {
@@ -85,7 +96,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToProfile() {
-        navController.navigate(com.example.gustoria.ui.navigation.Profile.OverallProfile)
+        navigateWithTabHandling(Profile)
     }
 
     fun navigateToOtherProfile(userId: String) {
@@ -93,7 +104,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToCreateRecipe() {
-        navController.navigate(Create)
+        navigateWithTabHandling(Create)
     }
 
     fun navigateToEditRecipe(id: String) {
@@ -105,19 +116,19 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToFavouriteFiltering() {
-        navController.navigate(Favourite.Filtering) { launchSingleTop = true }
+        navigateWithTabHandling(Favourite.Filtering)
     }
 
     fun navigateToFavouriteSaved() {
-        navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite)
     }
 
     fun navigateToFavouriteTried() {
-        navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite.Tried)
     }
 
     fun navigateToFavouriteCreated() {
-        navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite.Created)
     }
 
     fun navigateToReviewsList(recipeId: String) {
