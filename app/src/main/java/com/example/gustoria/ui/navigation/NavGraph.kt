@@ -64,6 +64,10 @@ class GustoriaNavigationActions(private val navController: NavController) {
         navController.navigate(Authentication)
     }
 
+    fun navigateToActionRequirement(action: String) {
+        navController.navigate(ActionRequirement(action))
+    }
+
     fun navigateToSearch() {
         navController.navigate(Search.FeaturedSearch)
     }
@@ -146,6 +150,16 @@ fun GustoriaApp(
                     dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
                 ) {
                     AuthenticationDestination(
+                        onAuthSuccess = { navActions.navigateBack() }
+                    )
+                }
+
+                dialog<ActionRequirement>(
+                    dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+                ) { backStackEntry ->
+                    val args: ActionRequirement = backStackEntry.toRoute()
+                    ActionRequirementDestination(
+                        action = args.action,
                         onAuthSuccess = { navActions.navigateBack() }
                     )
                 }

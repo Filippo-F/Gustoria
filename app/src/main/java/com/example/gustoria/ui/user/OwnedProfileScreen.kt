@@ -74,6 +74,7 @@ fun OwnedProfileScreenPreview() {
 fun OwnedProfileScreen(
     user: User?,
     recipeCount: Int,
+    isLoggedIn: Boolean = true,
     onBack: () -> Unit,
     onNavigateToProfileInfo: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -107,6 +108,7 @@ fun OwnedProfileScreen(
                 user = user,
                 recipeCount = recipeCount,
                 isLandscape = isLandscape,
+                isLoggedIn = isLoggedIn,
                 onNavigateToProfileInfo = onNavigateToProfileInfo,
                 onNavigateToSettings = onNavigateToSettings,
                 onNavigateToHelp = onNavigateToHelp,
@@ -121,6 +123,7 @@ fun PresentationPane(
     user: User,
     recipeCount: Int,
     isLandscape: Boolean,
+    isLoggedIn: Boolean = true,
     onNavigateToProfileInfo: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToHelp: () -> Unit = {},
@@ -259,8 +262,15 @@ fun PresentationPane(
                 MenuListItem(title = "Profile Info", icon = Icons.Default.Person, onClick = onNavigateToProfileInfo)
                 MenuListItem(title = "Settings", icon = Icons.Default.Settings, onClick = onNavigateToSettings)
                 MenuListItem(title = "Help & Feedback", icon = Icons.Default.Info, onClick = onNavigateToHelp)
-                Spacer(modifier = Modifier.height(16.dp))
-                MenuListItem(title = "Sign Out", icon = Icons.AutoMirrored.Filled.ExitToApp, isDestructive = true, onClick = onSignOut)
+                if (isLoggedIn) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MenuListItem(
+                        title = "Sign Out",
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        isDestructive = true,
+                        onClick = onSignOut
+                    )
+                }
             }
         }
     }

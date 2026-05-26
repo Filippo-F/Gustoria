@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gustoria.data.auth.AuthState
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
@@ -73,12 +74,20 @@ fun OverallProfileDestination(
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
+    val authState by SessionManagerFacade.authState.collectAsStateWithLifecycle()
 
     OwnedProfileScreen(
         user = user,
         recipeCount = recipeCount,
+        isLoggedIn = authState !is AuthState.Unauthenticated,
         onBack = navActions::navigateBack,
-        onNavigateToProfileInfo = navActions::navigateToOverallProfileInfo,
+        onNavigateToProfileInfo = {
+            if (authState !is AuthState.Unauthenticated) {
+                navActions.navigateToOverallProfileInfo()
+            } else {
+                navActions.navigateToActionRequirement("view and edit your detailed profile information")
+            }
+        },
         onNavigateToSettings = navActions::navigateToSettings,
         onNavigateToHelp = navActions::navigateToHelpAndFeedback,
         onSignOut = navActions::navigateToSignOut
