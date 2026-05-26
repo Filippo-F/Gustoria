@@ -17,37 +17,59 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+// Define UI Auth States
+sealed interface AuthState {
+    object Registering : AuthState
+    object Authenticated : AuthState
+    object AuthAsGuest : AuthState
+    object Unauthenticated : AuthState
+}
+
 object SessionManager {
     const val CURRENT_LOGGED_IN_USER_ID: String = "101"
 }
+
 object SessionManagerFacade : AuthRepoInterface {
     override val currentUserId: String?
         get() = FirebaseAuth.getInstance().currentUser?.uid
-            ?: throw IllegalStateException("User not logged in")
 
-
-    override val currentUserState: Flow<String?> = callbackFlow{
+    override val currentUserState: Flow<String?> = callbackFlow {
         val auth = FirebaseAuth.getInstance()
         val listener = FirebaseAuth.AuthStateListener {
             trySend(it.currentUser?.uid)
         }
         auth.addAuthStateListener(listener)
         awaitClose { auth.removeAuthStateListener(listener) }
-
     }
+
     private val _currentUser = MutableStateFlow(FirebaseAuth.getInstance().currentUser?.uid)
     override val currentUserStateFlow: StateFlow<String?> = _currentUser.asStateFlow()
+
+    private val _authState = MutableStateFlow<AuthState>(
+        FirebaseAuth.getInstance().currentUser?.let {
+            if (it.isAnonymous) AuthState.AuthAsGuest else AuthState.Authenticated
+        } ?: AuthState.Unauthenticated
+    )
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
     init {
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            _currentUser.value = auth.currentUser?.uid
+            val user = auth.currentUser
+            _currentUser.value = user?.uid
+            _authState.value = when {
+                user == null -> AuthState.Unauthenticated
+                user.isAnonymous -> AuthState.AuthAsGuest
+                else -> AuthState.Authenticated
+            }
         }
     }
 
     override suspend fun signIn(context: Context): Result<Unit> {
         return try {
+            _authState.value = AuthState.Registering
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(context.getString(R.string.default_web_client_id)) // Found in generated resources from google-services.json
+                .setServerClientId(context.getString(R.string.default_web_client_id))
                 .build()
 
             val request = GetCredentialRequest.Builder()
@@ -60,18 +82,29 @@ object SessionManagerFacade : AuthRepoInterface {
             val firebaseCredential =
                 GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
-            FirebaseAuth.getInstance().signInWithCredential(firebaseCredential).await()
+            val authResult = FirebaseAuth.getInstance().signInWithCredential(firebaseCredential).await()
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+            
+            if (isNewUser) {
+                // If we want to distinguish registration specifically, 
+                // we could set a specific state here if needed, 
+                // but the listener will catch the transition to Authenticated.
+            }
+            
             Result.success(Unit)
         } catch (e: Exception) {
+            _authState.value = AuthState.Unauthenticated
             Result.failure(e)
         }
     }
 
     override suspend fun signInAnonymous(context: Context): Result<Unit> {
         return try {
+            _authState.value = AuthState.Registering
             FirebaseAuth.getInstance().signInAnonymously().await()
             Result.success(Unit)
         } catch (e: Exception) {
+            _authState.value = AuthState.Unauthenticated
             Result.failure(e)
         }
     }

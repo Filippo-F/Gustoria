@@ -14,14 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 
-// Define UI Auth States
-sealed interface AuthState {
-    object Registering : AuthState
-    object Authenticated : AuthState
-    object AuthAsGuest : AuthState
-    object Unauthenticated : AuthState
-}
-
 class FirebaseAuthRepository(
     private val auth: FirebaseAuth,
     private val credentialManager: CredentialManager
