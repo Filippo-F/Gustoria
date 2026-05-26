@@ -24,8 +24,6 @@ class PaperUserRepo: UserRepoInterface {
             nickname = "User 101",
             firstName = "First",
             lastName = "User",
-            fullName = "First User",
-            username = "user101",
             phoneNumber = "+39 123 4567890",
             cookingRole = CookingRole.HOME_COOK,
             savedRecipesIds = listOf(
@@ -41,8 +39,6 @@ class PaperUserRepo: UserRepoInterface {
             nickname = "User 202",
             firstName = "Second",
             lastName = "User",
-            fullName = "Second User",
-            username = "user202",
             phoneNumber = "+39 098 7654321",
             cookingRole = CookingRole.FOOD_LOVER,
             savedRecipesIds = listOf(

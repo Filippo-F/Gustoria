@@ -65,6 +65,9 @@ class FirebaseAuthRepository(
         auth.signOut()
     }
 
+    override val authState: StateFlow<AuthState>
+        get() = TODO("Not yet implemented")
+
     override val currentUserId: String?
         get() = currentUserState.value
     override val currentUserState: StateFlow<String?> = _currentUser.asStateFlow()

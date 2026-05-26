@@ -194,21 +194,11 @@ class OwnedProfileViewModel(
     }
 
     fun setFirstName(firstName: String) {
-        editableUser = editableUser?.let { 
-            it.copy(
-                firstName = firstName,
-                fullName = "$firstName ${it.lastName}".trim()
-            )
-        }
+        editableUser = editableUser?.copy(firstName = firstName)
     }
 
     fun setLastName(lastName: String) {
-        editableUser = editableUser?.let {
-            it.copy(
-                lastName = lastName,
-                fullName = "${it.firstName} $lastName".trim()
-            )
-        }
+        editableUser = editableUser?.copy(lastName = lastName)
     }
 
     fun setDescription(description: String) {

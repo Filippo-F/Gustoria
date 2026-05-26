@@ -66,7 +66,7 @@ fun OtherProfileScreenPreview() {
 }
 
 @Composable
-fun ProfileImage(imageUrl: String?, fullName: String) {
+fun ProfileImage(imageUrl: String?, firstName: String, lastName: String) {
     Box(
         modifier = Modifier.fillMaxWidth().height(150.dp),
         contentAlignment = Alignment.Center
@@ -89,12 +89,7 @@ fun ProfileImage(imageUrl: String?, fullName: String) {
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
-                val initials = fullName
-                    .split(" ")
-                    .mapNotNull { it.firstOrNull()?.toString() }
-                    .take(2)
-                    .joinToString("")
-                    .uppercase()
+                val initials = (firstName.take(1) + lastName.take(1)).uppercase()
 
                 Text(
                     text = initials,
@@ -108,14 +103,14 @@ fun ProfileImage(imageUrl: String?, fullName: String) {
 }
 
 @Composable
-fun ProfileInfo(fullName: String, nickname: String, cookingRole: CookingRole, description: String){
+fun ProfileInfo(firstName: String, lastName: String, nickname: String, cookingRole: CookingRole, description: String){
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Full name
         Text(
-            text = fullName,
+            text = "$firstName $lastName",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
@@ -337,13 +332,15 @@ fun OtherProfileScreen(
                 item {
                     ProfileImage(
                         imageUrl = user.profileImageUri,
-                        fullName = user.fullName
+                        firstName = user.firstName,
+                        lastName = user.lastName
                     )
                 }
 
                 item {
                     ProfileInfo(
-                        fullName = user.fullName,
+                        firstName = user.firstName,
+                        lastName = user.lastName,
                         nickname = user.nickname,
                         cookingRole = user.cookingRole,
                         description = user.description

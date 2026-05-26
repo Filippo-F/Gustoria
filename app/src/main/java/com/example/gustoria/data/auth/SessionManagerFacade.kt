@@ -50,7 +50,7 @@ object SessionManagerFacade : AuthRepoInterface {
             if (it.isAnonymous) AuthState.AuthAsGuest else AuthState.Authenticated
         } ?: AuthState.Unauthenticated
     )
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    override val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     init {
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
@@ -86,7 +86,7 @@ object SessionManagerFacade : AuthRepoInterface {
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             
             if (isNewUser) {
-                // TODO: handel specific registering
+                // TODO: handle specific registering
             }
             
             Result.success(Unit)

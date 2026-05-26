@@ -150,7 +150,7 @@ fun PresentationPane(
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            text = "${user.fullName} (${user.nickname})",
+                            text = "${user.firstName} ${user.lastName} (${user.nickname})",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -185,7 +185,7 @@ fun PresentationPane(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "${user.fullName} (${user.nickname})",
+                        text = "${user.firstName} ${user.lastName} (${user.nickname})",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -349,13 +349,7 @@ fun ImageBoxContent(user: User) {
                 .background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center
         ) {
-            val initials = user.fullName
-                .split(" ")
-                .filter { it.isNotBlank() }
-                .mapNotNull { it.firstOrNull()?.toString() }
-                .take(2)
-                .joinToString("")
-                .uppercase()
+            val initials = (user.firstName.take(1) + user.lastName.take(1)).uppercase()
 
             Text(
                 text = initials,

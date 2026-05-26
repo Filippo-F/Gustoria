@@ -35,16 +35,12 @@ fun ReviewCard(
     val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
         "You"
     } else {
-        user?.fullName
+        user?.let { "${it.firstName} ${it.lastName}" }
     }
     val initials = if (displayName == "You") {
         "Y"
     } else {
-        displayName?.split(" ")
-            ?.mapNotNull { it.firstOrNull() }
-            ?.take(2)
-            ?.joinToString("")
-            ?.uppercase()
+        user?.let { (it.firstName.take(1) + it.lastName.take(1)).uppercase() }
     }
 
     Surface(

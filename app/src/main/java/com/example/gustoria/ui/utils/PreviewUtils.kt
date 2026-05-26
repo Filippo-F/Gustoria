@@ -34,7 +34,8 @@ object PreviewUtils {
         override fun getUserById(userId: String): Flow<User?> = flowOf(
             User(
                 internalId = userId,
-                fullName = "Mario Rossi",
+                firstName = "Mario",
+                lastName = "Rossi",
                 nickname = "SuperChef",
                 description = "Simple ingredients, great passion, amazing food.",
                 phoneNumber = "+39 333 1234567",
