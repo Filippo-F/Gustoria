@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -82,7 +81,7 @@ fun NotificationScreen(
     val unreadCount = notifications.count { !it.isRead }
 
     // Mostra snackbar alla prima apertura se ci sono notifiche non lette
-    LaunchedEffect(unreadCount) {
+    LaunchedEffect(Unit) {
         if (unreadCount > 0) {
             snackbarHostState.showSnackbar(
                 message = "You have $unreadCount unread notification${if (unreadCount > 1) "s" else ""}",
