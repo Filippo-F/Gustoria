@@ -13,9 +13,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.dataclass.Notification
+import com.example.gustoria.dataclass.NotificationType
+import com.example.gustoria.domain.NotificationRepoInterface
+import com.example.gustoria.domain.RecipeRepoInterface
+import kotlinx.coroutines.flow.first
 
 class ReviewViewModel(
-    private val reviewRepository: ReviewRepoInterface
+    private val reviewRepository: ReviewRepoInterface,
+    private val recipeRepository: RecipeRepoInterface,
+    private val notificationRepo: NotificationRepoInterface
 ) : ViewModel() {
 
     fun reviewsForRecipe(recipeId: String): StateFlow<List<Review>?> =
@@ -35,6 +44,21 @@ class ReviewViewModel(
     fun addReview(review: Review) {
         viewModelScope.launch {
             reviewRepository.addReview(review)
+
+            // Fetch la ricetta per trovare il proprietario e notificarlo
+            recipeRepository.getRecipeById(review.recipeId).first()?.let { recipe ->
+                if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: SessionManager.CURRENT_LOGGED_IN_USER_ID)) {
+                    notificationRepo.addNotification(
+                        Notification(
+                            recipientUserId = recipe.ownerId,
+                            type = NotificationType.REVIEW_RECEIVED,
+                            title = "New review on your recipe",
+                            message = "Someone reviewed \"${recipe.name}\".",
+                            targetRecipeId = recipe.id
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -43,7 +67,9 @@ class ReviewViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
                 val reviewRepository = application.container.reviewRepository
-                ReviewViewModel(reviewRepository)
+                val recipeRepository = application.container.recipeRepository
+                val notificationRepository = application.container.notificationRepository
+                ReviewViewModel(reviewRepository, recipeRepository, notificationRepository)
             }
         }
     }
