@@ -29,21 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
-import com.example.gustoria.ui.navigation.Edit
-import com.example.gustoria.ui.navigation.RecipeDetails
-import com.example.gustoria.ui.navigation.OtherProfile
 import com.example.gustoria.ui.navigation.GustoriaNavigationActions
-import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.R
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.review.components.ReviewCard
 
 @Composable
@@ -79,7 +74,7 @@ fun RecipeDetailsScreen(
             onViewReviews = { navActions.navigateToReviewsList(r.id) },
             onProfileClick = { userId ->
                 if (userId.isNotBlank()) {
-                    if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+                    if (userId == (SessionManagerFacade.currentUserId ?: "")) {
                         navActions.navigateToProfile()
                     } else {
                         navActions.navigateToOtherProfile(userId)

@@ -25,10 +25,6 @@ sealed interface AuthState {
     object Unauthenticated : AuthState
 }
 
-object SessionManager {
-    const val CURRENT_LOGGED_IN_USER_ID: String = "101"
-}
-
 object SessionManagerFacade : AuthRepoInterface {
     override val currentUserId: String?
         get() = FirebaseAuth.getInstance().currentUser?.uid
