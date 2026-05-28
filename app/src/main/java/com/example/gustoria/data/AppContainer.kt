@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import com.example.gustoria.data.auth.FirebaseAuthRepository
 import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
 import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.data.paperRepo.PaperLikeRepo
-import com.example.gustoria.data.paperRepo.PaperRecipeRepo
-import com.example.gustoria.data.paperRepo.PaperReviewRepo
-import com.example.gustoria.data.paperRepo.PaperUserRepo
 import com.example.gustoria.domain.AuthRepoInterface
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -25,9 +24,8 @@ interface AppContainer {
     val authRepository: AuthRepoInterface
 }
 
-/**
- * [AppContainer] implementation that provides instance of Paper-based repositories
- */
+// [AppContainer] implementation that provides Firestore-backed repositories
+
 class DefaultAppContainer(private val context: Context) : AppContainer {
     private val firestore: FirebaseFirestore by lazy {
         FirebaseFirestore.getInstance()
@@ -38,16 +36,15 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val recipeRepository: RecipeRepoInterface by lazy {
-        PaperRecipeRepo()
+        FirebaseRecipeRepo(firestore)
     }
 
     override val userRepository: UserRepoInterface by lazy {
-        //PaperUserRepo()
         FirebaseUserRepo(firestore)
     }
 
     override val reviewRepository: ReviewRepoInterface by lazy {
-        PaperReviewRepo()
+        FirebaseReviewRepo(firestore)
     }
 
     override val likeRepository: LikeRepoInterface by lazy {
