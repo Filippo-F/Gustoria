@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
@@ -29,7 +29,7 @@ class HomeViewModel(
 
     // ricette consigliate non possedute dall'utente corrente (sezione "Recommended for you")
     val recommendedRecipes: StateFlow<List<Recipe>> = allRecipes
-        .map { list -> list.filter { it.ownerId != SessionManager.CURRENT_LOGGED_IN_USER_ID } }
+        .map { list -> list.filter { it.ownerId != (SessionManagerFacade.currentUserId ?: "") } }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -38,7 +38,7 @@ class HomeViewModel(
 
     // ricette create dall'utente corrente (sezione "Recent creations")
     val myRecipes: StateFlow<List<Recipe>> = recipeRepository
-        .getRecipeByOwner(SessionManager.CURRENT_LOGGED_IN_USER_ID)
+        .getRecipeByOwner(SessionManagerFacade.currentUserId ?: "")
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

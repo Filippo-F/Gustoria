@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.ui.review.ReviewFormScreen
 import com.example.gustoria.ui.review.ReviewsListScreen
@@ -29,7 +29,7 @@ fun AddReviewDestination(
         onBack = navActions::navigateBack,
         onPostReview = { description, rating, photoUri ->
             val review = Review(
-                userId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
+                userId = SessionManagerFacade.currentUserId ?: "",
                 recipeId = recipeId,
                 description = description,
                 rating = rating,
@@ -55,7 +55,7 @@ fun ReviewsListDestination(
         onBack = navActions::navigateBack,
         onWriteReview = { navActions.navigateToAddReview(recipeId) },
         onProfileClick = { userId ->
-            if (userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+            if (userId == (SessionManagerFacade.currentUserId ?: "")) {
                 navActions.navigateToProfile()
             } else {
                 navActions.navigateToOtherProfile(userId)

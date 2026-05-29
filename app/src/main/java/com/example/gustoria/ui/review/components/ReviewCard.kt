@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.gustoria.GustoriaApplication
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Review
 
 @Composable
@@ -32,7 +32,7 @@ fun ReviewCard(
     val userRepository = application.container.userRepository
     val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
 
-    val displayName = if (review.userId == SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+    val displayName = if (review.userId == (SessionManagerFacade.currentUserId ?: "")) {
         "You"
     } else {
         user?.let { "${it.firstName} ${it.lastName}" }

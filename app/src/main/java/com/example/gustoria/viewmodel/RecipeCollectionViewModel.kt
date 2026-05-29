@@ -10,7 +10,7 @@ import com.example.gustoria.GustoriaApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.recipe.RecipeFilters
@@ -26,7 +26,7 @@ class RecipeCollectionViewModel(
     private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
-    private val userId = SessionManager.CURRENT_LOGGED_IN_USER_ID
+    private val userId get() = SessionManagerFacade.currentUserId ?: ""
 
     private val _filters = MutableStateFlow(RecipeFilters())
     val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()

@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.recipe.ALL_COSTS
 import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
@@ -202,7 +202,7 @@ class EditRecipeViewModel(
         viewModelScope.launch {
             val baseRecipe = originalRecipe ?: Recipe(
                 id = Uuid.random().toString(),
-                ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID // Assign recipe to connected user
+                ownerId = SessionManagerFacade.currentUserId ?: ""
             )
 
             val updatedRecipe = baseRecipe.copy(

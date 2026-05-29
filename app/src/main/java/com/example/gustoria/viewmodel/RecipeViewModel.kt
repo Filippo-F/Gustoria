@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.recipe.RecipeFilters
 import com.example.gustoria.ui.recipe.applyFilters
@@ -64,8 +64,7 @@ class RecipeViewModel(
 
 
     fun isOwnedByCurrentUser(recipe: Recipe): Boolean =
-        recipe.ownerId == SessionManager.CURRENT_LOGGED_IN_USER_ID
-
+        recipe.ownerId == (SessionManagerFacade.currentUserId ?: "")
     fun selectRecipe(recipeId: String?) {
         _selectedRecipeId.value = recipeId
     }
@@ -96,33 +95,27 @@ class RecipeViewModel(
     }
 
     fun isFavouriteFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+        userRepo.isFavourite((SessionManagerFacade.currentUserId ?: ""), recipeId)
 
     fun toggleFavourite(recipeId: String) {
         viewModelScope.launch {
-            val isFav = userRepo
-                .isFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
-                .first()
-            if (isFav) userRepo.removeFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
-            else userRepo.addFavourite(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+            val userId = SessionManagerFacade.currentUserId ?: ""
+            val isFav = userRepo.isFavourite(userId, recipeId).first()
+            if (isFav) userRepo.removeFavourite(userId, recipeId)
+            else userRepo.addFavourite(userId, recipeId)
         }
     }
 
 
     fun isTriedFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isTried(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
+        userRepo.isTried((SessionManagerFacade.currentUserId ?: ""), recipeId)
 
     fun toggleTried(recipeId: String) {
         viewModelScope.launch {
-            val hasTried = userRepo
-                .isTried(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
-                .first()
-
-            if (hasTried) {
-                userRepo.removeTriedRecipe(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
-            } else {
-                userRepo.addTriedRecipe(SessionManager.CURRENT_LOGGED_IN_USER_ID, recipeId)
-            }
+            val userId = SessionManagerFacade.currentUserId ?: ""
+            val hasTried = userRepo.isTried(userId, recipeId).first()
+            if (hasTried) userRepo.removeTriedRecipe(userId, recipeId)
+            else userRepo.addTriedRecipe(userId, recipeId)
         }
     }
     fun deleteRecipe(recipeId: String) {
@@ -139,7 +132,7 @@ class RecipeViewModel(
             val newId = Uuid.random().toString()
             val copy = recipe.copy(
                 id = newId,
-                ownerId = SessionManager.CURRENT_LOGGED_IN_USER_ID,
+                ownerId = SessionManagerFacade.currentUserId ?: "",
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name
                 else "${recipe.name} (Copy)"
             )

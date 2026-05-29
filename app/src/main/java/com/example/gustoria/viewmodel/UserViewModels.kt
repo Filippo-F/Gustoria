@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import com.example.gustoria.data.auth.SessionManager
+import com.example.gustoria.data.auth.SessionManagerFacade
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -50,11 +50,11 @@ class OwnedProfileViewModel(
 
     //state of logged user taken from repo (can be null initially)
     val user: StateFlow<User?> = userRepo
-        .getUserById(SessionManager.CURRENT_LOGGED_IN_USER_ID)
+        .getUserById(SessionManagerFacade.currentUserId ?: "")
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val recipeCount: StateFlow<Int> = recipeRepo
-        .getRecipeByOwner(SessionManager.CURRENT_LOGGED_IN_USER_ID)
+        .getRecipeByOwner(SessionManagerFacade.currentUserId ?: "")
         .map { it.size }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
