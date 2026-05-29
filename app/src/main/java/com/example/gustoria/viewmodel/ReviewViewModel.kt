@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import com.example.gustoria.data.auth.SessionManager
+
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
@@ -47,7 +47,7 @@ class ReviewViewModel(
 
             // Fetch la ricetta per trovare il proprietario e notificarlo
             recipeRepository.getRecipeById(review.recipeId).first()?.let { recipe ->
-                if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: SessionManager.CURRENT_LOGGED_IN_USER_ID)) {
+                if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: "")) {
                     notificationRepo.addNotification(
                         Notification(
                             recipientUserId = recipe.ownerId,

@@ -139,7 +139,7 @@ class RecipeViewModel(
             recipeRepository.addRecipe(copy)
 
             // Notify original recipe owner
-            if (recipe.ownerId != SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+            if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: "")) {
                 notificationRepo.addNotification(
                     Notification(
                         recipientUserId = recipe.ownerId,

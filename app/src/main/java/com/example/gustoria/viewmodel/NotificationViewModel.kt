@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
-import com.example.gustoria.data.auth.SessionManager
+
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
@@ -27,9 +27,8 @@ class NotificationViewModel(
     private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
-    // Usa Firebase UID se disponibile, altrimenti placeholder ((temporaneo, da cambiare!!!!))
     private val currentUserId: String
-        get() = SessionManagerFacade.currentUserId ?: SessionManager.CURRENT_LOGGED_IN_USER_ID
+        get() = SessionManagerFacade.currentUserId ?: ""
 
     val notifications: StateFlow<List<Notification>> =
         notificationRepo.getNotificationsForUser(currentUserId)

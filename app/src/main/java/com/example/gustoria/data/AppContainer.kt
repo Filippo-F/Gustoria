@@ -6,6 +6,7 @@ import com.example.gustoria.data.auth.FirebaseAuthRepository
 import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
 import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
@@ -52,7 +53,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val notificationRepository: NotificationRepoInterface by lazy {
-        PaperNotificationRepo()
+        FirebaseNotificationRepo(Firebase.firestore)
     }
 
     override val authRepository: AuthRepoInterface by lazy {

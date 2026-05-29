@@ -3,9 +3,10 @@ package com.example.gustoria
 import android.app.Application
 import com.example.gustoria.data.AppContainer
 import com.example.gustoria.data.DefaultAppContainer
-import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -31,6 +32,7 @@ class GustoriaApplication : Application() {
             (container.userRepository as? FirebaseUserRepo)?.initializeData()
             (container.recipeRepository as? FirebaseRecipeRepo)?.initializeData()
             (container.reviewRepository as? FirebaseReviewRepo)?.initializeData()
+            (container.notificationRepository as? FirebaseNotificationRepo)?.initializeData()
         }
     }
 }
