@@ -25,10 +25,14 @@ import kotlin.uuid.Uuid
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import com.example.gustoria.dataclass.Notification
+import com.example.gustoria.dataclass.NotificationType
+import com.example.gustoria.domain.NotificationRepoInterface
 
 class RecipeViewModel(
     private val recipeRepository: RecipeRepoInterface,
-    private val userRepo: UserRepoInterface
+    private val userRepo: UserRepoInterface,
+    private val notificationRepo: NotificationRepoInterface
 ) : ViewModel() {
 
     val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
@@ -130,12 +134,27 @@ class RecipeViewModel(
                 id = newId,
                 ownerId = SessionManagerFacade.currentUserId ?: "",
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name
-                        else "${recipe.name} (Copy)"
+                else "${recipe.name} (Copy)"
             )
             recipeRepository.addRecipe(copy)
+
+            // Notify original recipe owner
+            if (recipe.ownerId != SessionManager.CURRENT_LOGGED_IN_USER_ID) {
+                notificationRepo.addNotification(
+                    Notification(
+                        recipientUserId = recipe.ownerId,
+                        type = NotificationType.RECIPE_DUPLICATED,
+                        title = "Your recipe was duplicated!",
+                        message = "\"${copy.name}\" was inspired by your recipe.",
+                        targetRecipeId = copy.id
+                    )
+                )
+            }
+
             onSuccess(newId)
         }
     }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -143,7 +162,8 @@ class RecipeViewModel(
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
                 val recipeRepository = application.container.recipeRepository
                 val userRepository = application.container.userRepository
-                RecipeViewModel(recipeRepository, userRepository)
+                val notificationRepository = application.container.notificationRepository
+                RecipeViewModel(recipeRepository, userRepository, notificationRepository)
             }
         }
     }

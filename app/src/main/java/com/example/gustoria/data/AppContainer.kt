@@ -14,22 +14,21 @@ import com.example.gustoria.data.paperRepo.PaperLikeRepo
 import com.example.gustoria.domain.AuthRepoInterface
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.gustoria.data.paperRepo.PaperNotificationRepo
+import com.example.gustoria.domain.NotificationRepoInterface
 
 interface AppContainer {
     val recipeRepository: RecipeRepoInterface
     val userRepository: UserRepoInterface
     val reviewRepository: ReviewRepoInterface
     val likeRepository: LikeRepoInterface
+    val notificationRepository: NotificationRepoInterface
     val authRepository: AuthRepoInterface
 }
 
 // [AppContainer] implementation that provides Firestore-backed repositories
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
-    private val firestore: FirebaseFirestore by lazy {
-        FirebaseFirestore.getInstance()
-    }
 
     private val credentialManager: CredentialManager by lazy {
         CredentialManager.create(context)
@@ -49,6 +48,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val likeRepository: LikeRepoInterface by lazy {
         PaperLikeRepo()
+    }
+
+    override val notificationRepository: NotificationRepoInterface by lazy {
+        PaperNotificationRepo()
     }
 
     override val authRepository: AuthRepoInterface by lazy {
