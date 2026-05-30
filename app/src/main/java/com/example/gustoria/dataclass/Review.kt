@@ -12,7 +12,8 @@ data class Review (
 
     val description: String = "",
     val rating: Float = 0f,
-    val likes: Int = 0,
+    // IDs degli utenti che hanno messo like a questa review
+    val likedByUserIds: List<String> = emptyList(),
 
     val photoUri: String? = null,
 

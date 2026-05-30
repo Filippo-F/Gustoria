@@ -7,23 +7,19 @@ import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
-import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import com.example.gustoria.data.paperRepo.PaperLikeRepo
 import com.example.gustoria.domain.AuthRepoInterface
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import com.example.gustoria.data.paperRepo.PaperNotificationRepo
 import com.example.gustoria.domain.NotificationRepoInterface
 
 interface AppContainer {
     val recipeRepository: RecipeRepoInterface
     val userRepository: UserRepoInterface
     val reviewRepository: ReviewRepoInterface
-    val likeRepository: LikeRepoInterface
     val notificationRepository: NotificationRepoInterface
     val authRepository: AuthRepoInterface
 }
@@ -46,10 +42,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val reviewRepository: ReviewRepoInterface by lazy {
         FirebaseReviewRepo(Firebase.firestore)
-    }
-
-    override val likeRepository: LikeRepoInterface by lazy {
-        PaperLikeRepo()
     }
 
     override val notificationRepository: NotificationRepoInterface by lazy {

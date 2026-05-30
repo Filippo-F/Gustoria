@@ -21,4 +21,13 @@ interface RecipeRepoInterface {
 
     // Delete a recipe from the platform
     suspend fun deleteRecipe(recipeId: String)
+
+    // Aggiunge userId a likedByUserIds della ricetta
+    suspend fun addLikedByUser(recipeId: String, userId: String)
+
+    // Rimuove userId da likedByUserIds della ricetta
+    suspend fun removeLikedByUser(recipeId: String, userId: String)
+
+    // Somma totale dei like su tutte le ricette di un owner (per il profilo)
+    fun getLikesCountForOwner(ownerId: String): Flow<Int>
 }

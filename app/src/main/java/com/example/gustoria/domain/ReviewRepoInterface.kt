@@ -24,4 +24,13 @@ interface ReviewRepoInterface {
 
     // Delete a review from a recipe
     suspend fun deleteReview(reviewId: String)
+
+    // True se userId ha già messo like a questa review
+    fun isLiked(userId: String, reviewId: String): Flow<Boolean>
+
+    // Aggiunge userId a likedByUserIds della review
+    suspend fun addLike(userId: String, reviewId: String)
+
+    // Rimuove userId da likedByUserIds della review
+    suspend fun removeLike(userId: String, reviewId: String)
 }

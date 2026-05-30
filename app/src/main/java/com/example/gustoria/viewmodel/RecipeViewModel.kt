@@ -101,8 +101,13 @@ class RecipeViewModel(
         viewModelScope.launch {
             val userId = SessionManagerFacade.currentUserId ?: ""
             val isFav = userRepo.isFavourite(userId, recipeId).first()
-            if (isFav) userRepo.removeFavourite(userId, recipeId)
-            else userRepo.addFavourite(userId, recipeId)
+            if (isFav) {
+                userRepo.removeFavourite(userId, recipeId)
+                recipeRepository.removeLikedByUser(recipeId, userId)
+            } else {
+                userRepo.addFavourite(userId, recipeId)
+                recipeRepository.addLikedByUser(recipeId, userId)
+            }
         }
     }
 

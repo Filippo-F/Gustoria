@@ -61,6 +61,7 @@ fun OwnedProfileScreenPreview() {
         OwnedProfileScreen(
             user = null,
             recipeCount = 0,
+            likeCount = 0,
             onBack = {},
             onNavigateToProfileInfo = {},
             onNavigateToSettings = {},
@@ -74,6 +75,7 @@ fun OwnedProfileScreenPreview() {
 fun OwnedProfileScreen(
     user: User?,
     recipeCount: Int,
+    likeCount: Int,
     isLoggedIn: Boolean = true,
     onBack: () -> Unit,
     onNavigateToProfileInfo: () -> Unit,
@@ -107,6 +109,7 @@ fun OwnedProfileScreen(
             PresentationPane(
                 user = user,
                 recipeCount = recipeCount,
+                likeCount = likeCount,
                 isLandscape = isLandscape,
                 isLoggedIn = isLoggedIn,
                 onNavigateToProfileInfo = onNavigateToProfileInfo,
@@ -122,6 +125,7 @@ fun OwnedProfileScreen(
 fun PresentationPane(
     user: User,
     recipeCount: Int,
+    likeCount: Int,
     isLandscape: Boolean,
     isLoggedIn: Boolean = true,
     onNavigateToProfileInfo: () -> Unit = {},
@@ -249,7 +253,7 @@ fun PresentationPane(
             ) {
                 ProfileValueBox(recipeCount, "Recipes")
                 ProfileValueBox(user.numberOfFollowers, "Followers")
-                ProfileValueBox(user.numberOfLikes, "Likes")
+                ProfileValueBox(likeCount, "Likes")
             }
         }
 

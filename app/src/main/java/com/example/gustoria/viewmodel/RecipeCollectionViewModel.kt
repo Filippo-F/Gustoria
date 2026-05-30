@@ -130,8 +130,13 @@ class RecipeCollectionViewModel(
             val isFav = userRepo
                 .isFavourite(userId, recipeId)
                 .first()  // Read current value once
-            if (isFav) userRepo.removeFavourite(userId, recipeId)
-            else userRepo.addFavourite(userId, recipeId)
+            if (isFav) {
+                userRepo.removeFavourite(userId, recipeId)
+                repo.removeLikedByUser(recipeId, userId)
+            } else {
+                userRepo.addFavourite(userId, recipeId)
+                repo.addLikedByUser(recipeId, userId)
+            }
         }
     }
 

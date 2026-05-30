@@ -27,6 +27,9 @@ object PreviewUtils {
         override suspend fun addRecipe(recipe: Recipe) {}
         override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {}
         override suspend fun deleteRecipe(recipeId: String) {}
+        override suspend fun addLikedByUser(recipeId: String, userId: String) {}
+        override suspend fun removeLikedByUser(recipeId: String, userId: String) {}
+        override fun getLikesCountForOwner(ownerId: String): Flow<Int> = flowOf(0)
     }
 
     fun createFakeUserRepo() = object : UserRepoInterface {
@@ -40,8 +43,7 @@ object PreviewUtils {
                 description = "Simple ingredients, great passion, amazing food.",
                 phoneNumber = "+39 333 1234567",
                 numberOfRecipes = 42,
-                numberOfFollowers = 1200,
-                numberOfLikes = 850
+                numberOfFollowers = 1200
             )
         )
         override suspend fun createUser(user: User) {}
@@ -65,5 +67,8 @@ object PreviewUtils {
         override suspend fun addReview(review: Review) {}
         override suspend fun updateReview(reviewId: String, review: Review) {}
         override suspend fun deleteReview(reviewId: String) {}
+        override fun isLiked(userId: String, reviewId: String): Flow<Boolean> = flowOf(false)
+        override suspend fun addLike(userId: String, reviewId: String) {}
+        override suspend fun removeLike(userId: String, reviewId: String) {}
     }
 }

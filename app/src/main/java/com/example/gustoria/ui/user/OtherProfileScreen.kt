@@ -54,6 +54,7 @@ fun OtherProfileScreenPreview() {
         OtherProfileScreen(
             user = null,
             recipeCount = 0,
+            likeCount = 0,
             currentTab = 0,
             isFollowing = false,
             collections = emptyList(),
@@ -285,6 +286,7 @@ fun RecentActivitySection(activities: List<UserActivity>) {
 fun OtherProfileScreen(
     user: com.example.gustoria.dataclass.User?,
     recipeCount: Int,
+    likeCount: Int,
     currentTab: Int,
     isFollowing: Boolean,
     collections: List<UserCollection>,
@@ -379,7 +381,7 @@ fun OtherProfileScreen(
                     ) {
                         ValueBox(recipeCount, "Recipes")
                         ValueBox(user.numberOfFollowers, "Followers")
-                        ValueBox(user.numberOfLikes, "Likes")
+                        ValueBox(likeCount, "Likes")
                     }
                 }
 

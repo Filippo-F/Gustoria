@@ -19,6 +19,7 @@ import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 class ReviewViewModel(
@@ -59,6 +60,18 @@ class ReviewViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun isLikedFlow(reviewId: String): Flow<Boolean> =
+        reviewRepository.isLiked(SessionManagerFacade.currentUserId ?: "", reviewId)
+
+    fun toggleLike(reviewId: String) {
+        viewModelScope.launch {
+            val userId = SessionManagerFacade.currentUserId ?: ""
+            val isLiked = reviewRepository.isLiked(userId, reviewId).first()
+            if (isLiked) reviewRepository.removeLike(userId, reviewId)
+            else reviewRepository.addLike(userId, reviewId)
         }
     }
 

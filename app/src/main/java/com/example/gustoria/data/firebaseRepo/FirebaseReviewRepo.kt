@@ -3,6 +3,7 @@ package com.example.gustoria.data.firebaseRepo
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.ReviewRepoInterface
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Semplicissima e deliziosa! Il sugo di pomodoro fresco fa tutta la differenza.",
                     rating = 5.0f,
-                    likes = 4,
+                    likedByUserIds = listOf("303", "404", "505", "101"),
                     timestamp = (now - 86400000 * 7).toString()
                 ),
                 Review(
@@ -38,7 +39,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Ottima ricetta, la faccio ogni settimana. Ho aggiunto un po' di peperoncino.",
                     rating = 4.5f,
-                    likes = 2,
+                    likedByUserIds = listOf("202", "101"),
                     timestamp = (now - 86400000 * 5).toString()
                 ),
                 Review(
@@ -47,7 +48,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Veloce e gustosa, perfetta per un pranzo last-minute. 10/10!",
                     rating = 5.0f,
-                    likes = 6,
+                    likedByUserIds = listOf("202", "303", "505", "101", "606", "707"),
                     timestamp = (now - 86400000 * 3).toString()
                 ),
                 Review(
@@ -56,7 +57,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Buona, ma ho preferito usare pomodorini invece dei pelati.",
                     rating = 4.0f,
-                    likes = 1,
+                    likedByUserIds = listOf("303"),
                     timestamp = (now - 86400000).toString()
                 ),
 
@@ -67,7 +68,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_sushi_rolls",
                     description = "Ottimo sushi casalingo! Difficile ma il risultato è fantastico.",
                     rating = 5.0f,
-                    likes = 8,
+                    likedByUserIds = listOf("202", "303", "404", "505", "606", "707", "808", "909"),
                     timestamp = (now - 86400000 * 6).toString()
                 ),
                 Review(
@@ -76,7 +77,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_sushi_rolls",
                     description = "Ho seguito la ricetta passo passo, il riso era perfetto. Proverò con il tonno.",
                     rating = 4.5f,
-                    likes = 3,
+                    likedByUserIds = listOf("101", "404", "505"),
                     timestamp = (now - 86400000 * 4).toString()
                 ),
                 Review(
@@ -85,7 +86,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_sushi_rolls",
                     description = "Molto bello esteticamente, ma la tecnica di arrotolamento richiede pratica.",
                     rating = 4.0f,
-                    likes = 2,
+                    likedByUserIds = listOf("101", "303"),
                     timestamp = (now - 86400000 * 2).toString()
                 ),
                 Review(
@@ -94,7 +95,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_sushi_rolls",
                     description = "Perfetto per una cena speciale! Ingredienti facilmente reperibili.",
                     rating = 5.0f,
-                    likes = 5,
+                    likedByUserIds = listOf("101", "202", "303", "404", "606"),
                     timestamp = (now - 3600000).toString()
                 ),
 
@@ -105,7 +106,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_margherita_pizza",
                     description = "Impasto meraviglioso, meglio di molte pizzerie!",
                     rating = 5.0f,
-                    likes = 10,
+                    likedByUserIds = listOf("101", "303", "404", "505", "606", "707", "808", "909", "010", "111"),
                     timestamp = (now - 86400000 * 10).toString()
                 ),
                 Review(
@@ -114,7 +115,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_beef_burger",
                     description = "La tecnica smash burger è perfetta, crosta croccante e interno succoso.",
                     rating = 4.5f,
-                    likes = 7,
+                    likedByUserIds = listOf("202", "303", "404", "505", "606", "707", "808"),
                     timestamp = (now - 86400000 * 2).toString()
                 )
             )
@@ -164,5 +165,22 @@ class FirebaseReviewRepo(
 
     override suspend fun deleteReview(reviewId: String) {
         reviewsCollection.document(reviewId).delete().await()
+    }
+
+    override fun isLiked(userId: String, reviewId: String): Flow<Boolean> {
+        return getReviewById(reviewId)
+            .map { review -> review?.likedByUserIds?.contains(userId) == true }
+    }
+
+    override suspend fun addLike(userId: String, reviewId: String) {
+        reviewsCollection.document(reviewId)
+            .update("likedByUserIds", FieldValue.arrayUnion(userId))
+            .await()
+    }
+
+    override suspend fun removeLike(userId: String, reviewId: String) {
+        reviewsCollection.document(reviewId)
+            .update("likedByUserIds", FieldValue.arrayRemove(userId))
+            .await()
     }
 }
