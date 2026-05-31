@@ -28,11 +28,13 @@ import kotlinx.coroutines.flow.first
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
 
 class RecipeViewModel(
     private val recipeRepository: RecipeRepoInterface,
     private val userRepo: UserRepoInterface,
-    private val notificationRepo: NotificationRepoInterface
+    private val notificationRepo: NotificationRepoInterface,
+    private val reviewRepository: ReviewRepoInterface
 ) : ViewModel() {
 
     val recipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
@@ -125,6 +127,25 @@ class RecipeViewModel(
     }
     fun deleteRecipe(recipeId: String) {
         viewModelScope.launch {
+            // 1. Elimina tutte le review associate
+            val reviews = reviewRepository.getReviewsByRecipe(recipeId).first()
+            reviews.forEach { reviewRepository.deleteReview(it.id) }
+
+            // 2. Rimuovi dai preferiti di chi l'aveva
+            userRepo.getUsersWhoHaveInFavourites(recipeId).forEach { user ->
+                userRepo.removeFavourite(user.internalId, recipeId)
+                recipeRepository.removeLikedByUser(recipeId, user.internalId)
+            }
+
+            // 3. Rimuovi dai tried di chi ce l'aveva
+            userRepo.getUsersWhoHaveTried(recipeId).forEach { user ->
+                userRepo.removeTriedRecipe(user.internalId, recipeId)
+            }
+
+            // 4. Elimina le notifiche collegate a questa ricetta
+            notificationRepo.deleteNotificationsForRecipe(recipeId)
+
+            // 5. Elimina la ricetta
             recipeRepository.deleteRecipe(recipeId)
             selectRecipe(null)
         }
@@ -168,7 +189,8 @@ class RecipeViewModel(
                 val recipeRepository = application.container.recipeRepository
                 val userRepository = application.container.userRepository
                 val notificationRepository = application.container.notificationRepository
-                RecipeViewModel(recipeRepository, userRepository, notificationRepository)
+                val reviewRepository = application.container.reviewRepository
+                RecipeViewModel(recipeRepository, userRepository, notificationRepository, reviewRepository)
             }
         }
     }

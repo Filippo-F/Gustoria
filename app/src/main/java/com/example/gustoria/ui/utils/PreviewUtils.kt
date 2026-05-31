@@ -42,7 +42,6 @@ object PreviewUtils {
                 nickname = "SuperChef",
                 description = "Simple ingredients, great passion, amazing food.",
                 phoneNumber = "+39 333 1234567",
-                numberOfRecipes = 42,
                 numberOfFollowers = 1200
             )
         )
@@ -57,6 +56,8 @@ object PreviewUtils {
         override suspend fun addTriedRecipe(userId: String, recipeId: String) {}
         override suspend fun removeTriedRecipe(userId: String, recipeId: String) {}
         override fun isTried(userId: String, recipeId: String): Flow<Boolean> = flowOf(false)
+        override suspend fun getUsersWhoHaveInFavourites(recipeId: String): List<User> = emptyList()
+        override suspend fun getUsersWhoHaveTried(recipeId: String): List<User> = emptyList()
     }
 
     fun createFakeReviewRepo() = object : ReviewRepoInterface {

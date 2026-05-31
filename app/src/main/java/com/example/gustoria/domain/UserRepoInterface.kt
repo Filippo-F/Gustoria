@@ -42,4 +42,10 @@ interface UserRepoInterface {
 
     // True only if recipe is in user's tried list
     fun isTried(userId: String, recipeId: String): Flow<Boolean>
+
+    // Restituisce tutti gli utenti che hanno recipeId nei preferiti (per cascade delete)
+    suspend fun getUsersWhoHaveInFavourites(recipeId: String): List<User>
+
+    // Restituisce tutti gli utenti che hanno recipeId nei tried (per cascade delete)
+    suspend fun getUsersWhoHaveTried(recipeId: String): List<User>
 }

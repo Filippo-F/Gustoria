@@ -38,7 +38,6 @@ data class User(
     val dietaryRestrictions: List<String> = emptyList(),
     val favoriteIngredients: List<String> = emptyList(),
 
-    val numberOfRecipes: Int = 0,
     val numberOfFollowers: Int = 0,
 
     // Reference ids

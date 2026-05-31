@@ -10,12 +10,16 @@ import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.example.gustoria.domain.ReviewRepoInterface
+import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.recipe.ALL_COSTS
 import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,6 +42,9 @@ data class EditRecipeUiState(
 
 class EditRecipeViewModel(
     private val recipeRepository: RecipeRepoInterface,
+    private val userRepo: UserRepoInterface,
+    private val reviewRepository: ReviewRepoInterface,
+    private val notificationRepo: NotificationRepoInterface,
     private val recipeId: String? // null => we are in create mode
 ) : ViewModel() {
 
@@ -231,6 +238,25 @@ class EditRecipeViewModel(
     fun deleteRecipe(onSuccess: () -> Unit) {
         if (recipeId != null) {
             viewModelScope.launch {
+                // 1. Elimina tutte le review associate
+                val reviews = reviewRepository.getReviewsByRecipe(recipeId).first()
+                reviews.forEach { reviewRepository.deleteReview(it.id) }
+
+                // 2. Rimuovi dai preferiti di chi l'aveva
+                userRepo.getUsersWhoHaveInFavourites(recipeId).forEach { user ->
+                    userRepo.removeFavourite(user.internalId, recipeId)
+                    recipeRepository.removeLikedByUser(recipeId, user.internalId)
+                }
+
+                // 3. Rimuovi dai tried di chi ce l'aveva
+                userRepo.getUsersWhoHaveTried(recipeId).forEach { user ->
+                    userRepo.removeTriedRecipe(user.internalId, recipeId)
+                }
+
+                // 4. Elimina le notifiche collegate a questa ricetta
+                notificationRepo.deleteNotificationsForRecipe(recipeId)
+
+                // 5. Elimina la ricetta
                 recipeRepository.deleteRecipe(recipeId)
                 onSuccess()
             }
@@ -245,7 +271,10 @@ class EditRecipeViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
                 val recipeRepository = application.container.recipeRepository
-                EditRecipeViewModel(recipeRepository, recipeId)
+                val userRepository = application.container.userRepository
+                val reviewRepository = application.container.reviewRepository
+                val notificationRepository = application.container.notificationRepository
+                EditRecipeViewModel(recipeRepository, userRepository, reviewRepository, notificationRepository, recipeId)
             }
         }
     }
