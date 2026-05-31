@@ -60,6 +60,8 @@ fun ReviewsListDestination(
             } else {
                 navActions.navigateToOtherProfile(userId)
             }
-        }
+        },
+        isLikedFlow = { reviewId -> viewModel.isLikedFlow(reviewId) },
+        onToggleLike = { reviewId -> viewModel.toggleLike(reviewId) }
     )
 }
