@@ -7,23 +7,21 @@ import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
-import com.example.gustoria.domain.LikeRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import com.example.gustoria.data.paperRepo.PaperLikeRepo
 import com.example.gustoria.domain.AuthRepoInterface
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.example.gustoria.data.paperRepo.PaperNotificationRepo
 import com.example.gustoria.domain.NotificationRepoInterface
+import com.google.firebase.firestore.FirebaseFirestore
 
 interface AppContainer {
     val recipeRepository: RecipeRepoInterface
     val userRepository: UserRepoInterface
     val reviewRepository: ReviewRepoInterface
-    val likeRepository: LikeRepoInterface
     val notificationRepository: NotificationRepoInterface
     val authRepository: AuthRepoInterface
 }
@@ -32,28 +30,28 @@ interface AppContainer {
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
+
     private val credentialManager: CredentialManager by lazy {
         CredentialManager.create(context)
     }
 
     override val recipeRepository: RecipeRepoInterface by lazy {
-        FirebaseRecipeRepo(Firebase.firestore)
+        FirebaseRecipeRepo(firestore)
     }
 
     override val userRepository: UserRepoInterface by lazy {
-        FirebaseUserRepo(Firebase.firestore)
+        FirebaseUserRepo(firestore)
     }
 
     override val reviewRepository: ReviewRepoInterface by lazy {
-        FirebaseReviewRepo(Firebase.firestore)
-    }
-
-    override val likeRepository: LikeRepoInterface by lazy {
-        PaperLikeRepo()
+        FirebaseReviewRepo(firestore)
     }
 
     override val notificationRepository: NotificationRepoInterface by lazy {
-        FirebaseNotificationRepo(Firebase.firestore)
+        FirebaseNotificationRepo(firestore)
     }
 
     override val authRepository: AuthRepoInterface by lazy {
