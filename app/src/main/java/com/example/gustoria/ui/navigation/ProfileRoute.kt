@@ -79,7 +79,7 @@ fun OverallProfileDestination(
     OwnedProfileScreen(
         user = user,
         recipeCount = recipeCount,
-        isLoggedIn = authState !is AuthState.Unauthenticated,
+        isLoggedIn = SessionManagerFacade.isLoggedIn,
         onBack = navActions::navigateBack,
         onNavigateToProfileInfo = {
             if (authState !is AuthState.Unauthenticated) {

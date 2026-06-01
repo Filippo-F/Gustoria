@@ -108,5 +108,5 @@ object SessionManagerFacade : AuthRepoInterface {
     }
 
     override val isLoggedIn: Boolean
-        get() = FirebaseAuth.getInstance().currentUser != null
+        get() = FirebaseAuth.getInstance().currentUser != null && !FirebaseAuth.getInstance().currentUser!!.isAnonymous
 }
