@@ -1,6 +1,10 @@
 package com.example.gustoria.ui.navigation
 
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,6 +31,16 @@ class GustoriaNavigationActions(private val navController: NavController) {
     fun getNavController(): NavController = navController
     fun navigateBack() {
         navController.popBackStack()
+    }
+
+    private fun navigateWithTabHandling(route: Any) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 
     fun navigateToOverallProfileInfo() {
@@ -53,11 +68,11 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToHome() {
-        navController.navigate(Home)
+        navigateWithTabHandling(Home)
     }
 
     fun navigateToNotifications() {
-        navController.navigate(Notifications)
+        navigateWithTabHandling(Notifications)
     }
 
     fun navigateToAuthentication() {
@@ -69,7 +84,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToSearch() {
-        navController.navigate(Search.FeaturedSearch)
+        navigateWithTabHandling(Search)
     }
 
     fun navigateToSearching() {
@@ -81,7 +96,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToProfile() {
-        navController.navigate(com.example.gustoria.ui.navigation.Profile.OverallProfile)
+        navigateWithTabHandling(Profile)
     }
 
     fun navigateToOtherProfile(userId: String) {
@@ -89,7 +104,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToCreateRecipe() {
-        navController.navigate(Create)
+        navigateWithTabHandling(Create)
     }
 
     fun navigateToEditRecipe(id: String) {
@@ -101,19 +116,19 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToFavouriteFiltering() {
-        navController.navigate(Favourite.Filtering) { launchSingleTop = true }
+        navigateWithTabHandling(Favourite.Filtering)
     }
 
     fun navigateToFavouriteSaved() {
-        navController.navigate(Favourite.Saved) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite)
     }
 
     fun navigateToFavouriteTried() {
-        navController.navigate(Favourite.Tried) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite.Tried)
     }
 
     fun navigateToFavouriteCreated() {
-        navController.navigate(Favourite.Created) { launchSingleTop = true; restoreState = true }
+        navigateWithTabHandling(Favourite.Created)
     }
 
     fun navigateToReviewsList(recipeId: String) {
@@ -132,18 +147,20 @@ fun GustoriaApp(
 ) {
     Scaffold(
         bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                AppBottomNavBar(
-                    navCtrl = navController,
-                    navActions = navActions
-                )
-            }
+            AppBottomNavBar(
+                navCtrl = navController,
+                navActions = navActions
+            )
         },
         content = { paddingValues ->
             NavHost(
                 navController = navController,
                 startDestination = Home,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                enterTransition = { fadeIn(animationSpec = snap()) },
+                exitTransition = { fadeOut(animationSpec = snap()) },
+                popEnterTransition = { fadeIn(animationSpec = snap()) },
+                popExitTransition = { fadeOut(animationSpec = snap()) }
             ){
                 dialog<Authentication>(
                     // To have the dialog width not stuck at fixed size
