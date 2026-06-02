@@ -25,7 +25,7 @@ class FirebaseAuthRepository(
         auth.addAuthStateListener { _currentUser.value = it.currentUser?.uid }
     }
 
-    override suspend fun signIn(context: Context): Result<Unit> {
+    override suspend fun signIn(context: Context): Result<Boolean> {
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
@@ -42,17 +42,19 @@ class FirebaseAuthRepository(
             val firebaseCredential =
                 GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
-            auth.signInWithCredential(firebaseCredential).await()
-            Result.success(Unit)
+            val authResult = auth.signInWithCredential(firebaseCredential).await()
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+            Result.success(isNewUser)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
+    override suspend fun signInAnonymous(context: Context): Result<Boolean> {
         return try {
-            auth.signInAnonymously().await()
-            Result.success(Unit)
+            val authResult = auth.signInAnonymously().await()
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+            Result.success(isNewUser)
         } catch (e: Exception) {
             Result.failure(e)
         }

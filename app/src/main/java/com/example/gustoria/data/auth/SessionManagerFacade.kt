@@ -60,7 +60,7 @@ object SessionManagerFacade : AuthRepoInterface {
         }
     }
 
-    override suspend fun signIn(context: Context): Result<Unit> {
+    override suspend fun signIn(context: Context): Result<Boolean> {
         return try {
             _authState.value = AuthState.Registering
             val googleIdOption = GetGoogleIdOption.Builder()
@@ -81,22 +81,19 @@ object SessionManagerFacade : AuthRepoInterface {
             val authResult = FirebaseAuth.getInstance().signInWithCredential(firebaseCredential).await()
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             
-            if (isNewUser) {
-                // TODO: handle specific registering
-            }
-            
-            Result.success(Unit)
+            Result.success(isNewUser)
         } catch (e: Exception) {
             _authState.value = AuthState.Unauthenticated
             Result.failure(e)
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
+    override suspend fun signInAnonymous(context: Context): Result<Boolean> {
         return try {
             _authState.value = AuthState.Registering
-            FirebaseAuth.getInstance().signInAnonymously().await()
-            Result.success(Unit)
+            val authResult = FirebaseAuth.getInstance().signInAnonymously().await()
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+            Result.success(isNewUser)
         } catch (e: Exception) {
             _authState.value = AuthState.Unauthenticated
             Result.failure(e)
