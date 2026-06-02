@@ -58,6 +58,11 @@ class OwnedProfileViewModel(
         .map { it.size }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
+    // Somma totale dei like ricevuti su tutte le ricette dell'utente loggato
+    val likeCount: StateFlow<Int> = recipeRepo
+        .getLikesCountForOwner(SessionManagerFacade.currentUserId ?: "")
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
     // bozza modifiable durante l'editing
     var editableUser by mutableStateOf<User?>(null)
         private set
@@ -262,6 +267,11 @@ class OtherProfileViewModel(
     val recipeCount: StateFlow<Int> = recipeRepo
         .getRecipeByOwner(viewedUserId)
         .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    // Somma totale dei like ricevuti su tutte le ricette del profilo visualizzato
+    val likeCount: StateFlow<Int> = recipeRepo
+        .getLikesCountForOwner(viewedUserId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // Per ora placeholder hardcoded, in seguito popolato da Review/Recipe repos

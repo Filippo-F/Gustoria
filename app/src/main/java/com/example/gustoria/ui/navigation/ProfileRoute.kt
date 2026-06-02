@@ -53,10 +53,12 @@ fun OtherProfileDestination(
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
+    val likeCount by viewModel.likeCount.collectAsStateWithLifecycle()
 
     OtherProfileScreen(
         user = user,
         recipeCount = recipeCount,
+        likeCount = likeCount,
         currentTab = viewModel.currentTab,
         isFollowing = viewModel.isFollowing,
         collections = viewModel.collections,
@@ -74,11 +76,13 @@ fun OverallProfileDestination(
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
+    val likeCount by viewModel.likeCount.collectAsStateWithLifecycle()
     val authState by SessionManagerFacade.authState.collectAsStateWithLifecycle()
 
     OwnedProfileScreen(
         user = user,
         recipeCount = recipeCount,
+        likeCount = likeCount,
         isLoggedIn = SessionManagerFacade.isLoggedIn,
         onBack = navActions::navigateBack,
         onNavigateToProfileInfo = {

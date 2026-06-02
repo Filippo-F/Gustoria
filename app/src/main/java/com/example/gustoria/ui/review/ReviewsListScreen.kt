@@ -8,8 +8,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,7 +25,9 @@ fun ReviewsListScreen(
     reviews: List<Review>?,
     onBack: () -> Unit,
     onWriteReview: () -> Unit,
-    onProfileClick: (String) -> Unit
+    onProfileClick: (String) -> Unit,
+    isLikedFlow: ((String) -> Flow<Boolean>)? = null,
+    onToggleLike: ((String) -> Unit)? = null
 ) {
     val average = remember(reviews) {
         if (reviews.isNullOrEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
@@ -124,7 +129,15 @@ fun ReviewsListScreen(
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         items(reviews, key = { it.id }) { review ->
-                            ReviewCard(review = review, onProfileClick = onProfileClick)
+                            val isLiked by remember(review.id) {
+                                isLikedFlow?.invoke(review.id) ?: kotlinx.coroutines.flow.flowOf(false)
+                            }.collectAsStateWithLifecycle(initialValue = false)
+                            ReviewCard(
+                                review = review,
+                                onProfileClick = onProfileClick,
+                                isLiked = isLiked,
+                                onToggleLike = onToggleLike
+                            )
                         }
                     }
                 }

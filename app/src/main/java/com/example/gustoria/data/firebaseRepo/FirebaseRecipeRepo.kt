@@ -4,6 +4,7 @@ import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.RecipeRepoInterface
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
@@ -277,5 +278,22 @@ class FirebaseRecipeRepo(
 
     override suspend fun deleteRecipe(recipeId: String) {
         recipesCollection.document(recipeId).delete().await()
+    }
+
+    override suspend fun addLikedByUser(recipeId: String, userId: String) {
+        recipesCollection.document(recipeId)
+            .update("likedByUserIds", FieldValue.arrayUnion(userId))
+            .await()
+    }
+
+    override suspend fun removeLikedByUser(recipeId: String, userId: String) {
+        recipesCollection.document(recipeId)
+            .update("likedByUserIds", FieldValue.arrayRemove(userId))
+            .await()
+    }
+
+    override fun getLikesCountForOwner(ownerId: String): Flow<Int> {
+        return getRecipeByOwner(ownerId)
+            .map { recipes -> recipes.sumOf { it.likedByUserIds.size } }
     }
 }

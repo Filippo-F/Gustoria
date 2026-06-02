@@ -10,7 +10,6 @@ import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import io.paperdb.Paper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -24,7 +23,6 @@ class GustoriaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Paper.init(applicationContext) // ancora necessario per PaperLikeRepo
         container = DefaultAppContainer(context = applicationContext)
         auth = Firebase.auth
         // Initialize Firebase data if necessary

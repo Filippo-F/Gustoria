@@ -49,4 +49,13 @@ class FirebaseNotificationRepo(
     override suspend fun deleteNotification(notificationId: String) {
         notificationsCollection.document(notificationId).delete().await()
     }
+
+    override suspend fun deleteNotificationsForRecipe(recipeId: String) {
+        val snapshot = notificationsCollection
+            .whereEqualTo("targetRecipeId", recipeId)
+            .get().await()
+        firestore.runBatch { batch ->
+            snapshot.documents.forEach { batch.delete(it.reference) }
+        }.await()
+    }
 }

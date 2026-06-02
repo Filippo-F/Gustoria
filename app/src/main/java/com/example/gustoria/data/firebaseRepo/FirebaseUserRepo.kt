@@ -145,4 +145,18 @@ class FirebaseUserRepo(
             ids.contains(recipeId)
         }
     }
+
+    override suspend fun getUsersWhoHaveInFavourites(recipeId: String): List<User> {
+        return usersCollection
+            .whereArrayContains("favouriteRecipesIds", recipeId)
+            .get().await()
+            .toObjects(User::class.java)
+    }
+
+    override suspend fun getUsersWhoHaveTried(recipeId: String): List<User> {
+        return usersCollection
+            .whereArrayContains("triedRecipesIds", recipeId)
+            .get().await()
+            .toObjects(User::class.java)
+    }
 }
