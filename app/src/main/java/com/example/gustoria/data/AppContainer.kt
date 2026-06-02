@@ -3,19 +3,17 @@ package com.example.gustoria.data
 import android.content.Context
 import androidx.credentials.CredentialManager
 import com.example.gustoria.data.auth.FirebaseAuthRepository
-import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseRecipeRepo
 import com.example.gustoria.data.firebaseRepo.FirebaseReviewRepo
-import com.example.gustoria.data.firebaseRepo.FirebaseNotificationRepo
+import com.example.gustoria.data.firebaseRepo.FirebaseUserRepo
+import com.example.gustoria.domain.AuthRepoInterface
+import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import com.example.gustoria.domain.AuthRepoInterface
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.example.gustoria.data.paperRepo.PaperNotificationRepo
-import com.example.gustoria.domain.NotificationRepoInterface
 import com.google.firebase.firestore.FirebaseFirestore
 
 interface AppContainer {

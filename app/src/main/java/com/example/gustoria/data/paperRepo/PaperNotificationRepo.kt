@@ -4,7 +4,6 @@ import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.NotificationRepoInterface
 import io.paperdb.Paper
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
+//mai usato, file da cancellare
 class PaperNotificationRepo : NotificationRepoInterface {
 
     private val book = Paper.book(Collections.NOTIFICATIONS)
