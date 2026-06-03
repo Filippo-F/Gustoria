@@ -74,7 +74,7 @@ fun RecipeDetailsScreen(
             onViewReviews = { navActions.navigateToReviewsList(r.id) },
             onProfileClick = { userId ->
                 if (userId.isNotBlank()) {
-                    if (userId == (SessionManagerFacade.currentUserId ?: "")) {
+                    if (userId == (SessionManagerFacade.currentUserId.value ?: "")) {
                         navActions.navigateToProfile()
                     } else {
                         navActions.navigateToOtherProfile(userId)

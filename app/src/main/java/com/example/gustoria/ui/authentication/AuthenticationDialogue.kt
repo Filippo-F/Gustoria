@@ -8,6 +8,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
+import com.example.gustoria.viewmodel.AuthUiState
 import com.example.gustoria.viewmodel.AuthenticationViewModel
 
 @MultiPreview
@@ -33,6 +34,48 @@ fun ActionRequirementPreview() {
             viewModel = viewModel(factory = AuthenticationViewModel.Factory)
         )
     }
+}
+
+@MultiPreview
+@Preview
+@Composable
+fun RegistrationPreview() {
+    GustoriaTheme(dynamicColor = false) {
+        UserRegistrationDialogue(
+            state = AuthUiState(
+                nickname = "ChefMario",
+                name = "Mario",
+                surname = "Rossi",
+                phoneNumber = "123456789"
+            ),
+            onNicknameChange = {},
+            onNameChange = {},
+            onSurnameChange = {},
+            onPhoneNumberChange = {},
+            onRegister = {}
+        )
+    }
+}
+
+@Composable
+fun RegistrationDialogue(
+    onRegistrationSuccess: (String) -> Unit,
+    viewModel: AuthenticationViewModel
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    UserRegistrationDialogue(
+        state = state,
+        onNicknameChange = viewModel::updateNickname,
+        onNameChange = viewModel::updateName,
+        onSurnameChange = viewModel::updateSurname,
+        onPhoneNumberChange = viewModel::updatePhoneNumber,
+        onRegister = {
+            viewModel.completeRegistration(
+                onSuccess = onRegistrationSuccess
+            )
+        }
+    )
 }
 
 @Composable

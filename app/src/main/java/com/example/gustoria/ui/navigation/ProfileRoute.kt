@@ -90,7 +90,8 @@ fun OverallProfileDestination(
         },
         onNavigateToSettings = navActions::navigateToSettings,
         onNavigateToHelp = navActions::navigateToHelpAndFeedback,
-        onSignOut = navActions::navigateToSignOut
+        onSignOut = navActions::navigateToSignOut,
+        onSignIn = navActions::navigateToAuthentication
     )
 }
 
@@ -141,7 +142,7 @@ fun SignOutDestination(
         onSignOut = {
             scope.launch {
                 SessionManagerFacade.logOut()
-                navActions.navigateToHome()
+                navActions.navigateToHomeOnSignOut()
             }
         },
         onDismiss = navActions::navigateBack

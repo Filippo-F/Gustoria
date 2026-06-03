@@ -255,6 +255,7 @@ class FirebaseRecipeRepo(
     }
 
     override fun getRecipeById(recipeId: String): Flow<Recipe?> {
+        if (recipeId.isBlank()) return kotlinx.coroutines.flow.flowOf(null)
         return recipesCollection.document(recipeId)
             .snapshots()
             .map { it.toObject(Recipe::class.java) }

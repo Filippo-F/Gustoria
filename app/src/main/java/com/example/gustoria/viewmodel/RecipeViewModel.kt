@@ -64,7 +64,7 @@ class RecipeViewModel(
 
 
     fun isOwnedByCurrentUser(recipe: Recipe): Boolean =
-        recipe.ownerId == (SessionManagerFacade.currentUserId ?: "")
+        recipe.ownerId == (SessionManagerFacade.currentUserId.value ?: "")
     fun selectRecipe(recipeId: String?) {
         _selectedRecipeId.value = recipeId
     }
@@ -95,11 +95,11 @@ class RecipeViewModel(
     }
 
     fun isFavouriteFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isFavourite((SessionManagerFacade.currentUserId ?: ""), recipeId)
+        userRepo.isFavourite((SessionManagerFacade.currentUserId.value ?: ""), recipeId)
 
     fun toggleFavourite(recipeId: String) {
         viewModelScope.launch {
-            val userId = SessionManagerFacade.currentUserId ?: ""
+            val userId = SessionManagerFacade.currentUserId.value ?: ""
             val isFav = userRepo.isFavourite(userId, recipeId).first()
             if (isFav) userRepo.removeFavourite(userId, recipeId)
             else userRepo.addFavourite(userId, recipeId)
@@ -108,11 +108,11 @@ class RecipeViewModel(
 
 
     fun isTriedFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isTried((SessionManagerFacade.currentUserId ?: ""), recipeId)
+        userRepo.isTried((SessionManagerFacade.currentUserId.value ?: ""), recipeId)
 
     fun toggleTried(recipeId: String) {
         viewModelScope.launch {
-            val userId = SessionManagerFacade.currentUserId ?: ""
+            val userId = SessionManagerFacade.currentUserId.value ?: ""
             val hasTried = userRepo.isTried(userId, recipeId).first()
             if (hasTried) userRepo.removeTriedRecipe(userId, recipeId)
             else userRepo.addTriedRecipe(userId, recipeId)
@@ -132,14 +132,14 @@ class RecipeViewModel(
             val newId = Uuid.random().toString()
             val copy = recipe.copy(
                 id = newId,
-                ownerId = SessionManagerFacade.currentUserId ?: "",
+                ownerId = SessionManagerFacade.currentUserId.value ?: "",
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name
                 else "${recipe.name} (Copy)"
             )
             recipeRepository.addRecipe(copy)
 
             // Notify original recipe owner
-            if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: "")) {
+            if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
                 notificationRepo.addNotification(
                     Notification(
                         recipientUserId = recipe.ownerId,

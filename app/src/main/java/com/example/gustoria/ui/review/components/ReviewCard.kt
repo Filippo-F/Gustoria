@@ -32,7 +32,7 @@ fun ReviewCard(
     val userRepository = application.container.userRepository
     val user by remember(review.userId) { userRepository.getUserById(review.userId) }.collectAsStateWithLifecycle(initialValue = null)
 
-    val displayName = if (review.userId == (SessionManagerFacade.currentUserId ?: "")) {
+    val displayName = if (review.userId == (SessionManagerFacade.currentUserId.value ?: "")) {
         "You"
     } else {
         user?.let { "${it.firstName} ${it.lastName}" }

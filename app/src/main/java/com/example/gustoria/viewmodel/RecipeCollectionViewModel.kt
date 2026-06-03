@@ -26,7 +26,7 @@ class RecipeCollectionViewModel(
     private val userRepo: UserRepoInterface
 ) : ViewModel() {
 
-    private val userId get() = SessionManagerFacade.currentUserId ?: ""
+    private val userId get() = SessionManagerFacade.currentUserId.value ?: ""
 
     private val _filters = MutableStateFlow(RecipeFilters())
     val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()

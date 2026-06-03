@@ -29,7 +29,7 @@ fun AddReviewDestination(
         onBack = navActions::navigateBack,
         onPostReview = { description, rating, photoUri ->
             val review = Review(
-                userId = SessionManagerFacade.currentUserId ?: "",
+                userId = SessionManagerFacade.currentUserId.value ?: "",
                 recipeId = recipeId,
                 description = description,
                 rating = rating,
@@ -55,7 +55,7 @@ fun ReviewsListDestination(
         onBack = navActions::navigateBack,
         onWriteReview = { navActions.navigateToAddReview(recipeId) },
         onProfileClick = { userId ->
-            if (userId == (SessionManagerFacade.currentUserId ?: "")) {
+            if (userId == (SessionManagerFacade.currentUserId.value ?: "")) {
                 navActions.navigateToProfile()
             } else {
                 navActions.navigateToOtherProfile(userId)

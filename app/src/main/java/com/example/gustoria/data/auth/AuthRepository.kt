@@ -19,13 +19,12 @@ class FirebaseAuthRepository(
     private val credentialManager: CredentialManager
 ) : AuthRepoInterface {
     private val _currentUser = MutableStateFlow(auth.currentUser?.uid)
-    override val currentUserStateFlow: StateFlow<String?> = _currentUser.asStateFlow()
 
     init {
         auth.addAuthStateListener { _currentUser.value = it.currentUser?.uid }
     }
 
-    override suspend fun signIn(context: Context): Result<Boolean> {
+    override suspend fun signIn(context: Context): Result<Unit> {
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
@@ -42,19 +41,17 @@ class FirebaseAuthRepository(
             val firebaseCredential =
                 GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
-            val authResult = auth.signInWithCredential(firebaseCredential).await()
-            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
-            Result.success(isNewUser)
+            auth.signInWithCredential(firebaseCredential).await()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Boolean> {
+    override suspend fun signInAnonymous(context: Context): Result<Unit> {
         return try {
-            val authResult = auth.signInAnonymously().await()
-            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
-            Result.success(isNewUser)
+            auth.signInAnonymously().await()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -70,7 +67,7 @@ class FirebaseAuthRepository(
     override val authState: StateFlow<AuthState>
         get() = TODO("Not yet implemented")
 
-    override val currentUserId: String?
-        get() = currentUserState.value
+    private val _currentUserId = MutableStateFlow(FirebaseAuth.getInstance().currentUser?.uid)
+    override val currentUserId: StateFlow<String?> = _currentUserId.asStateFlow()
     override val currentUserState: StateFlow<String?> = _currentUser.asStateFlow()
 }

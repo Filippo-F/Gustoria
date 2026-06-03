@@ -28,7 +28,7 @@ class NotificationViewModel(
 ) : ViewModel() {
 
     private val currentUserId: String
-        get() = SessionManagerFacade.currentUserId ?: ""
+        get() = SessionManagerFacade.currentUserId.value ?: ""
 
     val notifications: StateFlow<List<Notification>> =
         notificationRepo.getNotificationsForUser(currentUserId)
