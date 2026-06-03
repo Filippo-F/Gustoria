@@ -10,6 +10,7 @@ import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class FirebaseUserRepo(
@@ -59,6 +60,7 @@ class FirebaseUserRepo(
     }
 
     override fun getUserById(userId: String): Flow<User?> {
+        if (userId.isBlank()) return flowOf(null)
         return usersCollection.document(userId)
             .snapshots()
             .map { it.toObject<User>() }

@@ -66,7 +66,8 @@ fun OwnedProfileScreenPreview() {
             onNavigateToProfileInfo = {},
             onNavigateToSettings = {},
             onNavigateToHelp = {},
-            onSignOut = {}
+            onSignOut = {},
+            onSignIn = {}
         )
     }
 }
@@ -81,7 +82,8 @@ fun OwnedProfileScreen(
     onNavigateToProfileInfo: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToHelp: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onSignIn: () -> Unit = {}
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -99,10 +101,39 @@ fun OwnedProfileScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             if (user == null) {
-                Box(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (!isLoggedIn) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Sign in to see your profile",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        androidx.compose.material3.Button(onClick = onSignIn) {
+                            Text("Sign In / Register")
+                        }
+                    } else {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Loading profile...")
+                        Spacer(modifier = Modifier.height(32.dp))
+                        // Allow sign out if loading takes too long or fails
+                        androidx.compose.material3.TextButton(onClick = onSignOut) {
+                            Text("Sign Out")
+                        }
+                    }
+                }
                 return@Box
             }
 

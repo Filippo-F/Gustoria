@@ -29,7 +29,7 @@ class HomeViewModel(
 
     // ricette consigliate non possedute dall'utente corrente (sezione "Recommended for you")
     val recommendedRecipes: StateFlow<List<Recipe>> = allRecipes
-        .map { list -> list.filter { it.ownerId != (SessionManagerFacade.currentUserId ?: "") } }
+        .map { list -> list.filter { it.ownerId != (SessionManagerFacade.currentUserId.value ?: "") } }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -38,7 +38,7 @@ class HomeViewModel(
 
     // ricette create dall'utente corrente (sezione "Recent creations")
     val myRecipes: StateFlow<List<Recipe>> = recipeRepository
-        .getRecipeByOwner(SessionManagerFacade.currentUserId ?: "")
+        .getRecipeByOwner(SessionManagerFacade.currentUserId.value ?: "")
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

@@ -18,8 +18,11 @@ import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.gustoria.data.auth.SessionManagerFacade
 
 data class ProfileValidation(
@@ -48,13 +51,18 @@ class OwnedProfileViewModel(
     private val recipeRepo: RecipeRepoInterface
 ) : ViewModel() {
 
-    //state of logged user taken from repo (can be null initially)
-    val user: StateFlow<User?> = userRepo
-        .getUserById(SessionManagerFacade.currentUserId ?: "")
+    val user: StateFlow<User?> = SessionManagerFacade.currentUserId
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(null)
+            else userRepo.getUserById(uid)
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    val recipeCount: StateFlow<Int> = recipeRepo
-        .getRecipeByOwner(SessionManagerFacade.currentUserId ?: "")
+    val recipeCount: StateFlow<Int> = SessionManagerFacade.currentUserId
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(emptyList())
+            else recipeRepo.getRecipeByOwner(uid)
+        }
         .map { it.size }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 

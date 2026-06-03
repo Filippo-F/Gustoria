@@ -71,6 +71,16 @@ class GustoriaNavigationActions(private val navController: NavController) {
         navigateWithTabHandling(Home)
     }
 
+    fun navigateToHomeOnSignOut() {
+        navController.navigate(Home) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                inclusive = true
+            }
+            launchSingleTop = true
+            restoreState = false
+        }
+    }
+
     fun navigateToNotifications() {
         navigateWithTabHandling(Notifications)
     }

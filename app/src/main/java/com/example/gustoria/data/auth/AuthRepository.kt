@@ -19,7 +19,6 @@ class FirebaseAuthRepository(
     private val credentialManager: CredentialManager
 ) : AuthRepoInterface {
     private val _currentUser = MutableStateFlow(auth.currentUser?.uid)
-    override val currentUserStateFlow: StateFlow<String?> = _currentUser.asStateFlow()
 
     init {
         auth.addAuthStateListener { _currentUser.value = it.currentUser?.uid }
@@ -68,7 +67,7 @@ class FirebaseAuthRepository(
     override val authState: StateFlow<AuthState>
         get() = TODO("Not yet implemented")
 
-    override val currentUserId: String?
-        get() = currentUserState.value
+    private val _currentUserId = MutableStateFlow(FirebaseAuth.getInstance().currentUser?.uid)
+    override val currentUserId: StateFlow<String?> = _currentUserId.asStateFlow()
     override val currentUserState: StateFlow<String?> = _currentUser.asStateFlow()
 }

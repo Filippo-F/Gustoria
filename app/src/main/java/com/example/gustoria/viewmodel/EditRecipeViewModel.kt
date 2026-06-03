@@ -209,7 +209,7 @@ class EditRecipeViewModel(
         viewModelScope.launch {
             val baseRecipe = originalRecipe ?: Recipe(
                 id = Uuid.random().toString(),
-                ownerId = SessionManagerFacade.currentUserId ?: ""
+                ownerId = SessionManagerFacade.currentUserId.value ?: ""
             )
 
             val updatedRecipe = baseRecipe.copy(
