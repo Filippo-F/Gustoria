@@ -46,6 +46,7 @@ data class UserActivity(
     val subtitle: String
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OwnedProfileViewModel(
     private val userRepo: UserRepoInterface,
     private val recipeRepo: RecipeRepoInterface
@@ -67,8 +68,11 @@ class OwnedProfileViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // Somma totale dei like ricevuti su tutte le ricette dell'utente loggato
-    val likeCount: StateFlow<Int> = recipeRepo
-        .getLikesCountForOwner(SessionManagerFacade.currentUserId ?: "")
+    val likeCount: StateFlow<Int> = SessionManagerFacade.currentUserId
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(0)
+            else recipeRepo.getLikesCountForOwner(uid)
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // bozza modifiable durante l'editing

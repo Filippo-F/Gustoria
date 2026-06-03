@@ -48,7 +48,7 @@ class ReviewViewModel(
 
             // Fetch la ricetta per trovare il proprietario e notificarlo
             recipeRepository.getRecipeById(review.recipeId).first()?.let { recipe ->
-                if (recipe.ownerId != (SessionManagerFacade.currentUserId ?: "")) {
+                if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
                     notificationRepo.addNotification(
                         Notification(
                             recipientUserId = recipe.ownerId,
@@ -64,11 +64,11 @@ class ReviewViewModel(
     }
 
     fun isLikedFlow(reviewId: String): Flow<Boolean> =
-        reviewRepository.isLiked(SessionManagerFacade.currentUserId ?: "", reviewId)
+        reviewRepository.isLiked(SessionManagerFacade.currentUserId.value ?: "", reviewId)
 
     fun toggleLike(reviewId: String) {
         viewModelScope.launch {
-            val userId = SessionManagerFacade.currentUserId ?: ""
+            val userId = SessionManagerFacade.currentUserId.value ?: ""
             val isLiked = reviewRepository.isLiked(userId, reviewId).first()
             if (isLiked) reviewRepository.removeLike(userId, reviewId)
             else reviewRepository.addLike(userId, reviewId)
