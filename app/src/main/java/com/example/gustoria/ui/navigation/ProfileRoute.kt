@@ -47,7 +47,7 @@ object Profile {
 fun OtherProfileDestination(
     userId: String,
     navActions: GustoriaNavigationActions,
-    viewModel: OtherProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+    viewModel: OtherProfileViewModel = viewModel(
         factory = OtherProfileViewModel.factory(userId)
     )
 ) {
