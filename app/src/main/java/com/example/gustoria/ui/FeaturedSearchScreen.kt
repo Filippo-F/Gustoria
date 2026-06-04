@@ -24,11 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.gustoria.R
-import com.example.gustoria.viewmodel.SearchViewModel
 
 import com.example.gustoria.viewmodel.RecentSearch
 import com.example.gustoria.viewmodel.TrendingCategory
@@ -70,9 +67,9 @@ fun FeaturedSearchScreen(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray)
+                Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Search recipes, chefs, or tables...", color = Color.Gray, fontSize = 14.sp)
+                Text("Search recipes, chefs, or tables...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             }
         }
 
@@ -88,7 +85,7 @@ fun FeaturedSearchScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("TRENDING SEARCHES", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(Icons.Default.FilterList, contentDescription = "Filter", modifier = Modifier.size(16.dp), tint = Color.Gray)
+                    Icon(Icons.Default.FilterList, contentDescription = "Filter", modifier = Modifier.size(16.dp), tint =MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -141,10 +138,10 @@ fun FeaturedSearchScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = recent.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                            Text(text = recent.subtitle, color = Color.Gray, fontSize = 10.sp)
+                            Text(text = recent.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
                         }
                         IconButton(onClick = { onRemoveRecentSearch(recent.id) }) {
-                            Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.LightGray)
+                            Icon(Icons.Default.Close, contentDescription = "Remove", tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
                         }
                     }
                 }
@@ -168,7 +165,7 @@ fun FeaturedSearchScreen(
                             AsyncImage(
                                 model = category.imageUrl,
                                 contentDescription = category.title,
-                                modifier = Modifier.fillMaxSize().background(Color.DarkGray),
+                                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
                                 contentScale = ContentScale.Crop,
                                 fallback = painterResource(R.drawable.no_image)
                             )

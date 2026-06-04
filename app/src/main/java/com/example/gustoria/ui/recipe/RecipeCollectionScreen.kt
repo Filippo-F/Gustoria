@@ -1,6 +1,5 @@
 package com.example.gustoria.ui.recipe
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,24 +14,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.gustoria.ui.navigation.Create
-import com.example.gustoria.ui.navigation.Edit
-import com.example.gustoria.ui.navigation.Favourite
-import com.example.gustoria.ui.navigation.RecipeDetails
 import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.domain.ReviewRepoInterface
-import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.recipe.components.RecipeCard
-import com.example.gustoria.viewmodel.RecipeCollectionViewModel
 
 @Composable
 fun RecipeCollectionScreen(
@@ -244,8 +231,8 @@ private fun RecipeCollectionListContent(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete recipe", color = Color.Black) },
-                text = { Text("Delete \"$nameToDelete\"?", color = Color.Black) },
+                title = { Text("Delete recipe") },
+                text = { Text("Delete \"$nameToDelete\"?") },
                 confirmButton = {
                     TextButton(onClick = {
                         onDeleteRecipe(idToDelete)

@@ -211,21 +211,21 @@ fun RecipeDetailsContent(
                                 onDismissRequest = { showTopMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Duplicate Recipe", color = Color.Black) },
+                                    text = { Text("Duplicate Recipe") },
                                     onClick = {
                                         showTopMenu = false
                                         showDuplicateDialog = true
                                     },
-                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null, tint = Color.Black) }
+                                    leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) }
                                 )
                                 if (isOwner) {
                                     DropdownMenuItem(
-                                        text = { Text("Edit Recipe", color = Color.Black) },
+                                        text = { Text("Edit Recipe") },
                                         onClick = {
                                             showTopMenu = false
                                             onEditClick()
                                         },
-                                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null, tint = Color.Black) }
+                                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) }
                                     )
                                     DropdownMenuItem(
                                         text = { Text("Delete Recipe", color = MaterialTheme.colorScheme.error) },
@@ -279,11 +279,11 @@ fun RecipeDetailsContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     InfoItem(icon = Icons.Default.Payments, text = recipe.cost)
-                    VerticalDivider(modifier = Modifier.height(32.dp), color = Color.Gray.copy(alpha = 0.4f))
+                    VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     InfoItem(icon = Icons.Default.SignalCellularAlt, text = recipe.difficulty)
-                    VerticalDivider(modifier = Modifier.height(32.dp), color = Color.Gray.copy(alpha = 0.4f))
+                    VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     InfoItem(icon = Icons.Default.Schedule, text = "${recipe.cookingTimeMinutes}m")
-                    VerticalDivider(modifier = Modifier.height(32.dp), color = Color.Gray.copy(alpha = 0.4f))
+                    VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     InfoItem(
                         icon = Icons.Default.Star,
                         text = "${String.format("%.1f", avgRating)} (${reviews?.size})",
@@ -314,7 +314,7 @@ fun RecipeDetailsContent(
                             Icon(
                                 imageVector = if (isTried) Icons.Default.Check else Icons.Default.RadioButtonUnchecked,
                                 contentDescription = "Toggle completion",
-                                tint = if (isTried) MaterialTheme.colorScheme.primary else Color.Gray,
+                                tint = if (isTried) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -323,8 +323,7 @@ fun RecipeDetailsContent(
                             text = if (isTried) "Cooked!" else "Mark as cooked?",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (isTried) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.7f)
-                        )
+                            color = if (isTried) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant                        )
                     }
 
                     Button(
@@ -593,14 +592,13 @@ fun DeleteConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete recipe", color = Color.Black) },
+        title = { Text("Delete recipe") },
         text = {
             Text(
                 text = if (recipeName.isBlank())
                     "Are you sure you want to delete this recipe? This action cannot be undone."
                 else
                     "Are you sure you want to delete \"$recipeName\"? This action cannot be undone.",
-                color = Color.Black
             )
         },
         confirmButton = {
@@ -622,14 +620,13 @@ fun DuplicateConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Duplicate recipe", color = Color.Black) },
+        title = { Text("Duplicate recipe") },
         text = {
             Text(
                 text = if (recipeName.isBlank())
                     "Do you want to add a copy of this recipe to your list?"
                 else
-                    "Do you want to add a copy of \"$recipeName\" to your list?",
-                color = Color.Black
+                    "Do you want to add a copy of \"$recipeName\" to your list?"
             )
         },
         confirmButton = {

@@ -38,7 +38,7 @@ fun UserRegistrationDialogue(
 ) {
     Surface(
         shape = RoundedCornerShape(28.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp,
         modifier = Modifier
             .padding(16.dp)
@@ -65,7 +65,7 @@ fun UserRegistrationDialogue(
             Text(
                 text = "Please provide your details to finish registration",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
 

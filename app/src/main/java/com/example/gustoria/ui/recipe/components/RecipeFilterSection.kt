@@ -11,12 +11,10 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.gustoria.ui.recipe.ALL_COSTS
 import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
@@ -40,11 +38,8 @@ fun RecipeFilterSection(
             onValueChange = onNameQueryChange,
             label = { Text("Search by name") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
+            modifier = Modifier.fillMaxWidth()
+
         )
 
         Spacer(Modifier.height(8.dp))
@@ -55,10 +50,6 @@ fun RecipeFilterSection(
             label = { Text("Search by ingredient") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
         )
 
         Spacer(Modifier.height(8.dp))

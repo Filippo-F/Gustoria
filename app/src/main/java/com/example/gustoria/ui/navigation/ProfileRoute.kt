@@ -119,9 +119,11 @@ fun ProfileInfoDestination(
 
 @Composable
 fun SettingsDestination(
-    navActions: GustoriaNavigationActions,
-    viewModel: SettingsViewModel = viewModel()
+    navActions: GustoriaNavigationActions
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val viewModel: SettingsViewModel = viewModel(context as androidx.activity.ComponentActivity)
+
     SettingsScreen(
         viewModel = viewModel,
         onBack = navActions::navigateBack

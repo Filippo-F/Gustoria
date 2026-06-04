@@ -143,7 +143,7 @@ fun ReviewFormScreen(
                         Icon(
                             imageVector = Icons.Default.CameraAlt,
                             contentDescription = "Add Photo",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
 

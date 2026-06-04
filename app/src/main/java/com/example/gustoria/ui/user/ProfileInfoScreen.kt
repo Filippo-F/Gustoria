@@ -59,19 +59,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.gustoria.dataclass.CookingRole
-import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
-import com.example.gustoria.ui.utils.PreviewUtils
 import com.example.gustoria.viewmodel.OwnedProfileViewModel
 
 @MultiPreview
@@ -178,7 +173,7 @@ fun ProfileInfoScreen(
                             Icon(
                                 imageVector = Icons.Default.CameraAlt,
                                 contentDescription = "Change Picture",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }

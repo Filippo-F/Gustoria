@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class SettingsViewModel : ViewModel() {
-    var selectedTheme by mutableIntStateOf(0) // 0: Light, 1: Dark, 2: Auto
+    var selectedTheme by mutableIntStateOf(2) // 0: Light, 1: Dark, 2: Auto
         private set
 
     var brightness by mutableFloatStateOf(0.5f)

@@ -94,7 +94,7 @@ fun ProfileImage(imageUrl: String?, firstName: String, lastName: String) {
 
                 Text(
                     text = initials,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 42.sp,
                     fontWeight = FontWeight.Bold
                 )

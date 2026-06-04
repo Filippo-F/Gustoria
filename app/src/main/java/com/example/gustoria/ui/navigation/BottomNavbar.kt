@@ -1,6 +1,5 @@
 package com.example.gustoria.ui.navigation
 
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -27,8 +26,6 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.gustoria.ui.navigation.Create
-import com.example.gustoria.ui.navigation.Home
 
 @Composable
 fun AppBottomNavBar(
@@ -91,8 +88,7 @@ private fun RowScope.NavItem(
 ) {
     val createColor = MaterialTheme.colorScheme.secondary
     val activeColor = MaterialTheme.colorScheme.primary
-    val inactiveColor = MaterialTheme.colorScheme.onSurface
-
+    val inactiveColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
     val iconTint = when {
         isCreate -> createColor
         selected -> activeColor

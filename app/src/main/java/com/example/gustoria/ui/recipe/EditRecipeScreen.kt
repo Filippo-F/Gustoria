@@ -18,21 +18,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
-import com.example.gustoria.viewmodel.EditRecipeViewModel
 import com.example.gustoria.ui.utils.MultiPreview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.ui.utils.PreviewUtils
 
 class EditRecipeActions(private val navController: NavHostController) {
     val navigateBack: () -> Unit = {
@@ -199,12 +192,8 @@ fun EditRecipeScreen(
                 label = { Text("Image URL or asset path") },
                 placeholder = { Text("file:///android_asset/pasta.jpg") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                modifier = Modifier.fillMaxWidth()
                 )
-            )
 
             // Name
             OutlinedTextField(
@@ -214,12 +203,8 @@ fun EditRecipeScreen(
                 isError = state.errors.containsKey("name"),
                 supportingText = { state.errors["name"]?.let { Text(it) } },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                singleLine = true
                 )
-            )
 
             // Description
             OutlinedTextField(
@@ -227,12 +212,8 @@ fun EditRecipeScreen(
                 onValueChange = onUpdateDescription,
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                minLines = 3
                 )
-            )
 
             // Cost
             Text("Cost", style = MaterialTheme.typography.labelMedium)
@@ -280,12 +261,8 @@ fun EditRecipeScreen(
                     isError = state.errors.containsKey("cookingTime"),
                     supportingText = { state.errors["cookingTime"]?.let { Text(it) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black
+                    modifier = Modifier.weight(1f)
                     )
-                )
 
                 OutlinedTextField(
                     value = state.servingsText,
@@ -294,12 +271,8 @@ fun EditRecipeScreen(
                     isError = state.errors.containsKey("servings") && state.servingsText.isBlank(),
                     supportingText = { state.errors["servings"]?.let { Text(it) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black
+                    modifier = Modifier.weight(1f)
                     )
-                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -329,35 +302,23 @@ fun EditRecipeScreen(
                         onValueChange = { onUpdateIngredientName(index, it) },
                         label = { Text("Name") },
                         isError = ingredient.name.isBlank() && state.errors.containsKey("ingredients"),
-                        modifier = Modifier.weight(2f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black
+                        modifier = Modifier.weight(2f)
                         )
-                    )
                     OutlinedTextField(
                         value = if (ingredient.quantity == 0) "" else ingredient.quantity.toString(),
                         onValueChange = { onUpdateIngredientQuantity(index, it) },
                         label = { Text("Qty") },
                         isError = ingredient.quantity <= 0 && state.errors.containsKey("ingredients"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black
+                        modifier = Modifier.weight(1f)
                         )
-                    )
                     OutlinedTextField(
                         value = ingredient.unit,
                         onValueChange = { onUpdateIngredientUnit(index, it) },
                         label = { Text("Unit") },
                         isError = ingredient.unit.isBlank() && state.errors.containsKey("ingredients"),
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black
+                        modifier = Modifier.weight(1f)
                         )
-                    )
                     IconButton(onClick = { onRemoveIngredient(index) }) {
                         Icon(
                             Icons.Default.Delete,
@@ -422,12 +383,8 @@ fun EditRecipeScreen(
                         onValueChange = { onUpdateStep(index, it) },
                         isError = step.isBlank() && state.errors.containsKey("steps"),
                         placeholder = { Text("Describe this step...") },
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black
+                        modifier = Modifier.weight(1f)
                         )
-                    )
                     IconButton(onClick = { onRemoveStep(index) }) {
                         Icon(
                             Icons.Default.Delete,
