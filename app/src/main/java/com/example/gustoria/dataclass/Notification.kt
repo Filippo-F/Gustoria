@@ -8,7 +8,8 @@ enum class NotificationType {
     REVIEW_RECEIVED,     // qualcuno ha recensito una tua ricetta
     RECOMMENDED_RECIPE,   // ricetta consigliata
     RECIPE_SAVED,      // (tua) ricetta salvata da un altro utente
-    REVIEW_LIKED      // like ad una tua review
+    REVIEW_LIKED,      // like ad una tua review
+    NEW_FOLLOWER
 }
 
 @OptIn(ExperimentalUuidApi::class)

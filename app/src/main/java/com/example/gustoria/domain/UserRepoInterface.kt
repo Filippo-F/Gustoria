@@ -57,4 +57,7 @@ interface UserRepoInterface {
 
     // True se il loggedUser segue già targetUserId
     fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean>
+    suspend fun followUser(followerId: String, followedId: String)
+    suspend fun unfollowUser(followerId: String, followedId: String)
+    fun isFollowing(followerId: String, followedId: String): Flow<Boolean>
 }

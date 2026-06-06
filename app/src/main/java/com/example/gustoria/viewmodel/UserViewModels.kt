@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.gustoria.data.auth.SessionManagerFacade
-import kotlinx.coroutines.flow.first
+import com.example.gustoria.dataclass.Notification
+import com.example.gustoria.dataclass.NotificationType
+import com.example.gustoria.domain.NotificationRepoInterface
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -277,8 +279,12 @@ class OwnedProfileViewModel(
 class OtherProfileViewModel(
     private val userRepo: UserRepoInterface,
     private val recipeRepo: RecipeRepoInterface,
+    private val notificationRepo: NotificationRepoInterface,
     private val viewedUserId: String
 ) : ViewModel() {
+
+    private val currentUserId: String
+        get() = SessionManagerFacade.currentUserId.value ?: ""
 
     val user: StateFlow<User?> = userRepo
         .getUserById(viewedUserId)
@@ -289,12 +295,17 @@ class OtherProfileViewModel(
         .map { it.size }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    // Somma totale dei like ricevuti su tutte le ricette del profilo visualizzato
     val likeCount: StateFlow<Int> = recipeRepo
         .getLikesCountForOwner(viewedUserId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    // Per ora placeholder hardcoded, in seguito popolato da Review/Recipe repos
+    val isFollowing: StateFlow<Boolean> = userRepo
+        .isFollowing(SessionManagerFacade.currentUserId.value ?: "", viewedUserId)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    var currentTab by mutableIntStateOf(0)
+        private set
+
     val collections = listOf(
         UserCollection("Summer Harvest", "12 Recipes • 2.4k Views"),
         UserCollection("Artisan Bakes", "8 Recipes • 1.1k Views")
@@ -305,40 +316,39 @@ class OtherProfileViewModel(
         UserActivity("Liked Marco's \"Focaccia Masterclass\"", "Yesterday")
     )
 
-    // True se il loggedUser segue già questo profilo
-    val isFollowing: StateFlow<Boolean> = SessionManagerFacade.currentUserId
-        .flatMapLatest { currentUid ->
-            if (currentUid.isNullOrBlank()) flowOf(false)
-            else userRepo.isFollowing(currentUid, viewedUserId)
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    var currentTab by mutableIntStateOf(0)
-        private set
-
     fun toggleFollow() {
         viewModelScope.launch {
-            val currentUserId = SessionManagerFacade.currentUserId.value ?: return@launch
-            if (isFollowing.first()) {
+            if (isFollowing.value) {
                 userRepo.unfollowUser(currentUserId, viewedUserId)
             } else {
                 userRepo.followUser(currentUserId, viewedUserId)
+                notificationRepo.addNotification(
+                    Notification(
+                        recipientUserId = viewedUserId,
+                        type = NotificationType.NEW_FOLLOWER.name,
+                        title = "You have a new follower!",
+                        message = "Someone started following you.",
+                        targetRecipeId = null
+                    )
+                )
             }
         }
     }
+
     fun changeTab(index: Int) {
         currentTab = index
     }
 
     companion object {
-        fun factory(
-            viewedUserId: String
-        ): ViewModelProvider.Factory = viewModelFactory {
+        fun factory(viewedUserId: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
-                val userRepository = application.container.userRepository
-                val recipeRepository = application.container.recipeRepository
-                OtherProfileViewModel(userRepository, recipeRepository, viewedUserId)
+                OtherProfileViewModel(
+                    userRepo = application.container.userRepository,
+                    recipeRepo = application.container.recipeRepository,
+                    notificationRepo = application.container.notificationRepository,
+                    viewedUserId = viewedUserId
+                )
             }
         }
     }
