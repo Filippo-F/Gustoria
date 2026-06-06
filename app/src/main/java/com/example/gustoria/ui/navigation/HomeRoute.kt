@@ -54,6 +54,7 @@ fun HomeDestination(
             recommendedRecipes = recommendedRecipes,
             myRecipes = myRecipes,
             selectedCategory = selectedCategory,
+            unreadCount = unreadCount,
             onNavigateToProfile = {
                 if (SessionManagerFacade.isLoggedIn) {
                     navActions.navigateToProfile()

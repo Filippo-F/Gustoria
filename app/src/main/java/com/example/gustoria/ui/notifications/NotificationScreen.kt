@@ -76,7 +76,7 @@ fun NotificationScreenPreview() {
 fun NotificationScreen(
     notifications: List<Notification>,
     onBack: () -> Unit,
-    onNotificationClick: (recipeId: String) -> Unit,
+    onNotificationClick: (Notification) -> Unit,
     onDeleteNotification: (notificationId: String) -> Unit,
     onMarkAllRead: () -> Unit,
     onMarkRead: (notificationId: String) -> Unit
@@ -156,11 +156,8 @@ fun NotificationScreen(
                     NotificationItem(
                         notification = notification,
                         onClick = {
-                            if (notification.targetRecipeId != null) {
-                                onNotificationClick(notification.targetRecipeId)
-                            } else {
-                                onMarkRead(notification.id)  // marca solo come letta
-                            }
+                            notification.targetRecipeId?.let { onNotificationClick(notification) }
+                                ?: onNotificationClick(notification)   // per NEW_FOLLOWER senza recipeId
                         },
                         onDelete = { onDeleteNotification(notification.id) }
                     )

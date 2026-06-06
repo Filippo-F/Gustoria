@@ -42,6 +42,8 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.ui.utils.PreviewUtils
 import com.example.gustoria.viewmodel.HomeViewModel
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 
 // categorie mostrate nella home (explore) - sezione 2
 private val homeCategories = listOf(
@@ -57,6 +59,7 @@ fun HomeScreenPreview() {
             recommendedRecipes = emptyList(),
             myRecipes = emptyList(),
             selectedCategory = "All",
+            unreadCount = 3,
             onNavigateToProfile = {},
             onNavigateToNotifications = {},
             onNavigateToRecipeDetails = {},
@@ -102,12 +105,24 @@ fun HomeScreen(
                     }
                 },
                 trailingContent = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notifications",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                    BadgedBox(
+                        badge = {
+                            if (unreadCount > 0) {
+                                Badge {
+                                    Text(
+                                        text = if (unreadCount > 99) "99+" else unreadCount.toString()
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        IconButton(onClick = onNavigateToNotifications) {
+                            Icon(
+                                imageVector = Icons.Outlined.Notifications,
+                                contentDescription = "Notifications",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
             )

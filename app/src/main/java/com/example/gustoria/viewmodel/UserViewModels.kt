@@ -335,7 +335,8 @@ class OtherProfileViewModel(
                         type = NotificationType.NEW_FOLLOWER.name,
                         title = "You have a new follower!",
                         message = "Someone started following you.",
-                        targetRecipeId = null
+                        targetRecipeId = null,
+                        targetUserId = currentUserId
                     )
                 )
             }

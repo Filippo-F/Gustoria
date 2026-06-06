@@ -20,6 +20,7 @@ data class Notification(
     val title: String = "",
     val message: String = "",
     val targetRecipeId: String? = null,  // per navigare al tap
+    val targetUserId: String? = null,
     val isRead: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )

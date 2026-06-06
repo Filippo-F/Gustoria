@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.viewmodel.NotificationViewModel
+import com.example.gustoria.dataclass.NotificationType
 
 
 @Serializable
@@ -22,11 +23,16 @@ fun NotificationsDestination(
     NotificationScreen(
         notifications = notifications,
         onBack = navActions::navigateBack,
-        onNotificationClick = { recipeId ->
-            viewModel.markAsRead(
-                notifications.find { it.targetRecipeId == recipeId }?.id ?: ""
-            )
-            navActions.navigateToRecipeDetails(recipeId)
+        onNotificationClick = { notification ->
+            viewModel.markAsRead(notification.id)
+            when (notification.type) {
+                NotificationType.NEW_FOLLOWER.name -> {
+                    notification.targetUserId?.let { navActions.navigateToOtherProfile(it) }
+                }
+                else -> {
+                    notification.targetRecipeId?.let { navActions.navigateToRecipeDetails(it) }
+                }
+            }
         },
         onDeleteNotification = viewModel::deleteNotification,
         onMarkAllRead = viewModel::markAllAsRead,
