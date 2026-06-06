@@ -208,5 +208,5 @@ class FirebaseUserRepo(
             .snapshots()
             .map { it.toObject(User::class.java)?.followingIds?.contains(targetUserId) == true }
     }
-    
+
 }
