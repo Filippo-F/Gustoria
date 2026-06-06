@@ -88,6 +88,19 @@ class AuthenticationViewModel(
         }
     }
 
+    fun simulateLogin(userId: String, onSuccess: (String) -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(errors = emptyMap()) }
+            SessionManagerFacade.simulateLogin(userId)
+            val user = userRepo.getUserById(userId).first()
+            if (user == null) {
+                _uiState.update { it.copy(showRegistration = true) }
+            } else {
+                onSuccess(userId)
+            }
+        }
+    }
+
     private fun validateFields(): Boolean {
         val current = _uiState.value
         val newErrors = mutableMapOf<String, String>()

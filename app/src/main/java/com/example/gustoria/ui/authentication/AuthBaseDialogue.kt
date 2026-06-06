@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,7 +29,8 @@ fun AuthBaseDialogue(
     title: String,
     subtitle: String,
     state: AuthUiState,
-    onSignInGoogle: () -> Unit
+    onSignInGoogle: () -> Unit,
+    onSimulateLogin: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(28.dp),
@@ -73,6 +75,18 @@ fun AuthBaseDialogue(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Sign in with Google")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = onSimulateLogin,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Logged User (id:101)")
                 }
             }
 

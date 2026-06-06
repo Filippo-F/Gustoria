@@ -25,13 +25,16 @@ sealed interface AuthState {
 }
 
 object SessionManagerFacade : AuthRepoInterface {
+    private var isSimulating = false
     private val _currentUserId = MutableStateFlow(FirebaseAuth.getInstance().currentUser?.uid)
     override val currentUserId: StateFlow<String?> = _currentUserId.asStateFlow()
 
     override val currentUserState: Flow<String?> = callbackFlow {
         val auth = FirebaseAuth.getInstance()
         val listener = FirebaseAuth.AuthStateListener {
-            trySend(it.currentUser?.uid)
+            if (!isSimulating) {
+                trySend(it.currentUser?.uid)
+            }
         }
         auth.addAuthStateListener(listener)
         awaitClose { auth.removeAuthStateListener(listener) }
@@ -46,6 +49,7 @@ object SessionManagerFacade : AuthRepoInterface {
 
     init {
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            if (isSimulating) return@addAuthStateListener
             val user = auth.currentUser
             _currentUserId.value = user?.uid
             _authState.value = when {
@@ -55,8 +59,15 @@ object SessionManagerFacade : AuthRepoInterface {
         }
     }
 
+    fun simulateLogin(userId: String) {
+        isSimulating = true
+        _currentUserId.value = userId
+        _authState.value = AuthState.Authenticated
+    }
+
     override suspend fun signIn(context: Context): Result<Unit> {
         return try {
+            isSimulating = false
             _authState.value = AuthState.Registering
             val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(
                 serverClientId = context.getString(R.string.default_web_client_id)
@@ -82,9 +93,10 @@ object SessionManagerFacade : AuthRepoInterface {
     }
 
     override suspend fun logOut() {
+        isSimulating = false
         FirebaseAuth.getInstance().signOut()
     }
 
     override val isLoggedIn: Boolean
-        get() = FirebaseAuth.getInstance().currentUser?.isAnonymous == false
+        get() = isSimulating || FirebaseAuth.getInstance().currentUser?.isAnonymous == false
 }
