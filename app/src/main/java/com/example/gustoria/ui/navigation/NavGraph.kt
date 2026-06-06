@@ -37,10 +37,10 @@ class GustoriaNavigationActions(private val navController: NavController) {
     private fun navigateWithTabHandling(route: Any) {
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
+                saveState = false
             }
             launchSingleTop = true
-            restoreState = true
+            restoreState = false
         }
     }
 
