@@ -54,7 +54,13 @@ fun ReviewsListDestination(
     ReviewsListScreen(
         reviews = reviews,
         onBack = navActions::navigateBack,
-        onWriteReview = { navActions.navigateToAddReview(recipeId) },
+        onWriteReview = {
+            if (SessionManagerFacade.isLoggedIn) {
+                navActions.navigateToAddReview(recipeId)
+            } else {
+                navActions.navigateToActionRequirement("write a review")
+            }
+        },
         onProfileClick = { userId ->
             if (userId == (SessionManagerFacade.currentUserId.value ?: "")) {
                 navActions.navigateToProfile()
@@ -63,6 +69,12 @@ fun ReviewsListDestination(
             }
         },
         isLikedFlow = { reviewId -> viewModel.isLikedFlow(reviewId) },
-        onToggleLike = { reviewId -> viewModel.toggleLike(reviewId) }
+        onToggleLike = { reviewId ->
+            if (SessionManagerFacade.isLoggedIn) {
+                viewModel.toggleLike(reviewId)
+            } else {
+                navActions.navigateToActionRequirement("like this review")
+            }
+        }
     )
 }
