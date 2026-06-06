@@ -109,6 +109,20 @@ class RecipeViewModel(
             } else {
                 userRepo.addFavourite(userId, recipeId)
                 recipeRepository.addLikedByUser(recipeId, userId)
+                // Notifica il proprietario della ricetta
+                recipeRepository.getRecipeById(recipeId).first()?.let { recipe ->
+                    if (recipe.ownerId != userId) {
+                        notificationRepo.addNotification(
+                            Notification(
+                                recipientUserId = recipe.ownerId,
+                                type = NotificationType.RECIPE_SAVED.name,
+                                title = "Someone saved your recipe",
+                                message = "\"${recipe.name}\" was added to someone's favourites.",
+                                targetRecipeId = recipeId
+                            )
+                        )
+                    }
+                }
             }
         }
     }

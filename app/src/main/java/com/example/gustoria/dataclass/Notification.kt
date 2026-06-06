@@ -6,7 +6,9 @@ import kotlin.uuid.Uuid
 enum class NotificationType {
     RECIPE_DUPLICATED,   // qualcuno ha duplicato una tua ricetta
     REVIEW_RECEIVED,     // qualcuno ha recensito una tua ricetta
-    RECOMMENDED_RECIPE   // ricetta consigliata
+    RECOMMENDED_RECIPE,   // ricetta consigliata
+    RECIPE_SAVED,      // (tua) ricetta salvata da un altro utente
+    REVIEW_LIKED      // like ad una tua review
 }
 
 @OptIn(ExperimentalUuidApi::class)

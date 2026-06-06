@@ -79,8 +79,25 @@ class ReviewViewModel(
         viewModelScope.launch {
             val userId = SessionManagerFacade.currentUserId.value ?: ""
             val isLiked = reviewRepository.isLiked(userId, reviewId).first()
-            if (isLiked) reviewRepository.removeLike(userId, reviewId)
-            else reviewRepository.addLike(userId, reviewId)
+            if (isLiked) {
+                reviewRepository.removeLike(userId, reviewId)
+            } else {
+                reviewRepository.addLike(userId, reviewId)
+                // Notifica l'autore della review
+                reviewRepository.getReviewById(reviewId).first()?.let { review ->
+                    if (review.userId != userId) {
+                        notificationRepo.addNotification(
+                            Notification(
+                                recipientUserId = review.userId,
+                                type = NotificationType.REVIEW_LIKED.name,
+                                title = "Someone liked your review!",
+                                message = "Your review received a like.",
+                                targetRecipeId = review.recipeId
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 

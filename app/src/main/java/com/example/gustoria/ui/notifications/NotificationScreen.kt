@@ -27,6 +27,8 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ThumbUp
 
 @MultiPreview
 @Preview
@@ -175,6 +177,8 @@ private fun NotificationItem(
     val (icon, iconTint) = when (notification.type) {
         NotificationType.RECIPE_DUPLICATED.name  -> Icons.Filled.ContentCopy to MaterialTheme.colorScheme.tertiary
         NotificationType.REVIEW_RECEIVED.name    -> Icons.Filled.RateReview  to MaterialTheme.colorScheme.primary
+        NotificationType.RECIPE_SAVED.name       -> Icons.Filled.Favorite    to MaterialTheme.colorScheme.error
+        NotificationType.REVIEW_LIKED.name       -> Icons.Filled.ThumbUp     to MaterialTheme.colorScheme.primary
         else                                     -> Icons.Filled.Recommend   to MaterialTheme.colorScheme.secondary
     }
 
