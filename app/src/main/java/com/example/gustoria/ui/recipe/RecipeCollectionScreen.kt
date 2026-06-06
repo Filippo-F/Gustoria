@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.recipe.components.RecipeCard
@@ -125,7 +124,7 @@ private fun RecipeCollectionListContent(
                         text = {
                             Text(
                                 text = title,
-                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.labelLarge,
                                 fontWeight = if (currentTab == index) FontWeight.Bold else FontWeight.Normal,
                                 color = if (currentTab == index) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
                             )
@@ -155,7 +154,7 @@ private fun RecipeCollectionListContent(
                                 text = if (activeFilters.isEmpty()) "Filters"
                                 else "Filters (${activeFilters.size})",
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp
+                                style = MaterialTheme.typography.labelMedium
                             )
                         },
                         colors = AssistChipDefaults.assistChipColors(
@@ -178,7 +177,7 @@ private fun RecipeCollectionListContent(
                                 filters.ingredientQuery -> onIngredientQueryChange("")
                             }
                         },
-                        label = { Text(label, fontSize = 12.sp) },
+                        label = { Text(label, style = MaterialTheme.typography.labelMedium) },
                         trailingIcon = {
                             Icon(
                                 Icons.Default.Close,

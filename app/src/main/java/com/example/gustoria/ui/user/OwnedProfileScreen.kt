@@ -31,8 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,17 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.gustoria.ui.navigation.Profile
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
-import com.example.gustoria.viewmodel.OwnedProfileViewModel
 
 @MultiPreview
 @Composable
@@ -186,7 +177,7 @@ fun PresentationPane(
                     ) {
                         Text(
                             text = "${user.firstName} ${user.lastName} (${user.nickname})",
-                            fontSize = 24.sp,
+                            style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
@@ -221,7 +212,7 @@ fun PresentationPane(
                 ) {
                     Text(
                         text = "${user.firstName} ${user.lastName} (${user.nickname})",
-                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
@@ -254,7 +245,7 @@ fun PresentationPane(
                     Text(
                         text = "🌿 Vegan Specialist",
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -267,7 +258,7 @@ fun PresentationPane(
                     Text(
                         text = "⭐ Top Curator",
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -314,8 +305,8 @@ fun PresentationPane(
 @Composable
 fun ProfileValueBox(value: Int, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = value.toString(), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text(text = label, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = value.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -389,7 +380,7 @@ fun ImageBoxContent(user: User) {
             Text(
                 text = initials,
                 color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 42.sp,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold
             )
         }

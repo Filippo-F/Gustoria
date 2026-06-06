@@ -24,11 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.viewmodel.RecipeViewModel
@@ -252,9 +250,8 @@ fun RecipeDetailsContent(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(16.dp),
-                        style = TextStyle(
+                        style = MaterialTheme.typography.headlineMedium.copy(
                             color = Color.White,
-                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
                             shadow = Shadow(
                                 color = Color.Black,
@@ -342,7 +339,7 @@ fun RecipeDetailsContent(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "DUPLICATE RECIPE",
-                            fontSize = 10.sp,
+                            style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -354,7 +351,7 @@ fun RecipeDetailsContent(
                 item {
                     Text(
                         recipe.description,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -370,7 +367,7 @@ fun RecipeDetailsContent(
                 ) {
                     Text(
                         "Ingredients",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -407,7 +404,7 @@ fun RecipeDetailsContent(
             item {
                 Text(
                     "Preparation",
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                     color = MaterialTheme.colorScheme.primary
@@ -429,7 +426,7 @@ fun RecipeDetailsContent(
                         Text(
                             text = "${index + 1}",
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -437,7 +434,6 @@ fun RecipeDetailsContent(
                         step,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = 22.sp
                     )
                 }
             }
@@ -577,7 +573,7 @@ fun InfoItem(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )

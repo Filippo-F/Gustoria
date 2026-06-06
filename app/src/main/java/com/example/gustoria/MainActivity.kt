@@ -12,6 +12,9 @@ import com.example.gustoria.ui.navigation.GustoriaApp
 import com.example.gustoria.ui.navigation.GustoriaNavigationActions
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.viewmodel.SettingsViewModel
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 class MainActivity : ComponentActivity() {
 
@@ -22,19 +25,33 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = viewModel()
 
-            // (0: Light, 1: Dark, 2: Auto)
             val isDarkTheme = when (settingsViewModel.selectedTheme) {
                 0 -> false
                 1 -> true
                 else -> isSystemInDarkTheme()
             }
 
+            // Map the Slider (0.0f - 1.0f) to a real font scale (e.g., 85% to 130% size)
+            val appFontScale = 0.85f + (settingsViewModel.fontSize * 0.45f)
+
+            // Grab the phone's default screen density
+            val currentDensity = LocalDensity.current
+
             GustoriaTheme(darkTheme = isDarkTheme) {
-                val navController = rememberNavController()
-                val navActions = remember(navController) {
-                    GustoriaNavigationActions(navController)
+
+                CompositionLocalProvider(
+                    LocalDensity provides Density(
+                        density = currentDensity.density,
+                        fontScale = appFontScale
+                    )
+                ) {
+                    val navController = rememberNavController()
+                    val navActions = remember(navController) {
+                        GustoriaNavigationActions(navController)
+                    }
+                    GustoriaApp(navController, navActions)
                 }
-                GustoriaApp(navController, navActions)
+
             }
         }
     }

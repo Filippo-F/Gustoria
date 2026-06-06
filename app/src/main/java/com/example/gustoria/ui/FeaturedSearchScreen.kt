@@ -23,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gustoria.R
 
@@ -69,7 +68,7 @@ fun FeaturedSearchScreen(
             ) {
                 Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Search recipes, chefs, or tables...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text("Search recipes, chefs, or tables...", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
             }
         }
 
@@ -83,7 +82,7 @@ fun FeaturedSearchScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("TRENDING SEARCHES", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text("TRENDING SEARCHES", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(Icons.Default.FilterList, contentDescription = "Filter", modifier = Modifier.size(16.dp), tint =MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -100,7 +99,7 @@ fun FeaturedSearchScreen(
                                         .padding(horizontal = 16.dp, vertical = 8.dp)
                                         .clickable { onTrendingTagClick(tag) }
                                 ) {
-                                    Text(text = tag, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                    Text(text = tag, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
                         }
@@ -113,10 +112,10 @@ fun FeaturedSearchScreen(
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        Text("RECENT SEARCHES", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Text("RECENT SEARCHES", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
                         Spacer(modifier = Modifier.weight(1f))
                         TextButton(onClick = onClearAllRecentSearches, contentPadding = PaddingValues(0.dp)) {
-                            Text("CLEAR ALL", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            Text("CLEAR ALL", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -137,8 +136,8 @@ fun FeaturedSearchScreen(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = recent.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                            Text(text = recent.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
+                            Text(text = recent.title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
+                            Text(text = recent.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
                         }
                         IconButton(onClick = { onRemoveRecentSearch(recent.id) }) {
                             Icon(Icons.Default.Close, contentDescription = "Remove", tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
@@ -150,7 +149,7 @@ fun FeaturedSearchScreen(
             // TRENDING CATEGORIES
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("TRENDING CATEGORIES", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text("TRENDING CATEGORIES", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -175,7 +174,7 @@ fun FeaturedSearchScreen(
                                 text = category.title,
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.align(Alignment.BottomStart).padding(12.dp)
                             )
                         }

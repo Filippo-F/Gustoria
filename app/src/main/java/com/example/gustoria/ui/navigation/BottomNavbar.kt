@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -94,7 +93,6 @@ private fun RowScope.NavItem(
         selected -> activeColor
         else -> inactiveColor
     }
-    val textColor = iconTint
 
     NavigationBarItem(
         selected = selected,
@@ -113,9 +111,9 @@ private fun RowScope.NavItem(
         label = {
             Text(
                 text = label,
-                fontSize = 9.sp,
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (selected && !isCreate) FontWeight.Bold else FontWeight.Normal,
-                color = textColor
+                color = iconTint
             )
         }
     )

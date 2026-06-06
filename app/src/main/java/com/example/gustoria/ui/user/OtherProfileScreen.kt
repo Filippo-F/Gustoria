@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import com.example.gustoria.ui.ThreeItemTopNavbar
@@ -94,7 +93,7 @@ fun ProfileImage(imageUrl: String?, firstName: String, lastName: String) {
                 Text(
                     text = initials,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 42.sp,
+                    style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -111,7 +110,7 @@ fun ProfileInfo(firstName: String, lastName: String, nickname: String, cookingRo
         // Full name
         Text(
             text = "$firstName $lastName",
-            fontSize = 24.sp,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
 
@@ -124,7 +123,7 @@ fun ProfileInfo(firstName: String, lastName: String, nickname: String, cookingRo
                     append(cookingRole.displayName())
                 }
             },
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
 
@@ -187,12 +186,12 @@ fun CollectionCard(collection: UserCollection) {
                 text = collection.title,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                style = MaterialTheme.typography.headlineSmall
             )
             Text(
                 text = collection.subtitle,
                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
-                fontSize = 12.sp
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
@@ -250,7 +249,7 @@ fun ActivityCard(
             Text(
                 text = activity.subtitle,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 12.sp
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
@@ -401,7 +400,7 @@ fun OtherProfileScreen(
                                 text = {
                                     Text(
                                         text = title,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.labelMedium,
                                         fontWeight = if (currentTab == index)
                                             FontWeight.Bold
                                         else

@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.ui.ThreeItemTopNavbar
@@ -236,7 +235,6 @@ private fun NotificationItem(
                 text = formatTimestamp(notification.timestamp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                fontSize = 10.sp
             )
         }
 

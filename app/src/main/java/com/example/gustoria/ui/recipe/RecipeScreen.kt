@@ -1,6 +1,5 @@
 package com.example.gustoria.ui.recipe
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,30 +26,14 @@ import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.dataclass.Recipe
-import com.example.gustoria.ui.navigation.Edit
-import com.example.gustoria.ui.navigation.Home
-import com.example.gustoria.ui.navigation.Search
-import com.example.gustoria.domain.RecipeRepoInterface
-import com.example.gustoria.domain.ReviewRepoInterface
-import com.example.gustoria.domain.UserRepoInterface
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.ThreeItemTopNavbar
-import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.utils.MultiPreview
-import com.example.gustoria.ui.utils.PreviewUtils
 
 @MultiPreview
 @Composable
@@ -126,7 +109,7 @@ private fun RecipeListContent(
                     InputChip(
                         selected = true,
                         onClick = { onRemoveFilter(filterLabel) },
-                        label = { Text(filterLabel, fontSize = 12.sp) },
+                        label = { Text(filterLabel, style = MaterialTheme.typography.labelMedium) },
                         trailingIcon = {
                             Icon(Icons.Default.Close, contentDescription = "Remove", modifier = Modifier.size(14.dp))
                         },

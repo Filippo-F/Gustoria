@@ -1,6 +1,5 @@
 package com.example.gustoria.ui.user
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrightnessHigh
-import androidx.compose.material.icons.filled.BrightnessLow
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Restaurant
@@ -33,18 +30,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
@@ -142,36 +135,6 @@ fun AppearanceAndDisplaySection(viewModel: SettingsViewModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Brightness bar
-        SettingItem(
-            title = "Brightness",
-            description = "Adjust the screen brightness level"
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.BrightnessLow, contentDescription = "Low Brightness", modifier = Modifier.size(20.dp))
-                Slider(
-                    value = viewModel.brightness,
-                    onValueChange = { viewModel.updateBrightness(it) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.primary,
-                        activeTrackColor = MaterialTheme.colorScheme.primary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant
-                    ),
-                    thumb = {
-                        SliderDefaults.Thumb(
-                            interactionSource = remember { MutableInteractionSource() },
-                            thumbSize = DpSize(12.dp, 12.dp),
-                            colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary)
-                        )
-                    }
-                )
-                Icon(Icons.Default.BrightnessHigh, contentDescription = "High Brightness", modifier = Modifier.size(24.dp))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
         // Font size bar
         SettingItem(
             title = "Font size",
@@ -182,19 +145,13 @@ fun AppearanceAndDisplaySection(viewModel: SettingsViewModel) {
                 Slider(
                     value = viewModel.fontSize,
                     onValueChange = { viewModel.updateFontSize(it) },
+                    onValueChangeFinished = { viewModel.saveFontSizeToDisk() }, // Saves ONLY when finger lifts
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                     colors = SliderDefaults.colors(
                         thumbColor = MaterialTheme.colorScheme.primary,
                         activeTrackColor = MaterialTheme.colorScheme.primary,
                         inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant
-                    ),
-                    thumb = {
-                        SliderDefaults.Thumb(
-                            interactionSource = remember { MutableInteractionSource() },
-                            thumbSize = DpSize(12.dp, 12.dp),
-                            colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary)
-                        )
-                    }
+                    )
                 )
                 Text("A", fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 4.dp))
             }

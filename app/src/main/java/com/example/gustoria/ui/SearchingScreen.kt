@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.gustoria.ui.recipe.ALL_COSTS
 import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
 import com.example.gustoria.ui.recipe.RecipeFilters
@@ -66,7 +65,7 @@ fun SearchingScreen(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(25.dp)
                 ) {
-                    Text("Show $resultCount Results", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text("Show $resultCount Results", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -159,7 +158,7 @@ fun SearchingScreen(
                 ) {
                     RadioButton(selected = selectedCuisine == cuisine, onClick = null)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(text = cuisine, fontSize = 16.sp)
+                    Text(text = cuisine, style = MaterialTheme.typography.bodyLarge)
                 }
             }
 
@@ -173,7 +172,7 @@ private fun FilterSectionTitle(title: String) {
     Text(
         text = title,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier.padding(bottom = 12.dp)
     )
 }
