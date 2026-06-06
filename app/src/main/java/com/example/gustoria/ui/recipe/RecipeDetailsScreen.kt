@@ -64,12 +64,36 @@ fun RecipeDetailsScreen(
             reviews = reviews,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
-            onToggleFavourite = { recipeViewModel.toggleFavourite(r.id) },
+            onToggleFavourite = {
+                if (SessionManagerFacade.isLoggedIn) {
+                    recipeViewModel.toggleFavourite(r.id)
+                } else {
+                    navActions.navigateToActionRequirement("add this recipe to your favorites")
+                }
+            },
             isTried = isTried,
-            onToggleTried = { recipeViewModel.toggleTried(r.id) },
+            onToggleTried = {
+                if (SessionManagerFacade.isLoggedIn) {
+                    recipeViewModel.toggleTried(r.id)
+                } else {
+                    navActions.navigateToActionRequirement("mark this recipe as cooked")
+                }
+            },
             onBackClick = backAction,
-            onWriteReview = { navActions.navigateToAddReview(r.id) },
-            onViewReviews = { navActions.navigateToReviewsList(r.id) },
+            onWriteReview = {
+                if (SessionManagerFacade.isLoggedIn) {
+                    navActions.navigateToAddReview(r.id)
+                } else {
+                    navActions.navigateToActionRequirement("write a review")
+                }
+            },
+            onViewReviews = {
+                if (SessionManagerFacade.isLoggedIn) {
+                    navActions.navigateToReviewsList(r.id)
+                } else {
+                    navActions.navigateToActionRequirement("view all reviews")
+                }
+            },
             onProfileClick = { userId ->
                 if (userId.isNotBlank()) {
                     if (userId == (SessionManagerFacade.currentUserId.value ?: "")) {
@@ -84,8 +108,12 @@ fun RecipeDetailsScreen(
                 backAction()
             },
             onDuplicateClick = {
-                recipeViewModel.duplicateRecipe(r) { newId ->
-                    navActions.navigateToEditRecipe(newId)
+                if (SessionManagerFacade.isLoggedIn) {
+                    recipeViewModel.duplicateRecipe(r) { newId ->
+                        navActions.navigateToEditRecipe(newId)
+                    }
+                } else {
+                    navActions.navigateToActionRequirement("duplicate this recipe")
                 }
             },
             onEditClick = { navActions.navigateToEditRecipe(r.id) }

@@ -29,6 +29,7 @@ import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
+import kotlinx.coroutines.flow.flowOf
 
 class RecipeViewModel(
     private val recipeRepository: RecipeRepoInterface,
@@ -96,8 +97,14 @@ class RecipeViewModel(
         _filters.value = RecipeFilters()
     }
 
-    fun isFavouriteFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isFavourite((SessionManagerFacade.currentUserId.value ?: ""), recipeId)
+    fun isFavouriteFlow(recipeId: String): Flow<Boolean> {
+        val userId = SessionManagerFacade.currentUserId.value
+        return if (userId.isNullOrBlank()) {
+            flowOf(false)
+        } else {
+            userRepo.isFavourite(userId, recipeId)
+        }
+    }
 
     fun toggleFavourite(recipeId: String) {
         viewModelScope.launch {
@@ -114,8 +121,14 @@ class RecipeViewModel(
     }
 
 
-    fun isTriedFlow(recipeId: String): Flow<Boolean> =
-        userRepo.isTried((SessionManagerFacade.currentUserId.value ?: ""), recipeId)
+    fun isTriedFlow(recipeId: String): Flow<Boolean> {
+        val userId = SessionManagerFacade.currentUserId.value
+        return if (userId.isNullOrBlank()) {
+            flowOf(false)
+        } else {
+            userRepo.isTried(userId, recipeId)
+        }
+    }
 
     fun toggleTried(recipeId: String) {
         viewModelScope.launch {
