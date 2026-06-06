@@ -54,13 +54,14 @@ fun OtherProfileDestination(
     val user by viewModel.user.collectAsStateWithLifecycle()
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
     val likeCount by viewModel.likeCount.collectAsStateWithLifecycle()
+    val isFollowing by viewModel.isFollowing.collectAsStateWithLifecycle()
 
     OtherProfileScreen(
         user = user,
         recipeCount = recipeCount,
         likeCount = likeCount,
         currentTab = viewModel.currentTab,
-        isFollowing = viewModel.isFollowing,
+        isFollowing = isFollowing,
         collections = viewModel.collections,
         recentActivities = viewModel.recentActivities,
         onBack = navActions::navigateBack,
