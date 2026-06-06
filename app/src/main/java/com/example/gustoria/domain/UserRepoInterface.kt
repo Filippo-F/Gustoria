@@ -48,4 +48,13 @@ interface UserRepoInterface {
 
     // Restituisce tutti gli utenti che hanno recipeId nei tried (per cascade delete)
     suspend fun getUsersWhoHaveTried(recipeId: String): List<User>
+
+    // Il loggedUser inizia a seguire targetUserId
+    suspend fun followUser(currentUserId: String, targetUserId: String)
+
+    // Il loggedUser smette di seguire targetUserId
+    suspend fun unfollowUser(currentUserId: String, targetUserId: String)
+
+    // True se il loggedUser segue già targetUserId
+    fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean>
 }

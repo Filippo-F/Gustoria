@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.gustoria.data.auth.SessionManagerFacade
+import kotlinx.coroutines.flow.first
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -304,14 +305,26 @@ class OtherProfileViewModel(
         UserActivity("Liked Marco's \"Focaccia Masterclass\"", "Yesterday")
     )
 
-    var isFollowing by mutableStateOf(false)
-        private set
+    // True se il loggedUser segue già questo profilo
+    val isFollowing: StateFlow<Boolean> = SessionManagerFacade.currentUserId
+        .flatMapLatest { currentUid ->
+            if (currentUid.isNullOrBlank()) flowOf(false)
+            else userRepo.isFollowing(currentUid, viewedUserId)
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     var currentTab by mutableIntStateOf(0)
         private set
 
     fun toggleFollow() {
-        isFollowing = !isFollowing // per ora non persiste sul repo
+        viewModelScope.launch {
+            val currentUserId = SessionManagerFacade.currentUserId.value ?: return@launch
+            if (isFollowing.first()) {
+                userRepo.unfollowUser(currentUserId, viewedUserId)
+            } else {
+                userRepo.followUser(currentUserId, viewedUserId)
+            }
+        }
     }
     fun changeTab(index: Int) {
         currentTab = index

@@ -180,4 +180,32 @@ class FirebaseUserRepo(
             .get().await()
             .toObjects(User::class.java)
     }
+
+    override suspend fun followUser(currentUserId: String, targetUserId: String) {
+        usersCollection.document(currentUserId)
+            .update("followingIds", FieldValue.arrayUnion(targetUserId))
+            .await()
+        usersCollection.document(targetUserId)
+            .update("numberOfFollowers", FieldValue.increment(1))
+            .await()
+    }
+
+    override suspend fun unfollowUser(currentUserId: String, targetUserId: String) {
+        usersCollection.document(currentUserId)
+            .update("followingIds", FieldValue.arrayRemove(targetUserId))
+            .await()
+        val targetDoc = usersCollection.document(targetUserId).get().await()
+        val currentFollowers = targetDoc.getLong("numberOfFollowers") ?: 0L
+        if (currentFollowers > 0) {
+            usersCollection.document(targetUserId)
+                .update("numberOfFollowers", FieldValue.increment(-1))
+                .await()
+        }
+    }
+
+    override fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean> {
+        return usersCollection.document(currentUserId)
+            .snapshots()
+            .map { it.toObject(User::class.java)?.followingIds?.contains(targetUserId) == true }
+    }
 }
