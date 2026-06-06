@@ -9,7 +9,6 @@ import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
-import com.example.gustoria.dataclass.NotificationType
 
 class FirebaseNotificationRepo(
     private val firestore: FirebaseFirestore
@@ -18,7 +17,6 @@ class FirebaseNotificationRepo(
     private val notificationsCollection = firestore.collection(Collections.NOTIFICATIONS)
 
     suspend fun initializeData() {
-        // notifiche fittizie a piacere da aggiungere
         // real notifications are generated dynamically by user actions
     }
 

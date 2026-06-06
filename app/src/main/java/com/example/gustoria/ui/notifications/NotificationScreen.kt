@@ -154,7 +154,11 @@ fun NotificationScreen(
                     NotificationItem(
                         notification = notification,
                         onClick = {
-                            notification.targetRecipeId?.let { onNotificationClick(it) }
+                            if (notification.targetRecipeId != null) {
+                                onNotificationClick(notification.targetRecipeId)
+                            } else {
+                                onMarkRead(notification.id)  // marca solo come letta
+                            }
                         },
                         onDelete = { onDeleteNotification(notification.id) }
                     )
