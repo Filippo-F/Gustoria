@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
-
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
