@@ -34,11 +34,10 @@ class FirebaseUserRepo(
                     dietaryRestrictions = listOf("None"),
                     favoriteIngredients = listOf("Tomato", "Basil", "Extra Virgin Olive Oil", "Parmesan"),
                     favouriteRecipesIds = listOf(
-                        "recipe_spaghetti_pomodoro",
                         "recipe_lasagna_bolognese",
-                        "recipe_risotto_milanese",
-                        "recipe_margherita_pizza",
-                        "recipe_tiramisu"
+                        "recipe_tiramisu",
+                        "recipe_sushi_rolls",
+                        "recipe_beef_burger"
                     ),
                     triedRecipesIds = listOf("recipe_sushi_rolls", "recipe_beef_burger"),
                     followingIds = listOf("202")
@@ -56,9 +55,9 @@ class FirebaseUserRepo(
                     favoriteIngredients = listOf("Salmon", "Avocado", "Soy Sauce", "Rice"),
                     favouriteRecipesIds = listOf(
                         "recipe_spaghetti_pomodoro",
-                        "recipe_tiramisu"
+                        "recipe_margherita_pizza"
                     ),
-                    triedRecipesIds = listOf("recipe_lasagna_bolognese"),
+                    triedRecipesIds = listOf("recipe_spaghetti_pomodoro"),
                     followingIds = listOf("101")
                 )
             )
