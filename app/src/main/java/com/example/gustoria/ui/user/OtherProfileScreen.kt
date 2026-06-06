@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -296,8 +295,17 @@ fun OtherProfileScreen(
     val tabs = listOf("Collections", "Recent Activity")
 
     Scaffold(
-        bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) { }
+        topBar = {
+            ThreeItemTopNavbar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                title = "Other Profile",
+                onBack = onBack,
+                extraIcon = Icons.Default.Share,
+                extraIconDescription = "Share",
+                onClickExtra = {}
+            )
         }
     ) { innerPadding ->
         Column(
@@ -306,18 +314,6 @@ fun OtherProfileScreen(
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background),
         ) {
-            ThreeItemTopNavbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .background(MaterialTheme.colorScheme.background),
-                title = "Other Profile",
-                onBack = onBack,
-                extraIcon = Icons.Default.Share,
-                extraIconDescription = "Share",
-                onClickExtra = {}
-            )
-
             if (user == null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
