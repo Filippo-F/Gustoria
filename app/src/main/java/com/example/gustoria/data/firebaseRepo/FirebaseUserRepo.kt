@@ -42,8 +42,27 @@ class FirebaseUserRepo(
                     ),
                     triedRecipesIds = listOf("recipe_sushi_rolls", "recipe_beef_burger"),
                     followingIds = listOf("202")
+                ),
+                User(
+                    internalId = "202",
+                    nickname = "SushiSara",
+                    firstName = "Sara",
+                    lastName = "Bianchi",
+                    description = "Exploring world cuisines one recipe at a time. Specializing in Asian and fusion dishes.",
+                    phoneNumber = "+39 987 6543210",
+                    cookingRole = CookingRole.CONTENT_CREATOR,
+                    cuisinePreferences = listOf("Japanese", "Thai", "American"),
+                    dietaryRestrictions = listOf("None"),
+                    favoriteIngredients = listOf("Salmon", "Avocado", "Soy Sauce", "Rice"),
+                    favouriteRecipesIds = listOf(
+                        "recipe_spaghetti_pomodoro",
+                        "recipe_tiramisu"
+                    ),
+                    triedRecipesIds = listOf("recipe_lasagna_bolognese"),
+                    followingIds = listOf("101")
                 )
             )
+
             firestore.runBatch { batch ->
                 placeholdersUser.forEach { user ->
                     val docRef = usersCollection.document(user.internalId)
