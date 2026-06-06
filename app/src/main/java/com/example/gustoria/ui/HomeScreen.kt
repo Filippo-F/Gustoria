@@ -73,6 +73,7 @@ fun HomeScreen(
     recommendedRecipes: List<Recipe>,
     myRecipes: List<Recipe>,
     selectedCategory: String,
+    unreadCount: Int,
     onNavigateToProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToRecipeDetails: (String) -> Unit,
