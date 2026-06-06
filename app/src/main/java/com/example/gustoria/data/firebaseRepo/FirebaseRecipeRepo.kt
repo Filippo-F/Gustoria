@@ -46,7 +46,8 @@ class FirebaseRecipeRepo(
                         "Scola la pasta e condisci con il sugo",
                         "Aggiungi basilico fresco e servi"
                     ),
-                    tags = listOf("Italian", "Pasta", "Quick")
+                    tags = listOf("Italian", "Pasta", "Quick"),
+                    likedByUserIds = listOf("202")
                 ),
                 Recipe(
                     id = "recipe_margherita_pizza",
@@ -72,11 +73,12 @@ class FirebaseRecipeRepo(
                         "Stendi l'impasto e aggiungi il condimento",
                         "Cuoci in forno a 250°C per 10-12 min"
                     ),
-                    tags = listOf("Italian", "Pizza", "Classic")
+                    tags = listOf("Italian", "Pizza", "Classic"),
+                    likedByUserIds = listOf("202")
                 ),
                 Recipe(
                     id = "recipe_lasagna_bolognese",
-                    ownerId = "101",
+                    ownerId = "202",
                     name = "Lasagna Bolognese",
                     description = "Strati di pasta, ragù ricco e besciamella cremosa.",
                     imageUri = null,
@@ -98,11 +100,12 @@ class FirebaseRecipeRepo(
                         "Termina con besciamella e parmigiano",
                         "Cuoci a 180°C per 40 min"
                     ),
-                    tags = listOf("Italian", "Pasta", "Baked")
+                    tags = listOf("Italian", "Pasta", "Baked"),
+                    likedByUserIds = listOf("101")
                 ),
                 Recipe(
                     id = "recipe_risotto_milanese",
-                    ownerId = "101",
+                    ownerId = "202",
                     name = "Risotto alla Milanese",
                     description = "Risotto dorato allo zafferano, tipico di Milano.",
                     imageUri = null,
@@ -130,7 +133,7 @@ class FirebaseRecipeRepo(
                 ),
                 Recipe(
                     id = "recipe_tiramisu",
-                    ownerId = "101",
+                    ownerId = "202",
                     name = "Tiramisù",
                     description = "Il dessert italiano più famoso nel mondo.",
                     imageUri = null,
@@ -155,7 +158,8 @@ class FirebaseRecipeRepo(
                         "Copri con crema e spolvera di cacao",
                         "Refrigera per almeno 4 ore"
                     ),
-                    tags = listOf("Italian", "Dessert", "NoBake")
+                    tags = listOf("Italian", "Dessert", "NoBake"),
+                    likedByUserIds = listOf("101")
                 ),
                 // Ricette di User 202
                 Recipe(
@@ -183,7 +187,8 @@ class FirebaseRecipeRepo(
                         "Arrotola strettamente con la stuoia",
                         "Taglia in 8 pezzi e servi con soia"
                     ),
-                    tags = listOf("Japanese", "Seafood", "Raw")
+                    tags = listOf("Japanese", "Seafood", "Raw"),
+                    likedByUserIds = listOf("101")
                 ),
                 Recipe(
                     id = "recipe_beef_burger",
@@ -208,7 +213,8 @@ class FirebaseRecipeRepo(
                         "Tosta il panino",
                         "Assembla con formaggio, lattuga e pomodoro"
                     ),
-                    tags = listOf("American", "Meat", "Quick")
+                    tags = listOf("American", "Meat", "Quick"),
+                    likedByUserIds = listOf("101")
                 ),
                 Recipe(
                     id = "recipe_pad_thai",

@@ -23,79 +23,77 @@ class FirebaseReviewRepo(
             val now = System.currentTimeMillis()
             val placeholderReviews = listOf(
 
-                // 4 recensioni per recipe_spaghetti_pomodoro (owned by user 101)
+                // 4 recensioni per recipe_spaghetti_pomodoro (owned by 101)
                 Review(
                     id = "review_spaghetti_1",
                     userId = "202",
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Semplicissima e deliziosa! Il sugo di pomodoro fresco fa tutta la differenza.",
                     rating = 5.0f,
-                    likedByUserIds = listOf("303", "404", "505", "101"),
+                    likedByUserIds = listOf("101"), // 202 scrive, 101 mette like
                     timestamp = (now - 86400000 * 7).toString()
                 ),
                 Review(
                     id = "review_spaghetti_2",
-                    userId = "303",
+                    userId = "202",
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Ottima ricetta, la faccio ogni settimana. Ho aggiunto un po' di peperoncino.",
                     rating = 4.5f,
-                    likedByUserIds = listOf("202", "101"),
+                    likedByUserIds = listOf("101"),
                     timestamp = (now - 86400000 * 5).toString()
                 ),
                 Review(
                     id = "review_spaghetti_3",
-                    userId = "404",
+                    userId = "202",
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Veloce e gustosa, perfetta per un pranzo last-minute. 10/10!",
                     rating = 5.0f,
-                    likedByUserIds = listOf("202", "303", "505", "101", "606", "707"),
+                    likedByUserIds = listOf("101"),
                     timestamp = (now - 86400000 * 3).toString()
                 ),
                 Review(
                     id = "review_spaghetti_4",
-                    userId = "505",
+                    userId = "202",
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Buona, ma ho preferito usare pomodorini invece dei pelati.",
                     rating = 4.0f,
-                    likedByUserIds = listOf("303"),
                     timestamp = (now - 86400000).toString()
                 ),
 
-                // 4 recensioni per recipe_sushi_rolls (owned by user 202)
+                // 4 recensioni per recipe_sushi_rolls (owned by 202)
                 Review(
                     id = "review_sushi_1",
                     userId = "101",
                     recipeId = "recipe_sushi_rolls",
                     description = "Ottimo sushi casalingo! Difficile ma il risultato è fantastico.",
                     rating = 5.0f,
-                    likedByUserIds = listOf("202", "303", "404", "505", "606", "707", "808", "909"),
+                    likedByUserIds = listOf("202"), // 101 scrive, 202 mette like
                     timestamp = (now - 86400000 * 6).toString()
                 ),
                 Review(
                     id = "review_sushi_2",
-                    userId = "303",
+                    userId = "101",
                     recipeId = "recipe_sushi_rolls",
                     description = "Ho seguito la ricetta passo passo, il riso era perfetto. Proverò con il tonno.",
                     rating = 4.5f,
-                    likedByUserIds = listOf("101", "404", "505"),
+                    likedByUserIds = listOf("202"),
                     timestamp = (now - 86400000 * 4).toString()
                 ),
                 Review(
                     id = "review_sushi_3",
-                    userId = "404",
+                    userId = "101",
                     recipeId = "recipe_sushi_rolls",
                     description = "Molto bello esteticamente, ma la tecnica di arrotolamento richiede pratica.",
                     rating = 4.0f,
-                    likedByUserIds = listOf("101", "303"),
                     timestamp = (now - 86400000 * 2).toString()
                 ),
                 Review(
                     id = "review_sushi_4",
-                    userId = "505",
+                    userId = "101",
                     recipeId = "recipe_sushi_rolls",
                     description = "Perfetto per una cena speciale! Ingredienti facilmente reperibili.",
                     rating = 5.0f,
-                    likedByUserIds = listOf("101", "202", "303", "404", "606"),
+                    likedByUserIds = listOf("202"),
                     timestamp = (now - 3600000).toString()
                 ),
 
@@ -106,7 +104,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_margherita_pizza",
                     description = "Impasto meraviglioso, meglio di molte pizzerie!",
                     rating = 5.0f,
-                    likedByUserIds = listOf("101", "303", "404", "505", "606", "707", "808", "909", "010", "111"),
+                    likedByUserIds = listOf("101"),
                     timestamp = (now - 86400000 * 10).toString()
                 ),
                 Review(
@@ -115,7 +113,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_beef_burger",
                     description = "La tecnica smash burger è perfetta, crosta croccante e interno succoso.",
                     rating = 4.5f,
-                    likedByUserIds = listOf("202", "303", "404", "505", "606", "707", "808"),
+                    likedByUserIds = listOf("202"),
                     timestamp = (now - 86400000 * 2).toString()
                 )
             )

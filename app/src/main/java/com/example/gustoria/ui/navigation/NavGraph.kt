@@ -187,7 +187,9 @@ fun GustoriaApp(
             NavHost(
                 navController = navController,
                 startDestination = Home,
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues),
                 enterTransition = { fadeIn(animationSpec = snap()) },
                 exitTransition = { fadeOut(animationSpec = snap()) },
                 popEnterTransition = { fadeIn(animationSpec = snap()) },
