@@ -23,11 +23,11 @@ class HomeViewModel(
     private val userRepository: UserRepoInterface
 ) : ViewModel() {
 
-    // tutte le ricette
+    // All recipes
     private val allRecipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // ricette consigliate non possedute dall'utente corrente (sezione "Recommended for you")
+    // Recommended recipes
     val recommendedRecipes: StateFlow<List<Recipe>> = allRecipes
         .map { list -> list.filter { it.ownerId != (SessionManagerFacade.currentUserId.value ?: "") } }
         .stateIn(
@@ -36,7 +36,7 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
-    // ricette create dall'utente corrente (sezione "Recent creations")
+    // User's recipes
     val myRecipes: StateFlow<List<Recipe>> = recipeRepository
         .getRecipeByOwner(SessionManagerFacade.currentUserId.value ?: "")
         .stateIn(
@@ -45,7 +45,7 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
-    // categoria selezionata (sezione "Explore categories")
+    // Selected category
     private val _selectedCategory = MutableStateFlow("All")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
 

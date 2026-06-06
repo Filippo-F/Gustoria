@@ -231,7 +231,7 @@ fun PresentationPane(
             }
         }
 
-        // Sezione badge dinamici dalle preferenze utente
+        // Dynamic preference badges
         val allTags = listOf(
             user.cuisinePreferences.filter { it.isNotBlank() }.map { it to "cuisine" },
             user.dietaryRestrictions.filter { it.isNotBlank() }.map { it to "diet" }

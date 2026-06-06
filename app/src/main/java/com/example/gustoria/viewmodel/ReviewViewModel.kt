@@ -82,7 +82,7 @@ class ReviewViewModel(
                 reviewRepository.removeLike(userId, reviewId)
             } else {
                 reviewRepository.addLike(userId, reviewId)
-                // Notifica l'autore della review
+                // Notify review author
                 reviewRepository.getReviewById(reviewId).first()?.let { review ->
                     if (review.userId != userId) {
                         notificationRepo.addNotification(
@@ -102,7 +102,7 @@ class ReviewViewModel(
 
     fun deleteReview(reviewId: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            // Otteniamo la review per trovare l'URL dell'immagine
+            // Get review to find image URL
             reviewRepository.getReviewById(reviewId).first()?.let { review ->
                 review.photoUri?.let { url ->
                     com.example.gustoria.data.utils.ImageUploader.deleteImage(url, "reviews")

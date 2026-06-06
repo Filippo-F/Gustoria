@@ -118,7 +118,7 @@ class RecipeViewModel(
             } else {
                 userRepo.addFavourite(userId, recipeId)
                 recipeRepository.addLikedByUser(recipeId, userId)
-                // Notifica il proprietario della ricetta
+                // Notify recipe owner
                 recipeRepository.getRecipeById(recipeId).first()?.let { recipe ->
                     if (recipe.ownerId != userId) {
                         notificationRepo.addNotification(
@@ -156,25 +156,25 @@ class RecipeViewModel(
     }
     fun deleteRecipe(recipeId: String) {
         viewModelScope.launch {
-            // 1. Elimina tutte le review associate
+            // 1. Delete associated reviews
             val reviews = reviewRepository.getReviewsByRecipe(recipeId).first()
             reviews.forEach { reviewRepository.deleteReview(it.id) }
 
-            // 2. Rimuovi dai preferiti di chi l'aveva
+            // 2. Remove from user favorites
             userRepo.getUsersWhoHaveInFavourites(recipeId).forEach { user ->
                 userRepo.removeFavourite(user.internalId, recipeId)
                 recipeRepository.removeLikedByUser(recipeId, user.internalId)
             }
 
-            // 3. Rimuovi dai tried di chi ce l'aveva
+            // 3. Remove from user tried recipes
             userRepo.getUsersWhoHaveTried(recipeId).forEach { user ->
                 userRepo.removeTriedRecipe(user.internalId, recipeId)
             }
 
-            // 4. Elimina le notifiche collegate a questa ricetta
+            // 4. Delete associated notifications
             notificationRepo.deleteNotificationsForRecipe(recipeId)
 
-            // 5. Elimina la ricetta
+            // 5. Delete recipe
             recipeRepository.deleteRecipe(recipeId)
             selectRecipe(null)
         }

@@ -35,7 +35,7 @@ class RecipeCollectionViewModel(
 
     private val _filters = MutableStateFlow(RecipeFilters())
     val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
-    // 1. Mocked Saved Recipes (Medium Difficulty)
+    // 1. Saved Recipes
     private val savedRecipes: StateFlow<List<Recipe>> = combine(
         repo.getAllRecipes(),
         userRepo.getFavouriteRecipeIds(userId)
@@ -73,7 +73,7 @@ class RecipeCollectionViewModel(
         resetFilters()
     }
 
-    // This dynamically changes the list based on the active tab and applies your existing filters!
+    // Dynamically change list based on active tab and filters
     val recipesToShow: StateFlow<List<Recipe>> = combine(
         savedRecipes, triedRecipes, createdRecipes, _currentTab, _filters
     ) { saved, tried, created, tabIndex, f ->
@@ -111,25 +111,25 @@ class RecipeCollectionViewModel(
 
     fun delete(id: String) {
         viewModelScope.launch {
-            // 1. Elimina tutte le review associate
+            // 1. Delete associated reviews
             val reviews = reviewRepository.getReviewsByRecipe(id).first()
             reviews.forEach { reviewRepository.deleteReview(it.id) }
 
-            // 2. Rimuovi dai preferiti di chi l'aveva
+            // 2. Remove from user favorites
             userRepo.getUsersWhoHaveInFavourites(id).forEach { user ->
                 userRepo.removeFavourite(user.internalId, id)
                 repo.removeLikedByUser(id, user.internalId)
             }
 
-            // 3. Rimuovi dai tried di chi ce l'aveva
+            // 3. Remove from user tried recipes
             userRepo.getUsersWhoHaveTried(id).forEach { user ->
                 userRepo.removeTriedRecipe(user.internalId, id)
             }
 
-            // 4. Elimina le notifiche collegate a questa ricetta
+            // 4. Delete associated notifications
             notificationRepo.deleteNotificationsForRecipe(id)
 
-            // 5. Elimina la ricetta
+            // 5. Delete recipe
             repo.deleteRecipe(id)
         }
     }

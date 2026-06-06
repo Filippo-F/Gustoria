@@ -50,9 +50,7 @@ class NotificationViewModel(
         generateRecommendedNotifications()
     }
 
-    //Controlla tutte le ricette disponibili e per quelle i cui tag matchano
-    //le preferenze dell'utente, crea notifica "Recommended" (se non esiste già)
-
+    // Generate "Recommended" notifications for recipes matching user preferences
     private fun generateRecommendedNotifications() {
         viewModelScope.launch {
             val user = userRepo.getUserById(currentUserId).first() ?: return@launch

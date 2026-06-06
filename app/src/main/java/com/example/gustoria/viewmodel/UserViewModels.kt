@@ -38,7 +38,7 @@ data class ProfileValidation(
     val isValid: Boolean = true
 )
 
-//placeholders data
+// Placeholder data
 data class UserCollection(
     val title: String,
     val subtitle: String
@@ -70,7 +70,7 @@ class OwnedProfileViewModel(
         .map { it.size }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    // Somma totale dei like ricevuti su tutte le ricette dell'utente loggato
+    // Total likes received on all recipes
     val likeCount: StateFlow<Int> = SessionManagerFacade.currentUserId
         .flatMapLatest { uid ->
             if (uid.isNullOrBlank()) flowOf(0)
@@ -78,7 +78,7 @@ class OwnedProfileViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    // bozza modifiable durante l'editing
+    // Editable draft
     var editableUser by mutableStateOf<User?>(null)
         private set
 
@@ -110,7 +110,7 @@ class OwnedProfileViewModel(
     fun toggleEditingLastName() { editingLastName = !editingLastName }
     fun toggleEditingPhone() { editingPhone = !editingPhone }
 
-    fun startEditing() { // click on edit
+    fun startEditing() {
         editableUser = user.value
         validation = ProfileValidation()
         isEditing = true
@@ -204,13 +204,13 @@ class OwnedProfileViewModel(
 
             viewModelScope.launch {
                 val publicProfileUrl = if (draft.profileImageUri != null && !draft.profileImageUri.startsWith("http")) {
-                    // Se stiamo caricando una nuova immagine, eliminiamo la vecchia
+                    // Delete old image if a new one is uploaded
                     user.value?.profileImageUri?.let { oldUrl ->
                         com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
                     }
                     com.example.gustoria.data.utils.ImageUploader.uploadImage(draft.profileImageUri, "profiles")
                 } else if (draft.profileImageUri == null) {
-                    // Se l'immagine è stata rimossa
+                    // Delete image if it was removed
                     user.value?.profileImageUri?.let { oldUrl ->
                         com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
                     }
@@ -227,7 +227,7 @@ class OwnedProfileViewModel(
             }
         }
     }
-    // Setters per la bozza
+    // Draft setters
     fun setNickname(nickname: String) {
         editableUser = editableUser?.copy(nickname = nickname)
     }
@@ -248,7 +248,7 @@ class OwnedProfileViewModel(
         editableUser = editableUser?.copy(phoneNumber = phone)
     }
 
-    // cookingRole  riceve sempre un CookingRole !! (per cambio logica)
+    // Update cooking role
     fun setCookingRole(role: CookingRole) {
         editableUser = editableUser?.copy(cookingRole = role)
     }
