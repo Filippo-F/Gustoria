@@ -55,11 +55,11 @@ class ReviewViewModel(
 
             // Notifications
             recipeRepository.getRecipeById(finalReview.recipeId).first()?.let { recipe ->
-                if (recipe.ownerId != (com.example.gustoria.data.auth.SessionManagerFacade.currentUserId.value ?: "")) {
+                if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
                     notificationRepo.addNotification(
-                        com.example.gustoria.dataclass.Notification(
+                        Notification(
                             recipientUserId = recipe.ownerId,
-                            type = com.example.gustoria.dataclass.NotificationType.REVIEW_RECEIVED,
+                            type = NotificationType.REVIEW_RECEIVED.name,
                             title = "New review on your recipe",
                             message = "Someone reviewed \"${recipe.name}\".",
                             targetRecipeId = recipe.id
