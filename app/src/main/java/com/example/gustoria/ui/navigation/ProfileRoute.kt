@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gustoria.data.auth.AuthState
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
@@ -65,7 +64,13 @@ fun OtherProfileDestination(
         collections = viewModel.collections,
         recentActivities = viewModel.recentActivities,
         onBack = navActions::navigateBack,
-        onToggleFollow = viewModel::toggleFollow,
+        onToggleFollow = {
+            if (SessionManagerFacade.isLoggedIn) {
+                viewModel.toggleFollow()
+            } else {
+                navActions.navigateToActionRequirement("follow this user")
+            }
+        },
         onChangeTab = viewModel::changeTab
     )
 }
@@ -78,7 +83,6 @@ fun OverallProfileDestination(
     val user by viewModel.user.collectAsStateWithLifecycle()
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
     val likeCount by viewModel.likeCount.collectAsStateWithLifecycle()
-    val authState by SessionManagerFacade.authState.collectAsStateWithLifecycle()
 
     OwnedProfileScreen(
         user = user,
@@ -87,7 +91,7 @@ fun OverallProfileDestination(
         isLoggedIn = SessionManagerFacade.isLoggedIn,
         onBack = navActions::navigateBack,
         onNavigateToProfileInfo = {
-            if (authState !is AuthState.Unauthenticated) {
+            if (SessionManagerFacade.isLoggedIn) {
                 navActions.navigateToOverallProfileInfo()
             } else {
                 navActions.navigateToActionRequirement("view and edit your detailed profile information")
