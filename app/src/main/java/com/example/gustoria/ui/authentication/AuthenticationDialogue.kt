@@ -90,8 +90,7 @@ fun AuthenticationDialogue(
         title = "Welcome to Gustoria",
         subtitle = "Choose a way to sign in",
         state = state,
-        onSignInGoogle = { viewModel.signInWithGoogle(context, onAuthSuccess) },
-        onSignInAnonymous = { viewModel.signInAnonymous(context, onAuthSuccess) }
+        onSignInGoogle = { viewModel.signInWithGoogle(context, onAuthSuccess) }
     )
 }
 
@@ -108,8 +107,6 @@ fun ActionRequirementDialogue(
         title = "Authentication Required",
         subtitle = "To $action you must be logged in",
         state = state,
-        onSignInGoogle = { viewModel.signInWithGoogle(context, onAuthSuccess) },
-        onSignInAnonymous = { viewModel.signInAnonymous(context, onAuthSuccess) },
-        onSignInAnonymousLabel = "Continue as Guest"
+        onSignInGoogle = { viewModel.signInWithGoogle(context, onAuthSuccess) }
     )
 }

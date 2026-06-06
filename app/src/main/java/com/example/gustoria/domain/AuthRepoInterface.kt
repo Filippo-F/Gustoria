@@ -9,7 +9,6 @@ interface AuthRepoInterface {
     val currentUserId: StateFlow<String?>
     val currentUserState: Flow<String?>
     suspend fun signIn(context: Context): Result<Unit>
-    suspend fun signInAnonymous(context: Context): Result<Unit>
     val isLoggedIn: Boolean
     suspend fun logOut()
     val authState: StateFlow<AuthState>

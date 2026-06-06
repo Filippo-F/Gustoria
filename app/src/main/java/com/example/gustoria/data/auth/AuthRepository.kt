@@ -5,7 +5,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.gustoria.R
 import com.example.gustoria.domain.AuthRepoInterface
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -26,13 +26,12 @@ class FirebaseAuthRepository(
 
     override suspend fun signIn(context: Context): Result<Unit> {
         return try {
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(context.getString(R.string.default_web_client_id)) // Found in google-services.json
-                .build()
+            val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(
+                serverClientId = context.getString(R.string.default_web_client_id)
+            ).build()
 
             val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(signInWithGoogleOption)
                 .build()
 
             val result = credentialManager.getCredential(context, request)
@@ -42,15 +41,6 @@ class FirebaseAuthRepository(
                 GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
             auth.signInWithCredential(firebaseCredential).await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
-        return try {
-            auth.signInAnonymously().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
