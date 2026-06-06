@@ -1,37 +1,46 @@
 package com.example.gustoria.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 
 // categorie mostrate nella home (explore) - sezione 2
 private val homeCategories = listOf(
@@ -48,6 +57,8 @@ fun HomeScreenPreview() {
             myRecipes = emptyList(),
             selectedCategory = "All",
             unreadCount = 3,
+            profileImageUri = null,
+            userInitials = "AB",
             onNavigateToProfile = {},
             onNavigateToNotifications = {},
             onNavigateToRecipeDetails = {},
@@ -62,6 +73,8 @@ fun HomeScreen(
     myRecipes: List<Recipe>,
     selectedCategory: String,
     unreadCount: Int,
+    profileImageUri: String?,
+    userInitials: String?,
     onNavigateToProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToRecipeDetails: (String) -> Unit,
@@ -86,10 +99,10 @@ fun HomeScreen(
                 },
                 leadingContent = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = "Profile",
-                            tint = MaterialTheme.colorScheme.onBackground
+                        ProfileAvatar(
+                            profileImageUri = profileImageUri,
+                            initials = userInitials,
+                            size = 32
                         )
                     }
                 },
@@ -240,6 +253,53 @@ private fun RecentCreationsRow(
                 recipe = recipe,
                 onClick = { onRecipeClick(recipe.id) },
                 modifier = Modifier.width(180.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ProfileAvatar(
+    profileImageUri: String?,
+    initials: String? = null,
+    size: Int = 32,
+    modifier: Modifier = Modifier
+) {
+    val sizeDp = size.dp
+    when {
+        profileImageUri != null -> {
+            AsyncImage(
+                model = profileImageUri,
+                contentDescription = "Profile Picture",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .size(sizeDp)
+                    .border(1.5.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .clip(CircleShape)
+            )
+        }
+        !initials.isNullOrBlank() -> {
+            Box(
+                modifier = modifier
+                    .size(sizeDp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = initials,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        else -> {
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = "Profile",
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = modifier.size(sizeDp)
             )
         }
     }

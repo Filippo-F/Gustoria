@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.HomeScreen
 import com.example.gustoria.viewmodel.HomeViewModel
+import com.example.gustoria.viewmodel.OwnedProfileViewModel
 import kotlinx.serialization.Serializable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,12 +30,14 @@ object Home
 fun HomeDestination(
     navActions: GustoriaNavigationActions,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory),
-    notificationViewModel: NotificationViewModel = viewModel(factory = NotificationViewModel.Factory)
+    notificationViewModel: NotificationViewModel = viewModel(factory = NotificationViewModel.Factory),
+    profileViewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
 ) {
     val recommendedRecipes by viewModel.recommendedRecipes.collectAsStateWithLifecycle()
     val myRecipes by viewModel.myRecipes.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val unreadCount by notificationViewModel.unreadCount.collectAsStateWithLifecycle()
+    val currentUser by profileViewModel.user.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     var snackbarShown by remember { mutableStateOf(false) }
@@ -50,11 +53,16 @@ fun HomeDestination(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        val userInitials = currentUser?.let {
+            (it.firstName.take(1) + it.lastName.take(1)).uppercase().takeIf { s -> s.isNotBlank() }
+        }
         HomeScreen(
             recommendedRecipes = recommendedRecipes,
             myRecipes = myRecipes,
             selectedCategory = selectedCategory,
             unreadCount = unreadCount,
+            profileImageUri = currentUser?.profileImageUri,
+            userInitials = userInitials,
             onNavigateToProfile = {
                 if (SessionManagerFacade.isLoggedIn) {
                     navActions.navigateToProfile()
