@@ -5,7 +5,7 @@ import com.example.gustoria.R
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.gustoria.domain.AuthRepoInterface
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -21,7 +21,6 @@ import kotlinx.coroutines.tasks.await
 sealed interface AuthState {
     object Registering : AuthState
     object Authenticated : AuthState
-    object AuthAsGuest : AuthState
     object Unauthenticated : AuthState
 }
 
@@ -40,7 +39,7 @@ object SessionManagerFacade : AuthRepoInterface {
 
     private val _authState = MutableStateFlow<AuthState>(
         FirebaseAuth.getInstance().currentUser?.let {
-            if (it.isAnonymous) AuthState.AuthAsGuest else AuthState.Authenticated
+            if (it.isAnonymous) AuthState.Unauthenticated else AuthState.Authenticated
         } ?: AuthState.Unauthenticated
     )
     override val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -50,8 +49,7 @@ object SessionManagerFacade : AuthRepoInterface {
             val user = auth.currentUser
             _currentUserId.value = user?.uid
             _authState.value = when {
-                user == null -> AuthState.Unauthenticated
-                user.isAnonymous -> AuthState.AuthAsGuest
+                user == null || user.isAnonymous -> AuthState.Unauthenticated
                 else -> AuthState.Authenticated
             }
         }
@@ -60,13 +58,12 @@ object SessionManagerFacade : AuthRepoInterface {
     override suspend fun signIn(context: Context): Result<Unit> {
         return try {
             _authState.value = AuthState.Registering
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(context.getString(R.string.default_web_client_id))
-                .build()
+            val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(
+                serverClientId = context.getString(R.string.default_web_client_id)
+            ).build()
 
             val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(signInWithGoogleOption)
                 .build()
 
             val result = CredentialManager.create(context).getCredential(context, request)
@@ -84,21 +81,10 @@ object SessionManagerFacade : AuthRepoInterface {
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
-        return try {
-            _authState.value = AuthState.Registering
-            FirebaseAuth.getInstance().signInAnonymously().await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            _authState.value = AuthState.Unauthenticated
-            Result.failure(e)
-        }
-    }
-
     override suspend fun logOut() {
         FirebaseAuth.getInstance().signOut()
     }
 
     override val isLoggedIn: Boolean
-        get() = FirebaseAuth.getInstance().currentUser != null
+        get() = FirebaseAuth.getInstance().currentUser?.isAnonymous == false
 }

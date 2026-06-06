@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,9 +28,7 @@ fun AuthBaseDialogue(
     title: String,
     subtitle: String,
     state: AuthUiState,
-    onSignInGoogle: () -> Unit,
-    onSignInAnonymous: (() -> Unit)? = null,
-    onSignInAnonymousLabel: String = "Sign in Anonymously"
+    onSignInGoogle: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(28.dp),
@@ -76,16 +73,6 @@ fun AuthBaseDialogue(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Sign in with Google")
-                }
-
-                if (onSignInAnonymous != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedButton(
-                        onClick = onSignInAnonymous,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(onSignInAnonymousLabel)
-                    }
                 }
             }
 

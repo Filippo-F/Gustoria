@@ -88,26 +88,6 @@ class AuthenticationViewModel(
         }
     }
 
-    fun signInAnonymous(context: Context, onSuccess: (String) -> Unit) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(errors = emptyMap()) }
-            val result = SessionManagerFacade.signInAnonymous(context)
-            result.onSuccess {
-                val userId = SessionManagerFacade.currentUserId.value
-                if (userId != null) {
-                    val user = userRepo.getUserById(userId).first()
-                    if (user == null) {
-                        _uiState.update { it.copy(showRegistration = true) }
-                    } else {
-                        onSuccess(userId)
-                    }
-                }
-            }.onFailure { e ->
-                _uiState.update { it.copy(errors = mapOf("auth" to (e.message ?: "Authentication failed"))) }
-            }
-        }
-    }
-
     private fun validateFields(): Boolean {
         val current = _uiState.value
         val newErrors = mutableMapOf<String, String>()
