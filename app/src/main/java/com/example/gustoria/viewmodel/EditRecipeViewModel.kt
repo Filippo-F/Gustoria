@@ -206,7 +206,14 @@ class EditRecipeViewModel(
         }
 
         // Saving in DB
+        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
+            // Upload image
+            val publicImageUrl = if (currentState.imageUri.isNotBlank()) {
+                com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
+                    ?: currentState.imageUri
+            } else null
+
             val baseRecipe = originalRecipe ?: Recipe(
                 id = Uuid.random().toString(),
                 ownerId = SessionManagerFacade.currentUserId.value ?: ""
@@ -221,7 +228,7 @@ class EditRecipeViewModel(
                 servings = servings!!,
                 ingredients = currentState.ingredients,
                 steps = currentState.steps,
-                imageUri = currentState.imageUri.ifBlank { null }
+                imageUri = publicImageUrl
             )
 
             if (isEditMode) {

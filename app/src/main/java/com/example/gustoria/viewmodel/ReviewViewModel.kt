@@ -42,17 +42,24 @@ class ReviewViewModel(
             initialValue = null
         )
 
-    fun addReview(review: Review) {
+    fun addReview(review: Review, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            reviewRepository.addReview(review)
+            // Upload image
+            val publicPhotoUrl = review.photoUri?.let { uri ->
+                com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "reviews")
+            } ?: review.photoUri
 
-            // Fetch la ricetta per trovare il proprietario e notificarlo
-            recipeRepository.getRecipeById(review.recipeId).first()?.let { recipe ->
-                if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
+            // Create review
+            val finalReview = review.copy(photoUri = publicPhotoUrl)
+            reviewRepository.addReview(finalReview)
+
+            // Notifications
+            recipeRepository.getRecipeById(finalReview.recipeId).first()?.let { recipe ->
+                if (recipe.ownerId != (com.example.gustoria.data.auth.SessionManagerFacade.currentUserId.value ?: "")) {
                     notificationRepo.addNotification(
-                        Notification(
+                        com.example.gustoria.dataclass.Notification(
                             recipientUserId = recipe.ownerId,
-                            type = NotificationType.REVIEW_RECEIVED,
+                            type = com.example.gustoria.dataclass.NotificationType.REVIEW_RECEIVED,
                             title = "New review on your recipe",
                             message = "Someone reviewed \"${recipe.name}\".",
                             targetRecipeId = recipe.id
@@ -60,6 +67,8 @@ class ReviewViewModel(
                     )
                 }
             }
+            // Now go back to previous screen
+            onSuccess()
         }
     }
 

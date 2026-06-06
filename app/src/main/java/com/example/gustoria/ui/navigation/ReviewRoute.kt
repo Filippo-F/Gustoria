@@ -36,8 +36,9 @@ fun AddReviewDestination(
                 photoUri = photoUri.ifBlank { null },
                 timestamp = System.currentTimeMillis().toString()
             )
-            viewModel.addReview(review)
-            navActions.navigateBack()
+            // Pass navActions.navigateBack() so that it will be called
+            // ONLY when ViewModel finished to upload photo
+            viewModel.addReview(review, onSuccess = { navActions.navigateBack() })
         }
     )
 }
