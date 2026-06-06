@@ -13,7 +13,7 @@ enum class NotificationType {
 data class Notification(
     val id: String = Uuid.random().toString(),
     val recipientUserId: String = "",
-    val type: NotificationType = NotificationType.RECOMMENDED_RECIPE,
+    val type: String = NotificationType.RECOMMENDED_RECIPE.name,
     val title: String = "",
     val message: String = "",
     val targetRecipeId: String? = null,  // per navigare al tap
