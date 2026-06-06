@@ -2,7 +2,20 @@ package com.example.gustoria.ui.recipe
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,11 +23,41 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.SignalCellularAlt
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,6 +67,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,9 +79,11 @@ import com.example.gustoria.ui.navigation.GustoriaNavigationActions
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.Review
+import com.example.gustoria.dataclass.User
 import com.example.gustoria.R
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.review.components.ReviewCard
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun RecipeDetailsScreen(
@@ -52,6 +98,10 @@ fun RecipeDetailsScreen(
     val recipe by recipeViewModel.selectedRecipe.collectAsStateWithLifecycle()
     val reviews by remember(recipeId) { reviewViewModel.reviewsForRecipe(recipeId) }.collectAsStateWithLifecycle(initialValue = null)
 
+    val author by remember(recipe?.ownerId) {
+        recipe?.ownerId?.let { recipeViewModel.getAuthor(it) } ?: flowOf(null)
+    }.collectAsStateWithLifecycle(initialValue = null)
+
     val backAction = onBack ?: navActions::navigateBack
 
     LaunchedEffect(recipeId) {
@@ -61,6 +111,7 @@ fun RecipeDetailsScreen(
     recipe?.let { r ->
         RecipeDetailsContent(
             recipe = r,
+            author = author,
             reviews = reviews,
             isOwner = recipeViewModel.isOwnedByCurrentUser(r),
             isFavourite = isFavourite,
@@ -124,6 +175,7 @@ fun RecipeDetailsScreen(
 @Composable
 fun RecipeDetailsContent(
     recipe: Recipe,
+    author: User?,
     reviews: List<Review>?,
     isOwner: Boolean,
     isFavourite: Boolean,
@@ -314,6 +366,72 @@ fun RecipeDetailsContent(
                         text = "${String.format("%.1f", avgRating)} (${reviews?.size})",
                         iconTint = MaterialTheme.colorScheme.tertiary
                     )
+                }
+            }
+
+            // Author section
+            item {
+                author?.let { u ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                            .clickable { onProfileClick(u.internalId) }
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (u.profileImageUri != null) {
+                            AsyncImage(
+                                model = u.profileImageUri,
+                                contentDescription = "Author Profile Picture",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                                error = painterResource(R.drawable.guest_user_profile_pic),
+                                fallback = painterResource(R.drawable.guest_user_profile_pic)
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                val initials = (u.firstName.take(1) + u.lastName.take(1)).uppercase()
+                                Text(
+                                    text = initials,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column {
+                            Text(
+                                text = "Created by",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = u.nickname.ifBlank { "${u.firstName} ${u.lastName}" }.ifBlank { "Unknown chef" },
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 

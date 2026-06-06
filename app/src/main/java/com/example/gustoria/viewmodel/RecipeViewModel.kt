@@ -72,6 +72,8 @@ class RecipeViewModel(
         _selectedRecipeId.value = recipeId
     }
 
+    fun getAuthor(userId: String) = userRepo.getUserById(userId)
+
 
     fun updateNameQuery(query: String) =
         _filters.update { it.copy(nameQuery = query) }
