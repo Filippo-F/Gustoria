@@ -169,7 +169,7 @@ class RecipeViewModel(
                 notificationRepo.addNotification(
                     Notification(
                         recipientUserId = recipe.ownerId,
-                        type = NotificationType.RECIPE_DUPLICATED,
+                        type = NotificationType.RECIPE_DUPLICATED.name,
                         title = "Your recipe was duplicated!",
                         message = "\"${copy.name}\" was inspired by your recipe.",
                         targetRecipeId = copy.id

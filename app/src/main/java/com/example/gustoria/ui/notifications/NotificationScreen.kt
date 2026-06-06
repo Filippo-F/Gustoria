@@ -37,7 +37,7 @@ fun NotificationScreenPreview() {
             notifications = listOf(
                 Notification(
                     recipientUserId = "101",
-                    type = NotificationType.RECIPE_DUPLICATED,
+                    type = NotificationType.RECIPE_DUPLICATED.name,
                     title = "Your recipe was duplicated!",
                     message = "\"Pasta Carbonara (Copy)\" was created from your recipe.",
                     targetRecipeId = "recipe_123",
@@ -45,7 +45,7 @@ fun NotificationScreenPreview() {
                 ),
                 Notification(
                     recipientUserId = "101",
-                    type = NotificationType.REVIEW_RECEIVED,
+                    type = NotificationType.REVIEW_RECEIVED.name,
                     title = "New review on your recipe",
                     message = "Someone reviewed \"Lasagna Bolognese\".",
                     targetRecipeId = "recipe_456",
@@ -53,7 +53,7 @@ fun NotificationScreenPreview() {
                 ),
                 Notification(
                     recipientUserId = "101",
-                    type = NotificationType.RECOMMENDED_RECIPE,
+                    type = NotificationType.RECOMMENDED_RECIPE.name,
                     title = "Recommended for you",
                     message = "\"Vegan Tacos\" matches your taste preferences!",
                     targetRecipeId = "recipe_789",
@@ -173,9 +173,9 @@ private fun NotificationItem(
         MaterialTheme.colorScheme.surface
 
     val (icon, iconTint) = when (notification.type) {
-        NotificationType.RECIPE_DUPLICATED -> Icons.Filled.ContentCopy to MaterialTheme.colorScheme.tertiary
-        NotificationType.REVIEW_RECEIVED   -> Icons.Filled.RateReview  to MaterialTheme.colorScheme.primary
-        NotificationType.RECOMMENDED_RECIPE -> Icons.Filled.Recommend  to MaterialTheme.colorScheme.secondary
+        NotificationType.RECIPE_DUPLICATED.name  -> Icons.Filled.ContentCopy to MaterialTheme.colorScheme.tertiary
+        NotificationType.REVIEW_RECEIVED.name    -> Icons.Filled.RateReview  to MaterialTheme.colorScheme.primary
+        else                                     -> Icons.Filled.Recommend   to MaterialTheme.colorScheme.secondary
     }
 
     Row(

@@ -133,7 +133,7 @@ class OwnedProfileViewModel(
         editingPhone = false
     }
 
-    fun validateAndSave() {
+    fun validateAndSave(onSuccess: () -> Unit) {
         val draft = editableUser ?: return
 
         var currentNicknameError = ""
@@ -197,14 +197,21 @@ class OwnedProfileViewModel(
         )
 
         if (formIsValid) {
-            // Persistenza nel repo: aggiorna la fonte (?)
+            isEditing = false
+
             viewModelScope.launch {
-                userRepo.updateUser(draft.internalId, draft)
-                isEditing = false
+                val publicProfileUrl = draft.profileImageUri?.let { uri ->
+                    com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "profiles")
+                } ?: draft.profileImageUri
+
+                val finalDraft = draft.copy(profileImageUri = publicProfileUrl)
+                userRepo.updateUser(finalDraft.internalId, finalDraft)
+
+                // Upload complete, so close screen
+                onSuccess()
             }
         }
     }
-
     // Setters per la bozza
     fun setNickname(nickname: String) {
         editableUser = editableUser?.copy(nickname = nickname)

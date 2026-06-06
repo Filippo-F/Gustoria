@@ -80,7 +80,7 @@ class NotificationViewModel(
                         notificationRepo.addNotification(
                             Notification(
                                 recipientUserId = currentUserId,
-                                type = NotificationType.RECOMMENDED_RECIPE,
+                                type = NotificationType.RECOMMENDED_RECIPE.name,
                                 title = "Recommended for you",
                                 message = "\"${recipe.name}\" matches your taste preferences!",
                                 targetRecipeId = recipe.id

@@ -445,10 +445,8 @@ fun ProfileInfoScreen(
                     }
                     Button(
                         onClick = {
-                            viewModel.validateAndSave()
-                            if (viewModel.validation.isValid) {
-                                onSave()
-                            }
+                            // Pass onSave directly to viewmodel
+                            viewModel.validateAndSave(onSuccess = onSave)
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp)
