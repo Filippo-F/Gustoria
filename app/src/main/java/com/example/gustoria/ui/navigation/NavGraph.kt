@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
@@ -114,7 +115,11 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToCreateRecipe() {
-        navigateWithTabHandling(Create)
+        if (SessionManagerFacade.isLoggedIn) {
+            navigateWithTabHandling(Create)
+        } else {
+            navigateToActionRequirement("create a recipe")
+        }
     }
 
     fun navigateToEditRecipe(id: String) {
@@ -126,19 +131,35 @@ class GustoriaNavigationActions(private val navController: NavController) {
     }
 
     fun navigateToFavouriteFiltering() {
-        navigateWithTabHandling(Favourite.Filtering)
+        if (SessionManagerFacade.isLoggedIn) {
+            navigateWithTabHandling(Favourite.Filtering)
+        } else {
+            navigateToActionRequirement("filter your favorites")
+        }
     }
 
     fun navigateToFavouriteSaved() {
-        navigateWithTabHandling(Favourite)
+        if (SessionManagerFacade.isLoggedIn) {
+            navigateWithTabHandling(Favourite)
+        } else {
+            navigateToActionRequirement("view your favorites")
+        }
     }
 
     fun navigateToFavouriteTried() {
-        navigateWithTabHandling(Favourite.Tried)
+        if (SessionManagerFacade.isLoggedIn) {
+            navigateWithTabHandling(Favourite.Tried)
+        } else {
+            navigateToActionRequirement("view your tried recipes")
+        }
     }
 
     fun navigateToFavouriteCreated() {
-        navigateWithTabHandling(Favourite.Created)
+        if (SessionManagerFacade.isLoggedIn) {
+            navigateWithTabHandling(Favourite.Created)
+        } else {
+            navigateToActionRequirement("view your created recipes")
+        }
     }
 
     fun navigateToReviewsList(recipeId: String) {
