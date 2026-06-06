@@ -52,7 +52,7 @@ class ReviewViewModel(
                     notificationRepo.addNotification(
                         Notification(
                             recipientUserId = recipe.ownerId,
-                            type = NotificationType.REVIEW_RECEIVED,
+                            type = NotificationType.REVIEW_RECEIVED.name,
                             title = "New review on your recipe",
                             message = "Someone reviewed \"${recipe.name}\".",
                             targetRecipeId = recipe.id
