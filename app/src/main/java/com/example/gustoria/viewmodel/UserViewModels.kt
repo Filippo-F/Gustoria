@@ -276,6 +276,7 @@ class OwnedProfileViewModel(
 }
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OtherProfileViewModel(
     private val userRepo: UserRepoInterface,
     private val recipeRepo: RecipeRepoInterface,
@@ -299,8 +300,14 @@ class OtherProfileViewModel(
         .getLikesCountForOwner(viewedUserId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    val isFollowing: StateFlow<Boolean> = userRepo
-        .isFollowing(SessionManagerFacade.currentUserId.value ?: "", viewedUserId)
+    val isFollowing: StateFlow<Boolean> = SessionManagerFacade.currentUserId
+        .flatMapLatest { currentUid ->
+            if (currentUid != null && currentUid.isNotBlank()) {
+                userRepo.isFollowing(currentUid, viewedUserId)
+            } else {
+                flowOf(false)
+            }
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     var currentTab by mutableIntStateOf(0)
