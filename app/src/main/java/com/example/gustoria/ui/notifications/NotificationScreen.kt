@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.PersonAdd
 
 @MultiPreview
 @Preview
@@ -179,6 +180,7 @@ private fun NotificationItem(
         NotificationType.REVIEW_RECEIVED.name    -> Icons.Filled.RateReview  to MaterialTheme.colorScheme.primary
         NotificationType.RECIPE_SAVED.name       -> Icons.Filled.Favorite    to MaterialTheme.colorScheme.error
         NotificationType.REVIEW_LIKED.name       -> Icons.Filled.ThumbUp     to MaterialTheme.colorScheme.primary
+        NotificationType.NEW_FOLLOWER.name -> Icons.Filled.PersonAdd to MaterialTheme.colorScheme.tertiary
         else                                     -> Icons.Filled.Recommend   to MaterialTheme.colorScheme.secondary
     }
 

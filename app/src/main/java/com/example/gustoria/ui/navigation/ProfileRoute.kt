@@ -19,6 +19,7 @@ import com.example.gustoria.viewmodel.OtherProfileViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 data class OtherProfile(val userId: String)
 
