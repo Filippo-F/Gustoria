@@ -86,7 +86,7 @@ fun AuthBaseDialogue(
                         containerColor = MaterialTheme.colorScheme.secondary
                     )
                 ) {
-                    Text("Logged User (id:101)")
+                    Text("loggedUser (ID: 101)")
                 }
             }
 
