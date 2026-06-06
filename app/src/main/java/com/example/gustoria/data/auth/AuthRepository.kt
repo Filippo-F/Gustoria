@@ -48,15 +48,6 @@ class FirebaseAuthRepository(
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
-        return try {
-            auth.signInAnonymously().await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     override val isLoggedIn: Boolean
         get() = _currentUser.value != null
 

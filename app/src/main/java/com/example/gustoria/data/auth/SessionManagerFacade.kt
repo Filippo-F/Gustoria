@@ -21,7 +21,6 @@ import kotlinx.coroutines.tasks.await
 sealed interface AuthState {
     object Registering : AuthState
     object Authenticated : AuthState
-    object AuthAsGuest : AuthState
     object Unauthenticated : AuthState
 }
 
@@ -40,7 +39,7 @@ object SessionManagerFacade : AuthRepoInterface {
 
     private val _authState = MutableStateFlow<AuthState>(
         FirebaseAuth.getInstance().currentUser?.let {
-            if (it.isAnonymous) AuthState.AuthAsGuest else AuthState.Authenticated
+            if (it.isAnonymous) AuthState.Unauthenticated else AuthState.Authenticated
         } ?: AuthState.Unauthenticated
     )
     override val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -50,8 +49,7 @@ object SessionManagerFacade : AuthRepoInterface {
             val user = auth.currentUser
             _currentUserId.value = user?.uid
             _authState.value = when {
-                user == null -> AuthState.Unauthenticated
-                user.isAnonymous -> AuthState.AuthAsGuest
+                user == null || user.isAnonymous -> AuthState.Unauthenticated
                 else -> AuthState.Authenticated
             }
         }
@@ -84,21 +82,10 @@ object SessionManagerFacade : AuthRepoInterface {
         }
     }
 
-    override suspend fun signInAnonymous(context: Context): Result<Unit> {
-        return try {
-            _authState.value = AuthState.Registering
-            FirebaseAuth.getInstance().signInAnonymously().await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            _authState.value = AuthState.Unauthenticated
-            Result.failure(e)
-        }
-    }
-
     override suspend fun logOut() {
         FirebaseAuth.getInstance().signOut()
     }
 
     override val isLoggedIn: Boolean
-        get() = FirebaseAuth.getInstance().currentUser != null
+        get() = FirebaseAuth.getInstance().currentUser?.isAnonymous == false
 }
