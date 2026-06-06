@@ -66,7 +66,8 @@ fun NotificationScreenPreview() {
             onBack = {},
             onNotificationClick = {},
             onDeleteNotification = {},
-            onMarkAllRead = {}
+            onMarkAllRead = {},
+            onMarkRead = {}
         )
     }
 }
@@ -77,7 +78,8 @@ fun NotificationScreen(
     onBack: () -> Unit,
     onNotificationClick: (recipeId: String) -> Unit,
     onDeleteNotification: (notificationId: String) -> Unit,
-    onMarkAllRead: () -> Unit
+    onMarkAllRead: () -> Unit,
+    onMarkRead: (notificationId: String) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val unreadCount = notifications.count { !it.isRead }

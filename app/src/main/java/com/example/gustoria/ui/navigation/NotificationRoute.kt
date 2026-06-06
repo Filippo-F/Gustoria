@@ -29,6 +29,7 @@ fun NotificationsDestination(
             navActions.navigateToRecipeDetails(recipeId)
         },
         onDeleteNotification = viewModel::deleteNotification,
-        onMarkAllRead = viewModel::markAllAsRead
+        onMarkAllRead = viewModel::markAllAsRead,
+        onMarkRead = viewModel::markAsRead
     )
 }
