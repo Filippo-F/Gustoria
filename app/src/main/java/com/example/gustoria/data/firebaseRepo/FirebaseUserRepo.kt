@@ -40,7 +40,8 @@ class FirebaseUserRepo(
                         "recipe_beef_burger"
                     ),
                     triedRecipesIds = listOf("recipe_sushi_rolls", "recipe_beef_burger"),
-                    followingIds = listOf("202")
+                    followingIds = listOf("202"),
+                    numberOfFollowers = 1
                 ),
                 User(
                     internalId = "202",
@@ -58,7 +59,8 @@ class FirebaseUserRepo(
                         "recipe_margherita_pizza"
                     ),
                     triedRecipesIds = listOf("recipe_spaghetti_pomodoro"),
-                    followingIds = listOf("101")
+                    followingIds = listOf("101"),
+                    numberOfFollowers = 1
                 )
             )
 
