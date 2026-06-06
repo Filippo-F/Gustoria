@@ -15,7 +15,12 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class GustoriaApplication : Application() {
-    
+
+    companion object {
+        lateinit var instance: GustoriaApplication
+            private set
+    }
+
     // AppContainer instance used by the rest of classes to obtain dependencies
     
     lateinit var container: AppContainer
@@ -23,6 +28,7 @@ class GustoriaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         container = DefaultAppContainer(context = applicationContext)
         auth = Firebase.auth
         // Initialize Firebase data if necessary

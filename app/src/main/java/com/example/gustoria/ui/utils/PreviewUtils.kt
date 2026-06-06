@@ -58,6 +58,9 @@ object PreviewUtils {
         override fun isTried(userId: String, recipeId: String): Flow<Boolean> = flowOf(false)
         override suspend fun getUsersWhoHaveInFavourites(recipeId: String): List<User> = emptyList()
         override suspend fun getUsersWhoHaveTried(recipeId: String): List<User> = emptyList()
+        override suspend fun followUser(currentUserId: String, targetUserId: String) {}
+        override suspend fun unfollowUser(currentUserId: String, targetUserId: String) {}
+        override fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean> = flowOf(false)
     }
 
     fun createFakeReviewRepo() = object : ReviewRepoInterface {

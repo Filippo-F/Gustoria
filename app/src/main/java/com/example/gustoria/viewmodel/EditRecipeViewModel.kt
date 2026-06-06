@@ -210,9 +210,23 @@ class EditRecipeViewModel(
         viewModelScope.launch {
             // Upload image
             val publicImageUrl = if (currentState.imageUri.isNotBlank()) {
-                com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
-                    ?: currentState.imageUri
-            } else null
+                if (currentState.imageUri.startsWith("http")) {
+                    currentState.imageUri
+                } else {
+                    // Se c'è una vecchia immagine e la stiamo cambiando, eliminiamo la vecchia
+                    if (originalRecipe?.imageUri != null && originalRecipe?.imageUri != currentState.imageUri) {
+                        com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+                    }
+                    com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
+                        ?: currentState.imageUri
+                }
+            } else {
+                // Se l'utente ha rimosso l'immagine (uri vuota) ma prima c'era
+                if (originalRecipe?.imageUri != null) {
+                    com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+                }
+                null
+            }
 
             val baseRecipe = originalRecipe ?: Recipe(
                 id = Uuid.random().toString(),
@@ -263,7 +277,12 @@ class EditRecipeViewModel(
                 // 4. Elimina le notifiche collegate a questa ricetta
                 notificationRepo.deleteNotificationsForRecipe(recipeId)
 
-                // 5. Elimina la ricetta
+                // 5. Elimina l'immagine da Supabase
+                originalRecipe?.imageUri?.let {
+                    com.example.gustoria.data.utils.ImageUploader.deleteImage(it, "recipes")
+                }
+
+                // 6. Elimina la ricetta
                 recipeRepository.deleteRecipe(recipeId)
                 onSuccess()
             }

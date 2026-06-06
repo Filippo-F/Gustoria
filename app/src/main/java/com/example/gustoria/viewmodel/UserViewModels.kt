@@ -203,9 +203,21 @@ class OwnedProfileViewModel(
             isEditing = false
 
             viewModelScope.launch {
-                val publicProfileUrl = draft.profileImageUri?.let { uri ->
-                    com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "profiles")
-                } ?: draft.profileImageUri
+                val publicProfileUrl = if (draft.profileImageUri != null && !draft.profileImageUri.startsWith("http")) {
+                    // Se stiamo caricando una nuova immagine, eliminiamo la vecchia
+                    user.value?.profileImageUri?.let { oldUrl ->
+                        com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                    }
+                    com.example.gustoria.data.utils.ImageUploader.uploadImage(draft.profileImageUri, "profiles")
+                } else if (draft.profileImageUri == null) {
+                    // Se l'immagine è stata rimossa
+                    user.value?.profileImageUri?.let { oldUrl ->
+                        com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                    }
+                    null
+                } else {
+                    draft.profileImageUri
+                }
 
                 val finalDraft = draft.copy(profileImageUri = publicProfileUrl)
                 userRepo.updateUser(finalDraft.internalId, finalDraft)

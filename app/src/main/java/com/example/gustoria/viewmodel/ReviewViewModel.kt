@@ -100,6 +100,19 @@ class ReviewViewModel(
         }
     }
 
+    fun deleteReview(reviewId: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            // Otteniamo la review per trovare l'URL dell'immagine
+            reviewRepository.getReviewById(reviewId).first()?.let { review ->
+                review.photoUri?.let { url ->
+                    com.example.gustoria.data.utils.ImageUploader.deleteImage(url, "reviews")
+                }
+            }
+            reviewRepository.deleteReview(reviewId)
+            onSuccess()
+        }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
