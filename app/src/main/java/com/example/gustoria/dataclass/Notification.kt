@@ -5,11 +5,11 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 enum class NotificationType {
-    RECIPE_DUPLICATED,   // qualcuno ha duplicato una tua ricetta
-    REVIEW_RECEIVED,     // qualcuno ha recensito una tua ricetta
-    RECOMMENDED_RECIPE,   // ricetta consigliata
-    RECIPE_SAVED,      // (tua) ricetta salvata da un altro utente
-    REVIEW_LIKED,      // like ad una tua review
+    RECIPE_DUPLICATED, // someone duplicated your recipe
+    REVIEW_RECEIVED, // someone reviewed your recipe
+    RECOMMENDED_RECIPE, // recommended recipe
+    RECIPE_SAVED, // your recipe was saved by another user
+    REVIEW_LIKED, // someone liked your review
     NEW_FOLLOWER
 }
 
@@ -20,7 +20,7 @@ data class Notification(
     val type: String = NotificationType.RECOMMENDED_RECIPE.name,
     val title: String = "",
     val message: String = "",
-    val targetRecipeId: String? = null,  // per navigare al tap
+    val targetRecipeId: String? = null, // for navigation on tap
     val targetUserId: String? = null,
     @get:PropertyName("isRead")
     @set:PropertyName("isRead")

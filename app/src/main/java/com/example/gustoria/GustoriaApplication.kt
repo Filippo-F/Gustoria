@@ -31,7 +31,6 @@ class GustoriaApplication : Application() {
         instance = this
         container = DefaultAppContainer(context = applicationContext)
         auth = Firebase.auth
-        // Initialize Firebase data if necessary
         MainScope().launch(Dispatchers.IO) {
             (container.userRepository as? FirebaseUserRepo)?.initializeData()
             (container.recipeRepository as? FirebaseRecipeRepo)?.initializeData()

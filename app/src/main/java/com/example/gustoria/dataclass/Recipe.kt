@@ -25,6 +25,6 @@ data class Recipe(
     val tags: List<String> = emptyList(), // per dietary/cuisine/type
     val caloriesKcal: Int = 0,
 
-    // IDs degli utenti che hanno aggiunto questa ricetta ai preferiti (= like)
+    // IDs of users who have added this recipe to favorites (likes)
     val likedByUserIds: List<String> = emptyList(),
 )

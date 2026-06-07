@@ -24,7 +24,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     var unitMeasure by mutableIntStateOf(prefs.getInt("unit_measure", 0))
         private set
 
-    // TODO: Account preferences (Awaiting Firestore Integration) ---
+    // TODO: Account preferences (Awaiting Firestore Integration)
     // Default to 'true' on fresh install, but eventually overwritten
     // when the user logs in and their Firestore profile is fetched.
     var pushNotificationsEnabled by mutableStateOf(true)

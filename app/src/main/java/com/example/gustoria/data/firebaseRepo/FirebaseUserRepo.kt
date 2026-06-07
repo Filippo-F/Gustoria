@@ -31,7 +31,6 @@ class FirebaseUserRepo(
                     phoneNumber = "+39 123 4567890",
                     cookingRole = CookingRole.PROFESSIONAL_CHEF,
                     cuisinePreferences = listOf("Italian", "Mediterranean", "French"),
-                    dietaryRestrictions = listOf("None"),
                     favoriteIngredients = listOf("Tomato", "Basil", "Extra Virgin Olive Oil", "Parmesan"),
                     favouriteRecipesIds = listOf(
                         "recipe_lasagna_bolognese",
@@ -52,7 +51,6 @@ class FirebaseUserRepo(
                     phoneNumber = "+39 987 6543210",
                     cookingRole = CookingRole.CONTENT_CREATOR,
                     cuisinePreferences = listOf("Japanese", "Thai", "American"),
-                    dietaryRestrictions = listOf("None"),
                     favoriteIngredients = listOf("Salmon", "Avocado", "Soy Sauce", "Rice"),
                     favouriteRecipesIds = listOf(
                         "recipe_spaghetti_pomodoro",

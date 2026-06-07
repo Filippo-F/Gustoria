@@ -23,7 +23,7 @@ class FirebaseReviewRepo(
             val now = System.currentTimeMillis()
             val placeholderReviews = listOf(
 
-                // 4 recensioni per recipe_spaghetti_pomodoro (owned by 101)
+                // 4 reviews for recipe_spaghetti_pomodoro (owned by 101)
                 Review(
                     id = "review_spaghetti_1",
                     userId = "202",
@@ -60,7 +60,7 @@ class FirebaseReviewRepo(
                     timestamp = (now - 86400000).toString()
                 ),
 
-                // 4 recensioni per recipe_sushi_rolls (owned by 202)
+                // 4 reviews for recipe_sushi_rolls (owned by 202)
                 Review(
                     id = "review_sushi_1",
                     userId = "101",
@@ -97,7 +97,7 @@ class FirebaseReviewRepo(
                     timestamp = (now - 3600000).toString()
                 ),
 
-                // Recensioni extra per altre ricette
+                // Extra reviews for other recipes
                 Review(
                     id = "review_pizza_1",
                     userId = "202",

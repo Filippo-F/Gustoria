@@ -42,7 +42,7 @@ import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 
-// categorie mostrate nella home (explore) - sezione 2
+// Home categories shown in section 2 (Explore)
 private val homeCategories = listOf(
     "All", "Quick Meals", "Vegan", "Italian", "Gluten-Free", "Desserts", "Vegetarian"
 )
@@ -131,7 +131,7 @@ fun HomeScreen(
             )
         }
 
-        // sezione 1: "Recommended For You"
+        // Section 1: "Recommended For You"
         item {
             HomeSectionHeader(title = "RECOMMENDED FOR YOU")
             Spacer(Modifier.height(8.dp))
@@ -151,7 +151,7 @@ fun HomeScreen(
             Spacer(Modifier.height(16.dp))
         }
 
-        // sezione 2: "Explore Categories"
+        // Section 2: "Explore Categories"
         item {
             HomeSectionHeader(title = "EXPLORE CATEGORIES")
             Spacer(Modifier.height(8.dp))
@@ -162,7 +162,7 @@ fun HomeScreen(
             Spacer(Modifier.height(16.dp))
         }
 
-        // sezione 3: "Recent Creations"
+        // Section 3: "Recent Creations"
         item {
             HomeSectionHeader(title = "RECENT CREATIONS")
             Spacer(Modifier.height(8.dp))
