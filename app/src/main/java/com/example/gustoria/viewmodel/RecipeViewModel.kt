@@ -154,8 +154,11 @@ class RecipeViewModel(
             else userRepo.addTriedRecipe(userId, recipeId)
         }
     }
-    fun deleteRecipe(recipeId: String) {
+    fun deleteRecipe(recipeId: String, onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
+            // 0. Get recipe to find image URL
+            val recipe = recipeRepository.getRecipeById(recipeId).first()
+
             // 1. Delete associated reviews
             val reviews = reviewRepository.getReviewsByRecipe(recipeId).first()
             reviews.forEach { reviewRepository.deleteReview(it.id) }
@@ -174,9 +177,15 @@ class RecipeViewModel(
             // 4. Delete associated notifications
             notificationRepo.deleteNotificationsForRecipe(recipeId)
 
-            // 5. Delete recipe
+            // 5. Delete image from storage
+            recipe?.imageUri?.let {
+                com.example.gustoria.data.utils.ImageUploader.deleteImage(it, "recipes")
+            }
+
+            // 6. Delete recipe
             recipeRepository.deleteRecipe(recipeId)
             selectRecipe(null)
+            onSuccess()
         }
     }
 

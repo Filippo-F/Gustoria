@@ -11,11 +11,13 @@ import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(
@@ -24,21 +26,31 @@ class HomeViewModel(
 ) : ViewModel() {
 
     // All recipes
-    private val allRecipes: StateFlow<List<Recipe>> = recipeRepository.getAllRecipes()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val allRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
+        .flatMapLatest { _ ->
+            recipeRepository.getAllRecipes()
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // Recommended recipes
-    val recommendedRecipes: StateFlow<List<Recipe>> = allRecipes
-        .map { list -> list.filter { it.ownerId != (SessionManagerFacade.currentUserId.value ?: "") } }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+    val recommendedRecipes: StateFlow<List<Recipe>> = combine(
+        allRecipes,
+        SessionManagerFacade.currentUserId
+    ) { recipes, userId ->
+        recipes.filter { it.ownerId != (userId ?: "") }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     // User's recipes
-    val myRecipes: StateFlow<List<Recipe>> = recipeRepository
-        .getRecipeByOwner(SessionManagerFacade.currentUserId.value ?: "")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val myRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
+        .flatMapLatest { userId ->
+            recipeRepository.getRecipeByOwner(userId ?: "")
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

@@ -13,13 +13,17 @@ import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class NotificationViewModel(
     private val notificationRepo: NotificationRepoInterface,
     private val recipeRepo: RecipeRepoInterface,
@@ -29,22 +33,25 @@ class NotificationViewModel(
     private val currentUserId: String
         get() = SessionManagerFacade.currentUserId.value ?: ""
 
-    val notifications: StateFlow<List<Notification>> =
-        notificationRepo.getNotificationsForUser(currentUserId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
+    // (Updated when user is logged in)
+    val notifications: StateFlow<List<Notification>> = SessionManagerFacade.currentUserId
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(emptyList())
+            else notificationRepo.getNotificationsForUser(uid)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
-    val unreadCount: StateFlow<Int> =
-        notificationRepo.getNotificationsForUser(currentUserId)
-            .map { list -> list.count { !it.isRead } }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = 0
-            )
+    val unreadCount: StateFlow<Int> = notifications
+        .map { list -> list.count { !it.isRead } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 0
+        )
 
     init {
         generateRecommendedNotifications()
