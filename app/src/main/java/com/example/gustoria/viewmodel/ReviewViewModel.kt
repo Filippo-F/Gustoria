@@ -20,6 +20,9 @@ import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class ReviewViewModel(
     private val reviewRepository: ReviewRepoInterface,
@@ -71,8 +74,13 @@ class ReviewViewModel(
         }
     }
 
+    // (Updated when user login)
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun isLikedFlow(reviewId: String): Flow<Boolean> =
-        reviewRepository.isLiked(SessionManagerFacade.currentUserId.value ?: "", reviewId)
+        SessionManagerFacade.currentUserId.flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(false)
+            else reviewRepository.isLiked(uid, reviewId)
+        }
 
     fun toggleLike(reviewId: String) {
         viewModelScope.launch {
