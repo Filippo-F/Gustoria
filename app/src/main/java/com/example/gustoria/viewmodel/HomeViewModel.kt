@@ -25,7 +25,7 @@ class HomeViewModel(
     private val userRepository: UserRepoInterface
 ) : ViewModel() {
 
-    // All recipes
+    //all
     @OptIn(ExperimentalCoroutinesApi::class)
     private val allRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
         .flatMapLatest { _ ->
@@ -33,7 +33,7 @@ class HomeViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Recommended recipes
+    // Recommended
     val recommendedRecipes: StateFlow<List<Recipe>> = combine(
         allRecipes,
         SessionManagerFacade.currentUserId
@@ -45,7 +45,6 @@ class HomeViewModel(
         initialValue = emptyList()
     )
 
-    // User's recipes
     @OptIn(ExperimentalCoroutinesApi::class)
     val myRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
         .flatMapLatest { userId ->
@@ -57,7 +56,6 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
-    // Selected category
     private val _selectedCategory = MutableStateFlow("All")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
 

@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
 
-            // Map the Slider (0.0f - 1.0f) to a real font scale (e.g., 85% to 130% size)
             val appFontScale = 0.85f + (settingsViewModel.fontSize * 0.45f)
 
             // Grab the phone's default screen density

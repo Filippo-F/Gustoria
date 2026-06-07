@@ -49,10 +49,10 @@ fun FeaturedSearchScreen(
         ThreeItemTopNavbar(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             title = "GUSTORIA",
-            showBackButton = false // Hidden because this is a main bottom tab
+            showBackButton = false
         )
 
-        // Mock Search Bar (Routes to the real filter screen)
+        // Mock search bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()

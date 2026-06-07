@@ -93,7 +93,7 @@ fun AppearanceAndDisplaySection(viewModel: SettingsViewModel) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        // Macro section title
+
         Text(
             text = "Appearance & Display",
             style = MaterialTheme.typography.headlineMedium,
@@ -145,7 +145,7 @@ fun AppearanceAndDisplaySection(viewModel: SettingsViewModel) {
                 Slider(
                     value = viewModel.fontSize,
                     onValueChange = { viewModel.updateFontSize(it) },
-                    onValueChangeFinished = { viewModel.saveFontSizeToDisk() }, // Saves ONLY when finger lifts
+                    onValueChangeFinished = { viewModel.saveFontSizeToDisk() }, 
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                     colors = SliderDefaults.colors(
                         thumbColor = MaterialTheme.colorScheme.primary,
