@@ -107,18 +107,19 @@ fun HomeScreen(
                     }
                 },
                 trailingContent = {
-                    BadgedBox(
-                        badge = {
-                            if (unreadCount > 0) {
-                                Badge {
-                                    Text(
-                                        text = if (unreadCount > 99) "99+" else unreadCount.toString()
-                                    )
+                    IconButton(onClick = onNavigateToNotifications) {
+                        BadgedBox(
+                            badge = {
+                                if (unreadCount > 0) {
+                                    Badge {
+                                        Text(
+                                            text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
                                 }
                             }
-                        }
-                    ) {
-                        IconButton(onClick = onNavigateToNotifications) {
+                        ) {
                             Icon(
                                 imageVector = Icons.Outlined.Notifications,
                                 contentDescription = "Notifications",
