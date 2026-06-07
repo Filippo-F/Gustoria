@@ -155,8 +155,7 @@ fun RecipeDetailsScreen(
                 }
             },
             onDeleteClick = {
-                recipeViewModel.deleteRecipe(r.id)
-                backAction()
+                recipeViewModel.deleteRecipe(r.id, onSuccess = backAction)
             },
             onDuplicateClick = {
                 if (SessionManagerFacade.isLoggedIn) {
