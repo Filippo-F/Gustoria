@@ -198,7 +198,8 @@ class RecipeViewModel(
                 id = newId,
                 ownerId = SessionManagerFacade.currentUserId.value ?: "",
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name
-                else "${recipe.name} (Copy)"
+                else "${recipe.name} (Copy)",
+                imageUri = null // Reset image for the duplicated recipe
             )
             recipeRepository.addRecipe(copy)
 

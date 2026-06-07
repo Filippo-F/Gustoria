@@ -149,9 +149,24 @@ class RecipeCollectionViewModel(
             val duplicatedRecipe = recipe.copy(
                 id = newId,
                 ownerId = userId,
-                name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)"
+                name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)",
+                imageUri = null // Reset image for the duplicated recipe
             )
             repo.addRecipe(duplicatedRecipe)
+
+            // Notify original recipe owner
+            if (recipe.ownerId != userId) {
+                notificationRepo.addNotification(
+                    com.example.gustoria.dataclass.Notification(
+                        recipientUserId = recipe.ownerId,
+                        type = com.example.gustoria.dataclass.NotificationType.RECIPE_DUPLICATED.name,
+                        title = "Your recipe was duplicated!",
+                        message = "\"${duplicatedRecipe.name}\" was inspired by your recipe.",
+                        targetRecipeId = duplicatedRecipe.id
+                    )
+                )
+            }
+
             onSuccess(newId)
         }
     }
