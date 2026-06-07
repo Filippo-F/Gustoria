@@ -105,9 +105,7 @@ class NotificationViewModel(
 
     fun markAllAsRead() {
         viewModelScope.launch {
-            notifications.value
-                .filter { !it.isRead }
-                .forEach { notificationRepo.markAsRead(it.id) }
+            notificationRepo.markAllAsRead(currentUserId)
         }
     }
 

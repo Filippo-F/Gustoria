@@ -1,5 +1,6 @@
 package com.example.gustoria.dataclass
 
+import com.google.firebase.firestore.PropertyName
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -21,6 +22,8 @@ data class Notification(
     val message: String = "",
     val targetRecipeId: String? = null,  // per navigare al tap
     val targetUserId: String? = null,
-    val isRead: Boolean = false,
+    @get:PropertyName("isRead")
+    @set:PropertyName("isRead")
+    var isRead: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )
