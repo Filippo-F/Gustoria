@@ -484,15 +484,29 @@ fun EditRecipeScreen(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = {
-                        onRevert()
-                        onBack()
-                    }) {
+                    TextButton(
+                        onClick = {
+                            onRevert()
+                            onBack()
+                        },
+                        enabled = !state.isSubmitting
+                    ) {
                         Text("Cancel")
                     }
                     Spacer(Modifier.width(16.dp))
-                    Button(onClick = onSave) {
-                        Text("Save Recipe")
+                    Button(
+                        onClick = onSave,
+                        enabled = !state.isSubmitting
+                    ) {
+                        if (state.isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Save Recipe")
+                        }
                     }
                 }
 

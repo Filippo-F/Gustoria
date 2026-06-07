@@ -25,7 +25,10 @@ fun AddReviewDestination(
     navActions: GustoriaNavigationActions,
     viewModel: ReviewViewModel
 ) {
+    val isSubmitting by viewModel.isSubmitting.collectAsStateWithLifecycle()
+
     ReviewFormScreen(
+        isSubmitting = isSubmitting,
         onBack = navActions::navigateBack,
         onPostReview = { description, rating, photoUri ->
             val review = Review(

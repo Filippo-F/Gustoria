@@ -95,6 +95,9 @@ class OwnedProfileViewModel(
     var favoriteIngredientsText by mutableStateOf("")
         private set
 
+    var isSubmitting by mutableStateOf(false)
+        private set
+
     // State for individual field editing in ProfileInfoScreen
     var editingNickname by mutableStateOf(false)
         private set
@@ -138,6 +141,7 @@ class OwnedProfileViewModel(
 
     fun validateAndSave(onSuccess: () -> Unit) {
         val draft = editableUser ?: return
+        if (isSubmitting) return
 
         var currentNicknameError = ""
         var currentFirstNameError = ""
@@ -201,29 +205,34 @@ class OwnedProfileViewModel(
 
         if (formIsValid) {
             isEditing = false
+            isSubmitting = true
 
             viewModelScope.launch {
-                val publicProfileUrl = if (draft.profileImageUri != null && !draft.profileImageUri.startsWith("http")) {
-                    // Delete old image if a new one is uploaded
-                    user.value?.profileImageUri?.let { oldUrl ->
-                        com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                try {
+                    val publicProfileUrl = if (draft.profileImageUri != null && !draft.profileImageUri.startsWith("http")) {
+                        // Delete old image if a new one is uploaded
+                        user.value?.profileImageUri?.let { oldUrl ->
+                            com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                        }
+                        com.example.gustoria.data.utils.ImageUploader.uploadImage(draft.profileImageUri, "profiles")
+                    } else if (draft.profileImageUri == null) {
+                        // Delete image if it was removed
+                        user.value?.profileImageUri?.let { oldUrl ->
+                            com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                        }
+                        null
+                    } else {
+                        draft.profileImageUri
                     }
-                    com.example.gustoria.data.utils.ImageUploader.uploadImage(draft.profileImageUri, "profiles")
-                } else if (draft.profileImageUri == null) {
-                    // Delete image if it was removed
-                    user.value?.profileImageUri?.let { oldUrl ->
-                        com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
-                    }
-                    null
-                } else {
-                    draft.profileImageUri
+
+                    val finalDraft = draft.copy(profileImageUri = publicProfileUrl)
+                    userRepo.updateUser(finalDraft.internalId, finalDraft)
+
+                    // Upload complete, so close screen
+                    onSuccess()
+                } finally {
+                    isSubmitting = false
                 }
-
-                val finalDraft = draft.copy(profileImageUri = publicProfileUrl)
-                userRepo.updateUser(finalDraft.internalId, finalDraft)
-
-                // Upload complete, so close screen
-                onSuccess()
             }
         }
     }
