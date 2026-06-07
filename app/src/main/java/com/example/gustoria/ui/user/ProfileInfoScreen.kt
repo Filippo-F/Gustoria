@@ -448,10 +448,19 @@ fun ProfileInfoScreen(
                             // Pass onSave directly to viewmodel
                             viewModel.validateAndSave(onSuccess = onSave)
                         },
+                        enabled = !viewModel.isSubmitting,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Save")
+                        if (viewModel.isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Save")
+                        }
                     }
                 }
 

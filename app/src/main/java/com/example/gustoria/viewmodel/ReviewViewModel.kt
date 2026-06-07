@@ -23,12 +23,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class ReviewViewModel(
     private val reviewRepository: ReviewRepoInterface,
     private val recipeRepository: RecipeRepoInterface,
     private val notificationRepo: NotificationRepoInterface
 ) : ViewModel() {
+
+    private val _isSubmitting = MutableStateFlow(false)
+    val isSubmitting = _isSubmitting.asStateFlow()
 
     fun reviewsForRecipe(recipeId: String): StateFlow<List<Review>?> =
         reviewRepository.getReviewsByRecipe(recipeId).stateIn(
@@ -45,32 +51,39 @@ class ReviewViewModel(
         )
 
     fun addReview(review: Review, onSuccess: () -> Unit) {
+        if (_isSubmitting.value) return // Blocca se un invio è già in corso
+
         viewModelScope.launch {
-            // Upload image
-            val publicPhotoUrl = review.photoUri?.let { uri ->
-                com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "reviews")
-            } ?: review.photoUri
+            _isSubmitting.value = true
+            try {
+                // Upload image
+                val publicPhotoUrl = review.photoUri?.let { uri ->
+                    com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "reviews")
+                } ?: review.photoUri
 
-            // Create review
-            val finalReview = review.copy(photoUri = publicPhotoUrl)
-            reviewRepository.addReview(finalReview)
+                // Create review
+                val finalReview = review.copy(photoUri = publicPhotoUrl)
+                reviewRepository.addReview(finalReview)
 
-            // Notifications
-            recipeRepository.getRecipeById(finalReview.recipeId).first()?.let { recipe ->
-                if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
-                    notificationRepo.addNotification(
-                        Notification(
-                            recipientUserId = recipe.ownerId,
-                            type = NotificationType.REVIEW_RECEIVED.name,
-                            title = "New review on your recipe",
-                            message = "Someone reviewed \"${recipe.name}\".",
-                            targetRecipeId = recipe.id
+                // Notifications
+                recipeRepository.getRecipeById(finalReview.recipeId).first()?.let { recipe ->
+                    if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
+                        notificationRepo.addNotification(
+                            Notification(
+                                recipientUserId = recipe.ownerId,
+                                type = NotificationType.REVIEW_RECEIVED.name,
+                                title = "New review on your recipe",
+                                message = "Someone reviewed \"${recipe.name}\".",
+                                targetRecipeId = recipe.id
+                            )
                         )
-                    )
+                    }
                 }
+                // Now go back to previous screen
+                onSuccess()
+            } finally {
+                _isSubmitting.value = false
             }
-            // Now go back to previous screen
-            onSuccess()
         }
     }
 

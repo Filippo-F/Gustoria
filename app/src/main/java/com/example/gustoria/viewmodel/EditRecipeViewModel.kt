@@ -37,7 +37,8 @@ data class EditRecipeUiState(
     val ingredients: List<RecipeIngredient> = listOf(RecipeIngredient()),
     val steps: List<String> = listOf(""),
     val errors: Map<String, String> = emptyMap(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isSubmitting: Boolean = false
 )
 
 class EditRecipeViewModel(
@@ -176,6 +177,8 @@ class EditRecipeViewModel(
     @OptIn(ExperimentalUuidApi::class)
     fun saveRecipe(onSuccess: () -> Unit) {
         val currentState = _state.value
+        if (currentState.isSubmitting) return
+
         val errors = mutableMapOf<String, String>()
 
         // Validation
@@ -206,53 +209,57 @@ class EditRecipeViewModel(
         }
 
         // Saving in DB
-        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(isSubmitting = true) }
         viewModelScope.launch {
-            // Upload image
-            val publicImageUrl = if (currentState.imageUri.isNotBlank()) {
-                if (currentState.imageUri.startsWith("http")) {
-                    currentState.imageUri
+            try {
+                // Upload image
+                val publicImageUrl = if (currentState.imageUri.isNotBlank()) {
+                    if (currentState.imageUri.startsWith("http")) {
+                        currentState.imageUri
+                    } else {
+                        // Se c'è una vecchia immagine e la stiamo cambiando, eliminiamo la vecchia
+                        if (originalRecipe?.imageUri != null && originalRecipe?.imageUri != currentState.imageUri) {
+                            com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+                        }
+                        com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
+                            ?: currentState.imageUri
+                    }
                 } else {
-                    // Se c'è una vecchia immagine e la stiamo cambiando, eliminiamo la vecchia
-                    if (originalRecipe?.imageUri != null && originalRecipe?.imageUri != currentState.imageUri) {
+                    // Se l'utente ha rimosso l'immagine (uri vuota) ma prima c'era
+                    if (originalRecipe?.imageUri != null) {
                         com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
                     }
-                    com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
-                        ?: currentState.imageUri
+                    null
                 }
-            } else {
-                // Se l'utente ha rimosso l'immagine (uri vuota) ma prima c'era
-                if (originalRecipe?.imageUri != null) {
-                    com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+
+                val baseRecipe = originalRecipe ?: Recipe(
+                    id = Uuid.random().toString(),
+                    ownerId = SessionManagerFacade.currentUserId.value ?: ""
+                )
+
+                val updatedRecipe = baseRecipe.copy(
+                    name = currentState.name,
+                    description = currentState.description,
+                    cost = currentState.cost,
+                    difficulty = currentState.difficulty,
+                    cookingTimeMinutes = cookingTime!!,
+                    servings = servings!!,
+                    ingredients = currentState.ingredients,
+                    steps = currentState.steps,
+                    imageUri = publicImageUrl
+                )
+
+                if (isEditMode) {
+                    recipeRepository.updateRecipe(updatedRecipe.id, updatedRecipe)
+                } else {
+                    recipeRepository.addRecipe(updatedRecipe)
                 }
-                null
+
+                // Report to UI to go back (close screen)
+                onSuccess()
+            } finally {
+                _state.update { it.copy(isSubmitting = false) }
             }
-
-            val baseRecipe = originalRecipe ?: Recipe(
-                id = Uuid.random().toString(),
-                ownerId = SessionManagerFacade.currentUserId.value ?: ""
-            )
-
-            val updatedRecipe = baseRecipe.copy(
-                name = currentState.name,
-                description = currentState.description,
-                cost = currentState.cost,
-                difficulty = currentState.difficulty,
-                cookingTimeMinutes = cookingTime!!,
-                servings = servings!!,
-                ingredients = currentState.ingredients,
-                steps = currentState.steps,
-                imageUri = publicImageUrl
-            )
-
-            if (isEditMode) {
-                recipeRepository.updateRecipe(updatedRecipe.id, updatedRecipe)
-            } else {
-                recipeRepository.addRecipe(updatedRecipe)
-            }
-
-            // Report to UI to go back (close screen)
-            onSuccess()
         }
     }
 

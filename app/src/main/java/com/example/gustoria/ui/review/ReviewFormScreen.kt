@@ -30,6 +30,7 @@ import com.example.gustoria.ui.ThreeItemTopNavbar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewFormScreen(
+    isSubmitting: Boolean = false,
     onBack: () -> Unit,
     onPostReview: (description: String, rating: Float, photoUri: String) -> Unit
 ) {
@@ -189,9 +190,18 @@ fun ReviewFormScreen(
                     onClick = {
                         onPostReview(description, rating, photoUri)
                     },
+                    enabled = !isSubmitting,
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("POST")
+                    if (isSubmitting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("POST")
+                    }
                 }
             }
         }
