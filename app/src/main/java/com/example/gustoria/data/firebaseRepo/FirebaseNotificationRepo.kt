@@ -46,6 +46,21 @@ class FirebaseNotificationRepo(
         notificationsCollection.document(notificationId).update("isRead", true).await()
     }
 
+    override suspend fun markAllAsRead(userId: String) {
+        val snapshot = notificationsCollection
+            .whereEqualTo("recipientUserId", userId)
+            .whereEqualTo("isRead", false)
+            .get().await()
+
+        if (!snapshot.isEmpty) {
+            firestore.runBatch { batch ->
+                snapshot.documents.forEach { doc ->
+                    batch.update(doc.reference, "isRead", true)
+                }
+            }.await()
+        }
+    }
+
     override suspend fun deleteNotification(notificationId: String) {
         notificationsCollection.document(notificationId).delete().await()
     }

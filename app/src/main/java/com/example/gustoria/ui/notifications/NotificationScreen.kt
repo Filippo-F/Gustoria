@@ -155,10 +155,7 @@ fun NotificationScreen(
                 items(notifications, key = { it.id }) { notification ->
                     NotificationItem(
                         notification = notification,
-                        onClick = {
-                            notification.targetRecipeId?.let { onNotificationClick(notification) }
-                                ?: onNotificationClick(notification)   // per NEW_FOLLOWER senza recipeId
-                        },
+                        onClick = { onNotificationClick(notification) },
                         onDelete = { onDeleteNotification(notification.id) }
                     )
                 }
