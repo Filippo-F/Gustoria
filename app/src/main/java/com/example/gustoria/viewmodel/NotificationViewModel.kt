@@ -65,7 +65,9 @@ class NotificationViewModel(
                     user.cuisinePreferences +
                             user.dietaryRestrictions +
                             user.favoriteIngredients
-                    ).map { it.lowercase() }.toSet()
+                    ).map { it.lowercase() }
+                .filter { it.isNotBlank() }
+                .toSet()
 
             if (userPrefs.isEmpty()) return@launch
 
@@ -74,12 +76,22 @@ class NotificationViewModel(
             allRecipes
                 .filter { recipe -> recipe.ownerId != currentUserId }
                 .forEach { recipe ->
-                    val recipeTags = recipe.tags.map { it.lowercase() }
-                    val matches = recipeTags.any { tag ->
+                    // prendo tutti i campi
+                    val recipeAttributes = buildList {
+                        add(recipe.cuisineType)
+                        add(recipe.mealType)
+                        addAll(recipe.dietaryTags)
+                        addAll(recipe.tags)
+                        addAll(recipe.ingredients.map { it.name })
+                    }.map { it.lowercase() }
+                        .filter { it.isNotBlank() }
+
+                    val matches = recipeAttributes.any { attr ->
                         userPrefs.any { pref ->
-                            tag.contains(pref) || pref.contains(tag)
+                            attr.contains(pref) || pref.contains(attr)
                         }
                     }
+
                     if (matches) {
                         notificationRepo.addNotification(
                             Notification(
