@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringArrayResource
+import com.example.gustoria.R
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.recipe.components.RecipeCard
@@ -70,6 +72,9 @@ private fun RecipeCollectionListContent(
     onToggleDifficulty: (String) -> Unit,
     onOpenFilters: () -> Unit
 ) {
+    val allCosts = stringArrayResource(R.array.recipe_costs).toList()
+    val allDifficulties = stringArrayResource(R.array.recipe_difficulties).toList()
+
     var showDeleteDialog by remember { mutableStateOf(false) }
     var idToDelete by remember { mutableStateOf("") }
     var nameToDelete by remember { mutableStateOf("") }
@@ -171,8 +176,8 @@ private fun RecipeCollectionListContent(
                         selected = true,
                         onClick = {
                             when (label) {
-                                in ALL_COSTS -> onToggleCost(label)
-                                in ALL_DIFFICULTIES -> onToggleDifficulty(label)
+                                in allCosts -> onToggleCost(label)
+                                in allDifficulties -> onToggleDifficulty(label)
                                 filters.nameQuery -> onNameQueryChange("")
                                 filters.ingredientQuery -> onIngredientQueryChange("")
                             }

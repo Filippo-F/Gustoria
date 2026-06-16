@@ -16,8 +16,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gustoria.ui.recipe.ALL_COSTS
-import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
+import androidx.compose.ui.res.stringArrayResource
+import com.example.gustoria.R
 
 @Composable
 fun RecipeFilterSection(
@@ -32,6 +32,9 @@ fun RecipeFilterSection(
     onResetFilters: () -> Unit,
     showResetButton: Boolean = true
 ) {
+    val allCosts = stringArrayResource(R.array.recipe_costs).toList()
+    val allDifficulties = stringArrayResource(R.array.recipe_difficulties).toList()
+
     Column {
         OutlinedTextField(
             value = nameQuery,
@@ -59,7 +62,7 @@ fun RecipeFilterSection(
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ALL_COSTS.forEach { c ->
+            allCosts.forEach { c ->
                 FilterChip(
                     selected = c in selectedCosts,
                     onClick = { onToggleCost(c) },
@@ -79,7 +82,7 @@ fun RecipeFilterSection(
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ALL_DIFFICULTIES.forEach { d ->
+            allDifficulties.forEach { d ->
                 FilterChip(
                     selected = d in selectedDifficulties,
                     onClick = { onToggleDifficulty(d) },

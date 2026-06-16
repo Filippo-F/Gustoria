@@ -14,8 +14,6 @@ import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
-import com.example.gustoria.ui.recipe.ALL_COSTS
-import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,8 +27,11 @@ import kotlin.uuid.Uuid
 data class EditRecipeUiState(
     val name: String = "",
     val description: String = "",
-    val cost: String = ALL_COSTS.first(),
-    val difficulty: String = ALL_DIFFICULTIES.first(),
+    val cost: String = "",
+    val difficulty: String = "",
+    val cuisineType: String = "",
+    val mealType: String = "",
+    val dietaryTags: List<String> = emptyList(),
     val cookingTimeMinutesText: String = "",
     val servingsText: String = "1",
     val imageUri: String = "",
@@ -70,6 +71,9 @@ class EditRecipeViewModel(
                                 description = recipe.description,
                                 cost = recipe.cost,
                                 difficulty = recipe.difficulty,
+                                cuisineType = recipe.cuisineType,
+                                mealType = recipe.mealType,
+                                dietaryTags = recipe.dietaryTags,
                                 cookingTimeMinutesText = recipe.cookingTimeMinutes.toString(),
                                 servingsText = recipe.servings.toString(),
                                 imageUri = recipe.imageUri ?: "",
@@ -98,6 +102,9 @@ class EditRecipeViewModel(
                     description = recipe.description,
                     cost = recipe.cost,
                     difficulty = recipe.difficulty,
+                    cuisineType = recipe.cuisineType,
+                    mealType = recipe.mealType,
+                    dietaryTags = recipe.dietaryTags,
                     cookingTimeMinutesText = recipe.cookingTimeMinutes.toString(),
                     servingsText = recipe.servings.toString(),
                     imageUri = recipe.imageUri ?: "",
@@ -124,6 +131,12 @@ class EditRecipeViewModel(
     fun updateDescription(desc: String) = _state.update { it.copy(description = desc) }
     fun updateCost(cost: String) = _state.update { it.copy(cost = cost) }
     fun updateDifficulty(diff: String) = _state.update { it.copy(difficulty = diff) }
+    fun updateCuisineType(cuisine: String) = _state.update { it.copy(cuisineType = cuisine) }
+    fun updateMealType(meal: String) = _state.update { it.copy(mealType = meal) }
+    fun toggleDietaryTag(tag: String) = _state.update {
+        val newList = if (tag in it.dietaryTags) it.dietaryTags - tag else it.dietaryTags + tag
+        it.copy(dietaryTags = newList)
+    }
     fun updateCookingTime(time: String) = _state.update { it.copy(cookingTimeMinutesText = time) }
     fun updateServings(servings: String) = _state.update { it.copy(servingsText = servings) }
     fun updateImageUri(uri: String) = _state.update { it.copy(imageUri = uri) }
@@ -242,6 +255,9 @@ class EditRecipeViewModel(
                     description = currentState.description,
                     cost = currentState.cost,
                     difficulty = currentState.difficulty,
+                    cuisineType = currentState.cuisineType,
+                    mealType = currentState.mealType,
+                    dietaryTags = currentState.dietaryTags,
                     cookingTimeMinutes = cookingTime!!,
                     servings = servings!!,
                     ingredients = currentState.ingredients,

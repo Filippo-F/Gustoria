@@ -99,6 +99,27 @@ class RecipeCollectionViewModel(
             it.copy(selectedDifficulties = newSet)
         }
     }
+    fun toggleCuisine(cuisine: String) {
+        _filters.update {
+            val newSet = if (cuisine in it.selectedCuisines) it.selectedCuisines - cuisine else it.selectedCuisines + cuisine
+            it.copy(selectedCuisines = newSet)
+        }
+    }
+    fun toggleMealType(meal: String) {
+        _filters.update {
+            val newSet = if (meal in it.selectedMealTypes) it.selectedMealTypes - meal else it.selectedMealTypes + meal
+            it.copy(selectedMealTypes = newSet)
+        }
+    }
+    fun toggleDietaryTag(tag: String) {
+        _filters.update {
+            val newSet = if (tag in it.selectedDietaryTags) it.selectedDietaryTags - tag else it.selectedDietaryTags + tag
+            it.copy(selectedDietaryTags = newSet)
+        }
+    }
+    fun setMaxCookingTime(minutes: Int?) {
+        _filters.update { it.copy(maxCookingTimeMinutes = minutes) }
+    }
     fun resetFilters() { _filters.value = RecipeFilters() }
 
     fun selectRecipe(recipeId: String?) {

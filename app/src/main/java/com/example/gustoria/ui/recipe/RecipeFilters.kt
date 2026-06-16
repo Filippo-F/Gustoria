@@ -7,38 +7,61 @@ data class RecipeFilters(
     val ingredientQuery: String = "",
     val selectedCosts: Set<String> = emptySet(),
     val selectedDifficulties: Set<String> = emptySet(),
+    val selectedCuisines: Set<String> = emptySet(),
+    val selectedMealTypes: Set<String> = emptySet(),
+    val selectedDietaryTags: Set<String> = emptySet(),
+    /** null = no time limit; otherwise max cooking time in minutes. */
+    val maxCookingTimeMinutes: Int? = null,
     val minServings: Int? = null,
-    val selectedTags: Set<String> = emptySet()
 ) {
-    val isEmpty: Boolean get() =
-        nameQuery.isBlank() && ingredientQuery.isBlank() &&
+    val isEmpty: Boolean
+        get() = nameQuery.isBlank() &&
+                ingredientQuery.isBlank() &&
                 selectedCosts.isEmpty() &&
                 selectedDifficulties.isEmpty() &&
-                minServings == null &&
-                selectedTags.isEmpty()
+                selectedCuisines.isEmpty() &&
+                selectedMealTypes.isEmpty() &&
+                selectedDietaryTags.isEmpty() &&
+                maxCookingTimeMinutes == null &&
+                minServings == null
 }
 
-val ALL_COSTS: List<String> = listOf("€", "€€", "€€€")
-val ALL_DIFFICULTIES: List<String> = listOf("Easy", "Medium", "Hard")
-
+/**
+ * Applies all active filters to this list of recipes.
+ * Returns the full list when [filters] is empty.
+ */
 fun List<Recipe>.applyFilters(filters: RecipeFilters): List<Recipe> {
     if (filters.isEmpty) return this
-    return this.filter { recipe ->
+    return filter { recipe ->
         val nameOk = filters.nameQuery.isBlank() ||
                 recipe.name.contains(filters.nameQuery, ignoreCase = true)
+
         val ingredientOk = filters.ingredientQuery.isBlank() ||
                 recipe.ingredients.any {
                     it.name.contains(filters.ingredientQuery, ignoreCase = true)
                 }
+
         val costOk = filters.selectedCosts.isEmpty() ||
                 recipe.cost in filters.selectedCosts
 
         val difficultyOk = filters.selectedDifficulties.isEmpty() ||
                 recipe.difficulty in filters.selectedDifficulties
-        val servingsOk = filters.minServings?.let { recipe.servings >= it } ?: true
-        val tagsOk = filters.selectedTags.isEmpty() ||
-                (recipe.tags.intersect(filters.selectedTags)).isNotEmpty()
 
-        nameOk && ingredientOk && costOk && difficultyOk && servingsOk && tagsOk
+        val cuisineOk = filters.selectedCuisines.isEmpty() ||
+                recipe.cuisineType in filters.selectedCuisines
+
+        val mealTypeOk = filters.selectedMealTypes.isEmpty() ||
+                recipe.mealType in filters.selectedMealTypes
+
+        val dietaryOk = filters.selectedDietaryTags.isEmpty() ||
+                recipe.dietaryTags.containsAll(filters.selectedDietaryTags)
+
+        val timeOk = filters.maxCookingTimeMinutes == null ||
+                recipe.cookingTimeMinutes <= filters.maxCookingTimeMinutes
+
+        val servingsOk = filters.minServings?.let { recipe.servings >= it } ?: true
+
+        nameOk && ingredientOk && costOk && difficultyOk &&
+                cuisineOk && mealTypeOk && dietaryOk && timeOk && servingsOk
     }
 }

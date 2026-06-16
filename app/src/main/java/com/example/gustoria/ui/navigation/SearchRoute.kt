@@ -70,6 +70,10 @@ fun SearchingDestination(
         onResetFilters = viewModel::resetFilters,
         onToggleDifficulty = viewModel::toggleDifficulty,
         onToggleCost = viewModel::toggleCost,
+        onToggleCuisine = viewModel::toggleCuisine,
+        onToggleMealType = viewModel::toggleMealType,
+        onToggleDietaryTag = viewModel::toggleDietaryTag,
+        onSetMaxCookingTime = viewModel::setMaxCookingTime,
         onNameQueryChange = viewModel::updateNameQuery,
         onIngredientQueryChange = viewModel::updateIngredientQuery
     )
@@ -97,10 +101,16 @@ fun SearchedDestination(
         onAdjustFilters = navActions::navigateToSearching,
         onRecipeClick = navActions::navigateToRecipeDetails,
         onRemoveFilter = { filterLabel ->
-            if (filterLabel in com.example.gustoria.ui.recipe.ALL_COSTS) viewModel.toggleCost(filterLabel)
-            else if (filterLabel in com.example.gustoria.ui.recipe.ALL_DIFFICULTIES) viewModel.toggleDifficulty(filterLabel)
-            else if (filterLabel == filters.nameQuery) viewModel.updateNameQuery("")
-            else if (filterLabel == filters.ingredientQuery) viewModel.updateIngredientQuery("")
+            when {
+                filterLabel in filters.selectedCosts         -> viewModel.toggleCost(filterLabel)
+                filterLabel in filters.selectedDifficulties  -> viewModel.toggleDifficulty(filterLabel)
+                filterLabel in filters.selectedCuisines      -> viewModel.toggleCuisine(filterLabel)
+                filterLabel in filters.selectedMealTypes     -> viewModel.toggleMealType(filterLabel)
+                filterLabel in filters.selectedDietaryTags   -> viewModel.toggleDietaryTag(filterLabel)
+                filterLabel == filters.nameQuery             -> viewModel.updateNameQuery("")
+                filterLabel == filters.ingredientQuery       -> viewModel.updateIngredientQuery("")
+                filterLabel.startsWith("≤") && filterLabel.endsWith("min") -> viewModel.setMaxCookingTime(null)
+            }
         }
     )
 }

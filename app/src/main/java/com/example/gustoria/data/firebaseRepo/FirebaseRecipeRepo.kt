@@ -30,6 +30,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€",
                     difficulty = "Easy",
+                    cuisineType = "Italian",
+                    mealType = "Dinner",
+                    dietaryTags = listOf("Vegan", "Dairy-Free"),
                     cookingTimeMinutes = 20,
                     servings = 2,
                     ingredients = listOf(
@@ -46,8 +49,9 @@ class FirebaseRecipeRepo(
                         "Scola la pasta e condisci con il sugo",
                         "Aggiungi basilico fresco e servi"
                     ),
-                    tags = listOf("Italian", "Pasta", "Quick"),
-                    likedByUserIds = listOf("202")
+                    tags = listOf("Pasta", "Quick"),
+                    likedByUserIds = listOf("202"),
+                    createdAt = "2026-01-10T12:00:00"
                 ),
                 Recipe(
                     id = "recipe_margherita_pizza",
@@ -57,6 +61,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€",
                     difficulty = "Hard",
+                    cuisineType = "Italian",
+                    mealType = "Dinner",
+                    dietaryTags = listOf("Vegetarian"),
                     cookingTimeMinutes = 90,
                     servings = 4,
                     ingredients = listOf(
@@ -73,8 +80,9 @@ class FirebaseRecipeRepo(
                         "Stendi l'impasto e aggiungi il condimento",
                         "Cuoci in forno a 250°C per 10-12 min"
                     ),
-                    tags = listOf("Italian", "Pizza", "Classic"),
-                    likedByUserIds = listOf("202")
+                    tags = listOf("Pizza", "Classic"),
+                    likedByUserIds = listOf("202"),
+                    createdAt = "2026-01-15T18:30:00"
                 ),
                 Recipe(
                     id = "recipe_lasagna_bolognese",
@@ -84,6 +92,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€",
                     difficulty = "Hard",
+                    cuisineType = "Italian",
+                    mealType = "Dinner",
+                    dietaryTags = emptyList(),
                     cookingTimeMinutes = 120,
                     servings = 6,
                     ingredients = listOf(
@@ -100,8 +111,9 @@ class FirebaseRecipeRepo(
                         "Termina con besciamella e parmigiano",
                         "Cuoci a 180°C per 40 min"
                     ),
-                    tags = listOf("Italian", "Pasta", "Baked"),
-                    likedByUserIds = listOf("101")
+                    tags = listOf("Pasta", "Baked"),
+                    likedByUserIds = listOf("101"),
+                    createdAt = "2026-01-20T19:00:00"
                 ),
                 Recipe(
                     id = "recipe_risotto_milanese",
@@ -111,6 +123,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€",
                     difficulty = "Medium",
+                    cuisineType = "Italian",
+                    mealType = "Dinner",
+                    dietaryTags = listOf("Gluten-Free"),
                     cookingTimeMinutes = 30,
                     servings = 3,
                     ingredients = listOf(
@@ -129,7 +144,8 @@ class FirebaseRecipeRepo(
                         "Sciogli lo zafferano nel brodo e aggiungi",
                         "Manteca con burro e parmigiano"
                     ),
-                    tags = listOf("Italian", "Rice", "Classic")
+                    tags = listOf("Rice", "Classic"),
+                    createdAt = "2026-02-01T20:00:00"
                 ),
                 Recipe(
                     id = "recipe_tiramisu",
@@ -139,6 +155,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€",
                     difficulty = "Easy",
+                    cuisineType = "Italian",
+                    mealType = "Dessert",
+                    dietaryTags = listOf("Vegetarian"),
                     cookingTimeMinutes = 45,
                     servings = 8,
                     ingredients = listOf(
@@ -158,8 +177,9 @@ class FirebaseRecipeRepo(
                         "Copri con crema e spolvera di cacao",
                         "Refrigera per almeno 4 ore"
                     ),
-                    tags = listOf("Italian", "Dessert", "NoBake"),
-                    likedByUserIds = listOf("101")
+                    tags = listOf("NoBake"),
+                    likedByUserIds = listOf("101"),
+                    createdAt = "2026-02-10T16:00:00"
                 ),
                 // Ricette di User 202
                 Recipe(
@@ -170,6 +190,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€€",
                     difficulty = "Hard",
+                    cuisineType = "Japanese",
+                    mealType = "Lunch",
+                    dietaryTags = listOf("Dairy-Free", "Gluten-Free"),
                     cookingTimeMinutes = 60,
                     servings = 2,
                     ingredients = listOf(
@@ -187,8 +210,9 @@ class FirebaseRecipeRepo(
                         "Arrotola strettamente con la stuoia",
                         "Taglia in 8 pezzi e servi con soia"
                     ),
-                    tags = listOf("Japanese", "Seafood", "Raw"),
-                    likedByUserIds = listOf("101")
+                    tags = listOf("Seafood", "Raw"),
+                    likedByUserIds = listOf("101"),
+                    createdAt = "2026-02-15T13:00:00"
                 ),
                 Recipe(
                     id = "recipe_beef_burger",
@@ -198,6 +222,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€",
                     difficulty = "Easy",
+                    cuisineType = "American",
+                    mealType = "Lunch",
+                    dietaryTags = emptyList(),
                     cookingTimeMinutes = 15,
                     servings = 1,
                     ingredients = listOf(
@@ -213,8 +240,9 @@ class FirebaseRecipeRepo(
                         "Tosta il panino",
                         "Assembla con formaggio, lattuga e pomodoro"
                     ),
-                    tags = listOf("American", "Meat", "Quick"),
-                    likedByUserIds = listOf("101")
+                    tags = listOf("Meat", "Quick"),
+                    likedByUserIds = listOf("101"),
+                    createdAt = "2026-03-01T12:30:00"
                 ),
                 Recipe(
                     id = "recipe_pad_thai",
@@ -224,6 +252,9 @@ class FirebaseRecipeRepo(
                     imageUri = null,
                     cost = "€€",
                     difficulty = "Medium",
+                    cuisineType = "Thai",
+                    mealType = "Dinner",
+                    dietaryTags = listOf("Dairy-Free"),
                     cookingTimeMinutes = 30,
                     servings = 2,
                     ingredients = listOf(
@@ -242,7 +273,8 @@ class FirebaseRecipeRepo(
                         "Sposta di lato e strapazza le uova",
                         "Mescola tutto e servi con arachidi"
                     ),
-                    tags = listOf("Thai", "Noodles", "Spicy")
+                    tags = listOf("Noodles", "Spicy"),
+                    createdAt = "2026-03-05T19:00:00"
                 )
             )
 

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="recipe_difficulties">
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+    </string-array>
+
+    <string-array name="recipe_costs">
+        <item>€</item>
+        <item>€€</item>
+        <item>€€€</item>
+    </string-array>
+
+    <string-array name="recipe_cuisine_types">
+        <item>Italian</item>
+        <item>Mediterranean</item>
+        <item>Asian</item>
+        <item>Japanese</item>
+        <item>Mexican</item>
+        <item>French</item>
+        <item>American</item>
+        <item>Thai</item>
+        <item>Indian</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="recipe_meal_types">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+        <item>Dessert</item>
+    </string-array>
+
+    <string-array name="recipe_dietary_tags">
+        <item>Vegan</item>
+        <item>Vegetarian</item>
+        <item>Gluten-Free</item>
+        <item>Dairy-Free</item>
+        <item>Nut-Free</item>
+        <item>Halal</item>
+    </string-array>
+
+    <string-array name="recipe_time_filter_labels">
+        <item>Any</item>
+        <item>&lt;15 min</item>
+        <item>&lt;30 min</item>
+        <item>&lt;60 min</item>
+        <item>60+ min</item>
+    </string-array>
+
+    <integer-array name="recipe_time_filter_minutes">
+        <item>-1</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>999</item>
+    </integer-array>
+
+    <string-array name="ingredient_units">
+        <item>g</item>
+        <item>kg</item>
+        <item>ml</item>
+        <item>l</item>
+        <item>cup</item>
+        <item>tbsp</item>
+        <item>tsp</item>
+        <item>pc</item>
+        <item>slice</item>
+        <item>pinch</item>
+        <item>to taste</item>
+    </string-array>
+
+</resources>

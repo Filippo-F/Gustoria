@@ -148,6 +148,10 @@ fun FavouriteFilteringDestination(
         onResetFilters = viewModel::resetFilters,
         onToggleDifficulty = viewModel::toggleDifficulty,
         onToggleCost = viewModel::toggleCost,
+        onToggleCuisine = viewModel::toggleCuisine,
+        onToggleMealType = viewModel::toggleMealType,
+        onToggleDietaryTag = viewModel::toggleDietaryTag,
+        onSetMaxCookingTime = viewModel::setMaxCookingTime,
         onNameQueryChange = viewModel::setNameQuery,
         onIngredientQueryChange = viewModel::setIngredientQuery
     )

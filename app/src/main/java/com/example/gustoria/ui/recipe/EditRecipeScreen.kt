@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.gustoria.R
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 import androidx.navigation.NavHostController
@@ -60,6 +63,9 @@ fun EditRecipeScreenPreview() {
             onUpdateDescription = {},
             onUpdateCost = {},
             onUpdateDifficulty = {},
+            onUpdateCuisineType = {},
+            onUpdateMealType = {},
+            onToggleDietaryTag = {},
             onUpdateCookingTime = {},
             onUpdateServings = {},
             onUpdateIngredientName = { _, _ -> },
@@ -74,6 +80,7 @@ fun EditRecipeScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditRecipeScreen(
     state: com.example.gustoria.viewmodel.EditRecipeUiState,
@@ -87,6 +94,9 @@ fun EditRecipeScreen(
     onUpdateDescription: (String) -> Unit,
     onUpdateCost: (String) -> Unit,
     onUpdateDifficulty: (String) -> Unit,
+    onUpdateCuisineType: (String) -> Unit,
+    onUpdateMealType: (String) -> Unit,
+    onToggleDietaryTag: (String) -> Unit,
     onUpdateCookingTime: (String) -> Unit,
     onUpdateServings: (String) -> Unit,
     onUpdateIngredientName: (Int, String) -> Unit,
@@ -98,6 +108,12 @@ fun EditRecipeScreen(
     onRemoveStep: (Int) -> Unit,
     onAddStep: () -> Unit
 ) {
+    // Option lists loaded from XML resources — no hardcoded values
+    val allCosts        = stringArrayResource(R.array.recipe_costs).toList()
+    val allDifficulties = stringArrayResource(R.array.recipe_difficulties).toList()
+    val allCuisineTypes = stringArrayResource(R.array.recipe_cuisine_types).toList()
+    val allMealTypes    = stringArrayResource(R.array.recipe_meal_types).toList()
+    val allDietaryTags  = stringArrayResource(R.array.recipe_dietary_tags).toList()
     BackHandler {
         onRevert()
         onBack()
@@ -289,7 +305,7 @@ fun EditRecipeScreen(
                 // Cost
                 Text("Cost", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ALL_COSTS.forEach { c ->
+                    allCosts.forEach { c ->
                         FilterChip(
                             selected = state.cost == c,
                             onClick = { onUpdateCost(c) },
@@ -306,7 +322,7 @@ fun EditRecipeScreen(
                 // Difficulty
                 Text("Difficulty", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ALL_DIFFICULTIES.forEach { d ->
+                    allDifficulties.forEach { d ->
                         FilterChip(
                             selected = state.difficulty == d,
                             onClick = { onUpdateDifficulty(d) },
@@ -315,6 +331,78 @@ fun EditRecipeScreen(
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        )
+                    }
+                }
+
+                // Cuisine Type
+                Text("Cuisine Type", style = MaterialTheme.typography.labelMedium)
+                var cuisineExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = cuisineExpanded,
+                    onExpandedChange = { cuisineExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = state.cuisineType.ifBlank { "Select cuisine..." },
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cuisineExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = cuisineExpanded,
+                        onDismissRequest = { cuisineExpanded = false }
+                    ) {
+                        allCuisineTypes.forEach { cuisine ->
+                            DropdownMenuItem(
+                                text = { Text(cuisine) },
+                                onClick = {
+                                    onUpdateCuisineType(cuisine)
+                                    cuisineExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Meal Type
+                Text("Meal Type", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    allMealTypes.forEach { meal ->
+                        FilterChip(
+                            selected = state.mealType == meal,
+                            onClick = { onUpdateMealType(meal) },
+                            label = { Text(meal) },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        )
+                    }
+                }
+
+                // Dietary Tags
+                Text("Dietary Tags", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    allDietaryTags.forEach { tag ->
+                        FilterChip(
+                            selected = tag in state.dietaryTags,
+                            onClick = { onToggleDietaryTag(tag) },
+                            label = { Text(tag) },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         )
                     }

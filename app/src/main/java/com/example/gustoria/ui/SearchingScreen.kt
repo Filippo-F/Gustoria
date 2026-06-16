@@ -4,20 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.integerArrayResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.gustoria.ui.recipe.ALL_COSTS
-import com.example.gustoria.ui.recipe.ALL_DIFFICULTIES
+import com.example.gustoria.R
 import com.example.gustoria.ui.recipe.RecipeFilters
 
 @Composable
@@ -29,14 +27,20 @@ fun SearchingScreen(
     onResetFilters: () -> Unit,
     onToggleDifficulty: (String) -> Unit,
     onToggleCost: (String) -> Unit,
+    onToggleCuisine: (String) -> Unit,
+    onToggleMealType: (String) -> Unit,
+    onToggleDietaryTag: (String) -> Unit,
+    onSetMaxCookingTime: (Int?) -> Unit,
     onNameQueryChange: (String) -> Unit,
-    onIngredientQueryChange: (String) -> Unit
+    onIngredientQueryChange: (String) -> Unit,
 ) {
-    val timeOptions = listOf("Any", "< 15m", "< 30m", "< 60m")
-    val cuisineOptions = listOf("Italian", "Mexican", "Japanese", "Indian")
-
-    var selectedTime by remember { mutableStateOf("Any") }
-    var selectedCuisine by remember { mutableStateOf("Italian") }
+    val difficulties  = stringArrayResource(R.array.recipe_difficulties).toList()
+    val costs         = stringArrayResource(R.array.recipe_costs).toList()
+    val cuisineTypes  = stringArrayResource(R.array.recipe_cuisine_types).toList()
+    val mealTypes     = stringArrayResource(R.array.recipe_meal_types).toList()
+    val dietaryTags   = stringArrayResource(R.array.recipe_dietary_tags).toList()
+    val timeLabels    = stringArrayResource(R.array.recipe_time_filter_labels).toList()
+    val timeMinutes   = integerArrayResource(R.array.recipe_time_filter_minutes).toList()
 
     Scaffold(
         topBar = {
@@ -47,10 +51,7 @@ fun SearchingScreen(
                 showBackButton = true,
                 extraIcon = Icons.Default.Refresh,
                 extraIconDescription = "Reset Filters",
-                onClickExtra = {
-                    onResetFilters()
-                    selectedTime = "Any"
-                }
+                onClickExtra = { onResetFilters() }
             )
         },
         bottomBar = {
@@ -100,7 +101,7 @@ fun SearchingScreen(
             //DIFFICULTY
             FilterSectionTitle("Difficulty")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ALL_DIFFICULTIES.forEach { diff ->
+                difficulties.forEach { diff ->
                     FilterChip(
                         selected = diff in filters.selectedDifficulties,
                         onClick = { onToggleDifficulty(diff) },
@@ -109,28 +110,33 @@ fun SearchingScreen(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
 
             //time
             FilterSectionTitle("Time")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                timeOptions.forEach { time ->
+                timeLabels.forEachIndexed { index, label ->
+                    val minutes = timeMinutes.getOrNull(index) ?: -1
+                    val isSelected = when {
+                        minutes == -1 -> filters.maxCookingTimeMinutes == null
+                        else -> filters.maxCookingTimeMinutes == minutes
+                    }
                     FilterChip(
-                        selected = selectedTime == time,
-                        onClick = { selectedTime = time },
-                        label = { Text(time) },
+                        selected = isSelected,
+                        onClick = {
+                            onSetMaxCookingTime(if (minutes == -1) null else minutes)
+                        },
+                        label = { Text(label) },
                         shape = RoundedCornerShape(16.dp)
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // cost
             FilterSectionTitle("Cost")
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ALL_COSTS.forEach { cost ->
+                costs.forEach { cost ->
                     FilterChip(
                         selected = cost in filters.selectedCosts,
                         onClick = { onToggleCost(cost) },
@@ -139,29 +145,57 @@ fun SearchingScreen(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // cusine type
             FilterSectionTitle("Cuisine Type")
-            cuisineOptions.forEach { cuisine ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .toggleable(
-                            value = selectedCuisine == cuisine,
-                            role = Role.RadioButton,
-                            onValueChange = { selectedCuisine = cuisine }
-                        )
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(selected = selectedCuisine == cuisine, onClick = null)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(text = cuisine, style = MaterialTheme.typography.bodyLarge)
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                cuisineTypes.forEach { cuisine ->
+                    FilterChip(
+                        selected = cuisine in filters.selectedCuisines,
+                        onClick = { onToggleCuisine(cuisine) },
+                        label = { Text(cuisine) },
+                        shape = RoundedCornerShape(16.dp)
+                    )
                 }
             }
+            Spacer(modifier = Modifier.height(24.dp))
 
+            //Meal Type
+            FilterSectionTitle("Meal Type")
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                mealTypes.forEach { meal ->
+                    FilterChip(
+                        selected = meal in filters.selectedMealTypes,
+                        onClick = { onToggleMealType(meal) },
+                        label = { Text(meal) },
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            //Dietary
+            FilterSectionTitle("Dietary")
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                dietaryTags.forEach { tag ->
+                    FilterChip(
+                        selected = tag in filters.selectedDietaryTags,
+                        onClick = { onToggleDietaryTag(tag) },
+                        label = { Text(tag) },
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(32.dp))
         }
     }

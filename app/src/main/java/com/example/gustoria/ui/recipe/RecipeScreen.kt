@@ -85,6 +85,10 @@ private fun RecipeListContent(
     if (filters.ingredientQuery.isNotBlank()) activeFilters.add(filters.ingredientQuery)
     activeFilters.addAll(filters.selectedCosts)
     activeFilters.addAll(filters.selectedDifficulties)
+    activeFilters.addAll(filters.selectedCuisines)
+    activeFilters.addAll(filters.selectedMealTypes)
+    activeFilters.addAll(filters.selectedDietaryTags)
+    filters.maxCookingTimeMinutes?.let { activeFilters.add("≤${it}min") }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
 
