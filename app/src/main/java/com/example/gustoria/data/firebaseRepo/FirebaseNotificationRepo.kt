@@ -9,6 +9,7 @@ import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import com.example.gustoria.dataclass.NotificationType
 
 class FirebaseNotificationRepo(
     private val firestore: FirebaseFirestore
@@ -31,15 +32,15 @@ class FirebaseNotificationRepo(
     }
 
     override suspend fun addNotification(notification: Notification) {
-        val existing = notificationsCollection
-            .whereEqualTo("recipientUserId", notification.recipientUserId)
-            .whereEqualTo("type", notification.type)
-            .whereEqualTo("targetRecipeId", notification.targetRecipeId)
-            .get().await()
-
-        if (existing.isEmpty) {
-            notificationsCollection.document(notification.id).set(notification).await()
+        if (notification.type == NotificationType.RECOMMENDED_RECIPE.name) {
+            val existing = notificationsCollection
+                .whereEqualTo("recipientUserId", notification.recipientUserId)
+                .whereEqualTo("type", notification.type)
+                .whereEqualTo("targetRecipeId", notification.targetRecipeId)
+                .get().await()
+            if (!existing.isEmpty) return
         }
+        notificationsCollection.document(notification.id).set(notification).await()
     }
 
     override suspend fun markAsRead(notificationId: String) {

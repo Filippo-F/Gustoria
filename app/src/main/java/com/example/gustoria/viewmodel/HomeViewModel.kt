@@ -25,7 +25,6 @@ class HomeViewModel(
     private val userRepository: UserRepoInterface
 ) : ViewModel() {
 
-    //all
     @OptIn(ExperimentalCoroutinesApi::class)
     private val allRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
         .flatMapLatest { _ ->
@@ -33,12 +32,16 @@ class HomeViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Recommended
+    private val _selectedCategory = MutableStateFlow("All")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
     val recommendedRecipes: StateFlow<List<Recipe>> = combine(
         allRecipes,
-        SessionManagerFacade.currentUserId
-    ) { recipes, userId ->
-        recipes.filter { it.ownerId != (userId ?: "") }
+        SessionManagerFacade.currentUserId,
+        _selectedCategory
+    ) { recipes, userId, category ->
+        recipes
+            .filter { it.ownerId != (userId ?: "") }
+            .filter { matchesCategory(it, category) }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -56,12 +59,20 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
-    private val _selectedCategory = MutableStateFlow("All")
-    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
-
     fun selectCategory(category: String) {
         _selectedCategory.value = category
     }
+    private fun matchesCategory(recipe: Recipe, category: String): Boolean =
+        when (category) {
+            "All"         -> true
+            "Quick Meals" -> recipe.cookingTimeMinutes in 1..30
+            "Vegan"       -> recipe.dietaryTags.any { it.equals("Vegan", true) }
+            "Vegetarian"  -> recipe.dietaryTags.any { it.equals("Vegetarian", true) }
+            "Gluten-Free" -> recipe.dietaryTags.any { it.equals("Gluten-Free", true) }
+            "Italian"     -> recipe.cuisineType.equals("Italian", true)
+            "Desserts"    -> recipe.mealType.equals("Dessert", true)
+            else          -> true
+        }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

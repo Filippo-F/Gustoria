@@ -30,8 +30,6 @@ data class Recipe(
     val ingredients: List<RecipeIngredient> = emptyList(),
     val steps: List<String> = emptyList(),
 
-    val caloriesKcal: Int = 0,
-
     // IDs of users who have added this recipe to favorites (likes)
     val likedByUserIds: List<String> = emptyList(),
 
