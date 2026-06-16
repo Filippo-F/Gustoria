@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
@@ -27,6 +26,7 @@ import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
+import com.example.gustoria.dataclass.Recipe
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -36,17 +36,6 @@ data class ProfileValidation(
     val cookingRoleError: String = "",
     val descriptionError: String = "",
     val isValid: Boolean = true
-)
-
-// Placeholder data
-data class UserCollection(
-    val title: String,
-    val subtitle: String
-)
-
-data class UserActivity(
-    val title: String,
-    val subtitle: String
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -331,18 +320,9 @@ class OtherProfileViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    var currentTab by mutableIntStateOf(0)
-        private set
-
-    val collections = listOf(
-        UserCollection("Summer Harvest", "12 Recipes • 2.4k Views"),
-        UserCollection("Artisan Bakes", "8 Recipes • 1.1k Views")
-    )
-
-    val recentActivities = listOf(
-        UserActivity("Published \"Golden Turmeric Latte\"", "2 hours ago"),
-        UserActivity("Liked Marco's \"Focaccia Masterclass\"", "Yesterday")
-    )
+    val recipes: StateFlow<List<Recipe>> = recipeRepo
+        .getRecipeByOwner(viewedUserId)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun toggleFollow() {
         viewModelScope.launch {
@@ -362,10 +342,6 @@ class OtherProfileViewModel(
                 )
             }
         }
-    }
-
-    fun changeTab(index: Int) {
-        currentTab = index
     }
 
     companion object {

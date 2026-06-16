@@ -55,15 +55,14 @@ fun OtherProfileDestination(
     val recipeCount by viewModel.recipeCount.collectAsStateWithLifecycle()
     val likeCount by viewModel.likeCount.collectAsStateWithLifecycle()
     val isFollowing by viewModel.isFollowing.collectAsStateWithLifecycle()
+    val recipes by viewModel.recipes.collectAsStateWithLifecycle()
 
     OtherProfileScreen(
         user = user,
         recipeCount = recipeCount,
         likeCount = likeCount,
-        currentTab = viewModel.currentTab,
         isFollowing = isFollowing,
-        collections = viewModel.collections,
-        recentActivities = viewModel.recentActivities,
+        recipes = recipes,
         onBack = navActions::navigateBack,
         onToggleFollow = {
             if (SessionManagerFacade.isLoggedIn) {
@@ -72,7 +71,7 @@ fun OtherProfileDestination(
                 navActions.navigateToActionRequirement("follow this user")
             }
         },
-        onChangeTab = viewModel::changeTab
+        onRecipeClick = navActions::navigateToRecipeDetails
     )
 }
 

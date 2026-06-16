@@ -31,18 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import com.example.gustoria.ui.ThreeItemTopNavbar
-import androidx.compose.material3.Tab
-import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.gustoria.viewmodel.UserCollection
-import com.example.gustoria.viewmodel.UserActivity
 import com.example.gustoria.dataclass.CookingRole
 import androidx.compose.material3.CircularProgressIndicator
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
+import com.example.gustoria.dataclass.Recipe
+import androidx.compose.foundation.lazy.items
 
 @MultiPreview
 @Composable
@@ -52,13 +49,11 @@ fun OtherProfileScreenPreview() {
             user = null,
             recipeCount = 0,
             likeCount = 0,
-            currentTab = 0,
             isFollowing = false,
-            collections = emptyList(),
-            recentActivities = emptyList(),
+            recipes = emptyList(),
             onBack = {},
             onToggleFollow = {},
-            onChangeTab = {}
+            onRecipeClick = {}
         )
     }
 }
@@ -170,129 +165,18 @@ fun ValueBox(
     }
 }
 
-@Composable
-fun CollectionCard(collection: UserCollection) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(16.dp))
-            .padding(16.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Column {
-            Text(
-                text = collection.title,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                text = collection.subtitle,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun CollectionsSection(collections: List<UserCollection>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Curated Collections",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "VIEW ALL",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
-
-        Column(
-            modifier = Modifier.padding(top = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            collections.forEach { collection ->
-                CollectionCard(collection = collection)
-            }
-        }
-    }
-}
-
-@Composable
-fun ActivityCard(
-    activity: UserActivity
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-            .padding(16.dp)
-    ) {
-        Column {
-            Text(
-                text = activity.title,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = activity.subtitle,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun RecentActivitySection(activities: List<UserActivity>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Recent Activity",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Column(
-            modifier = Modifier.padding(top = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            activities.forEach { activity ->
-                ActivityCard(activity = activity)
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(
     user: com.example.gustoria.dataclass.User?,
     recipeCount: Int,
     likeCount: Int,
-    currentTab: Int,
     isFollowing: Boolean,
-    collections: List<UserCollection>,
-    recentActivities: List<UserActivity>,
+    recipes: List<Recipe>,
     onBack: () -> Unit,
     onToggleFollow: () -> Unit,
-    onChangeTab: (Int) -> Unit
+    onRecipeClick: (String) -> Unit
 ) {
-    val tabs = listOf("Collections", "Recent Activity")
 
     Scaffold(
         topBar = {
@@ -378,44 +262,30 @@ fun OtherProfileScreen(
                         ValueBox(likeCount, "Likes")
                     }
                 }
-
-
                 item {
-                    SecondaryTabRow(
-                        selectedTabIndex = currentTab,
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.secondary,
-                        divider = {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                        },
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = currentTab == index,
-                                onClick = { onChangeTab(index) },
-                                text = {
-                                    Text(
-                                        text = title,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = if (currentTab == index)
-                                            FontWeight.Bold
-                                        else
-                                            FontWeight.Normal,
-                                        color = if (currentTab == index)
-                                            MaterialTheme.colorScheme.secondary
-                                        else
-                                            MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Recipes",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
 
-                item {
-                    when (currentTab) {
-                        0 -> CollectionsSection(collections = collections)
-                        1 -> RecentActivitySection(activities = recentActivities)
+                if (recipes.isEmpty()) {
+                    item {
+                        Text(
+                            text = "No recipes published yet.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                } else {
+                    items(recipes, key = { it.id }) { recipe ->
+                        com.example.gustoria.ui.recipe.components.RecipeCard(
+                            recipe = recipe,
+                            onClick = { onRecipeClick(recipe.id) },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                        )
                     }
                 }
             }
