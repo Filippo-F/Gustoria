@@ -14,10 +14,8 @@ data class TrendingCategory(val id: String, val title: String, val imageUrl: Str
 
 class SearchViewModel : ViewModel() {
 
-    // Trending Searches
     val trendingSearches = listOf("#Pizza", "#Sushi")
 
-    // Recent Searches
     private val _recentSearches = MutableStateFlow(
         listOf(
             RecentSearch("1", "Summer Harvest Buddha Bowl", "SEARCHED 2H AGO"),
@@ -27,7 +25,6 @@ class SearchViewModel : ViewModel() {
     )
     val recentSearches: StateFlow<List<RecentSearch>> = _recentSearches.asStateFlow()
 
-    // Trending Categories
     val trendingCategories = listOf(
         TrendingCategory("c1", "Spaghetti", null),
         TrendingCategory("c2", "Pizza", null),
@@ -38,15 +35,7 @@ class SearchViewModel : ViewModel() {
         TrendingCategory("c7", "Burger", null),
         TrendingCategory("c8", "Tiramisù", null) // meglio sweets?
     )
-
-    // Search Query State
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
-
-    fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
-    }
-
+    
     fun clearAllRecentSearches() {
         _recentSearches.value = emptyList()
     }

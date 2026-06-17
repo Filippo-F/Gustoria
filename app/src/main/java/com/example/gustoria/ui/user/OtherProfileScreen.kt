@@ -184,7 +184,7 @@ fun OtherProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                title = user?.let { "${it.firstName} ${it.lastName}" } ?: "Profile",
+                title = user?.nickname ?: "Profile",
                 onBack = onBack,
                 extraIcon = Icons.Default.Share,
                 extraIconDescription = "Share",
