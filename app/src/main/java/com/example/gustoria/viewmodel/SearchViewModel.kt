@@ -26,14 +26,14 @@ class SearchViewModel : ViewModel() {
     val recentSearches: StateFlow<List<RecentSearch>> = _recentSearches.asStateFlow()
 
     val trendingCategories = listOf(
-        TrendingCategory("c1", "Spaghetti", null),
-        TrendingCategory("c2", "Pizza", null),
-        TrendingCategory("c3", "Sushi", null),
-        TrendingCategory("c4", "Salad", null),
-        TrendingCategory("c5", "Soup", null),
-        TrendingCategory("c6", "Risotto", null),
-        TrendingCategory("c7", "Burger", null),
-        TrendingCategory("c8", "Tiramisù", null) // meglio sweets?
+        TrendingCategory("c1", "Spaghetti", "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c2", "Pizza", "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c3", "Sushi", "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c4", "Salad", "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c5", "Soup", "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c6", "Risotto", "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c7", "Burger", "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80"),
+        TrendingCategory("c8", "Dessert", "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=300&q=80")
     )
     
     fun clearAllRecentSearches() {
