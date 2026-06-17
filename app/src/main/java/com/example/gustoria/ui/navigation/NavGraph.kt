@@ -3,9 +3,7 @@ package com.example.gustoria.ui.navigation
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -377,7 +375,7 @@ fun GustoriaApp(
 
                 navigation<Profile>(startDestination = Profile.OverallProfile) {
                     composable<Profile.OverallProfile> {
-                        OverallProfileDestination(navActions)
+                        OverallProfileDestination(navActions, showBackButton = false)
                     }
                     composable<OtherProfile> { backStackEntry ->
                         val args: OtherProfile = backStackEntry.toRoute()

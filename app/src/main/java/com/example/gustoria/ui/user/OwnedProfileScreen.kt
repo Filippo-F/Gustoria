@@ -55,6 +55,7 @@ fun OwnedProfileScreenPreview() {
             user = null,
             recipeCount = 0,
             likeCount = 0,
+            showBackButton = true,
             onBack = {},
             onNavigateToProfileInfo = {},
             onNavigateToSettings = {},
@@ -71,6 +72,7 @@ fun OwnedProfileScreen(
     recipeCount: Int,
     likeCount: Int,
     isLoggedIn: Boolean = true,
+    showBackButton: Boolean = true,
     onBack: () -> Unit,
     onNavigateToProfileInfo: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -88,7 +90,8 @@ fun OwnedProfileScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 title = "My Profile",
-                onBack = onBack
+                onBack = onBack,
+                showBackButton = showBackButton
             )
         }
     ) { innerPadding ->

@@ -78,6 +78,7 @@ fun OtherProfileDestination(
 @Composable
 fun OverallProfileDestination(
     navActions: GustoriaNavigationActions,
+    showBackButton: Boolean = true,
     viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
@@ -89,6 +90,7 @@ fun OverallProfileDestination(
         recipeCount = recipeCount,
         likeCount = likeCount,
         isLoggedIn = SessionManagerFacade.isLoggedIn,
+        showBackButton = showBackButton,
         onBack = navActions::navigateBack,
         onNavigateToProfileInfo = {
             if (SessionManagerFacade.isLoggedIn) {
