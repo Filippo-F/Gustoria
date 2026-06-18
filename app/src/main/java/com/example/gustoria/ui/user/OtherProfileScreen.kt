@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.res.stringArrayResource
+import com.example.gustoria.R
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -111,13 +113,15 @@ fun ProfileInfo(firstName: String, lastName: String, nickname: String, cookingRo
             fontWeight = FontWeight.Bold
         )
 
+        val cookingRoles = stringArrayResource(R.array.cooking_roles)
+
         // Nickname + cookingRole
         Text(
             text = buildString {
                 append(nickname)
                 if (cookingRole != CookingRole.NONE) {
                     append(" • ")
-                    append(cookingRole.displayName())
+                    append(cookingRoles[cookingRole.ordinal])
                 }
             },
             style = MaterialTheme.typography.headlineSmall,

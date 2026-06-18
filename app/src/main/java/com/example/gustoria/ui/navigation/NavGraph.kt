@@ -88,6 +88,10 @@ class GustoriaNavigationActions(private val navController: NavController) {
         navController.navigate(Authentication)
     }
 
+    fun navigateToRegistration() {
+        navController.navigate(Registration)
+    }
+
     fun navigateToActionRequirement(action: String) {
         navController.navigate(ActionRequirement(action))
     }
@@ -195,20 +199,46 @@ fun GustoriaApp(
             ){
                 dialog<Authentication>(
                     // To have the dialog width not stuck at fixed size
-                    dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+                    dialogProperties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnClickOutside = true
+                    )
                 ) {
                     AuthenticationDestination(
-                        onAuthSuccess = { navActions.navigateBack() }
+                        onAuthSuccess = { navActions.navigateBack() },
+                        onNeedsRegistration = {
+                            navController.popBackStack()
+                            navActions.navigateToRegistration()
+                        }
                     )
                 }
 
                 dialog<ActionRequirement>(
-                    dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+                    dialogProperties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnClickOutside = true
+                    )
                 ) { backStackEntry ->
                     val args: ActionRequirement = backStackEntry.toRoute()
                     ActionRequirementDestination(
                         action = args.action,
-                        onAuthSuccess = { navActions.navigateBack() }
+                        onAuthSuccess = { navActions.navigateBack() },
+                        onNeedsRegistration = {
+                            navController.popBackStack()
+                            navActions.navigateToRegistration()
+                        }
+                    )
+                }
+
+                dialog<Registration>(
+                    dialogProperties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnClickOutside = false
+                    )
+                ) {
+                    RegistrationDestination(
+                        onRegistrationSuccess = { navActions.navigateBack() },
+                        onCancel = { navActions.navigateBack() }
                     )
                 }
                 composable<Home> {

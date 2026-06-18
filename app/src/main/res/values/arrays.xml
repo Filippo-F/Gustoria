@@ -73,4 +73,12 @@
         <item>to taste</item>
     </string-array>
 
+    <string-array name="cooking_roles">
+        <item>None</item>
+        <item>Food Lover</item>
+        <item>Home Cook</item>
+        <item>Content Creator</item>
+        <item>Professional Chef</item>
+    </string-array>
+
 </resources>

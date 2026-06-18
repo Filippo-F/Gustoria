@@ -47,6 +47,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringArrayResource
+import com.example.gustoria.R
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -361,9 +363,10 @@ fun ProfileInfoScreen(
                     titleColor = MaterialTheme.colorScheme.tertiary
                 ) {
                     var expanded by remember { mutableStateOf(false) }
+                    val cookingRoles = stringArrayResource(R.array.cooking_roles)
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
-                            value = if (draft.cookingRole == CookingRole.NONE) "" else draft.cookingRole.displayName(),
+                            value = if (draft.cookingRole == CookingRole.NONE) "" else cookingRoles[draft.cookingRole.ordinal],
                             onValueChange = {},
                             readOnly = true,
                             modifier = Modifier.fillMaxWidth(),
@@ -394,7 +397,7 @@ fun ProfileInfoScreen(
                         ) {
                             CookingRole.entries.forEach { role ->
                                 DropdownMenuItem(
-                                    text = { Text(role.displayName()) },
+                                    text = { Text(cookingRoles[role.ordinal]) },
                                     onClick = {
                                         viewModel.setCookingRole(role)
                                         expanded = false

@@ -142,6 +142,13 @@ class AuthenticationViewModel(
         }
     }
 
+    fun cancelRegistration() {
+        viewModelScope.launch {
+            SessionManagerFacade.logOut()
+            _uiState.update { it.copy(showRegistration = false) }
+        }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
