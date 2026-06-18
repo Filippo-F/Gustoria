@@ -271,7 +271,7 @@ fun OtherProfileScreen(
                 }
                 item {
                     Text(
-                        text = "Recipes",
+                        text = "Recent Recipes",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(16.dp)
@@ -287,7 +287,8 @@ fun OtherProfileScreen(
                         )
                     }
                 } else {
-                    items(recipes, key = { it.id }) { recipe ->
+                    val recentRecipes = recipes.sortedByDescending { it.createdAt }.take(3)
+                    items(recentRecipes, key = { it.id }) { recipe ->
                         RecipeCard(
                             recipe = recipe,
                             onClick = { onRecipeClick(recipe.id) },
