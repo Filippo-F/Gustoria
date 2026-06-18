@@ -31,22 +31,17 @@ fun FeaturedSearchDestination(
 
     FeaturedSearchScreen(
         recentSearches = recentSearches,
-        trendingSearches = searchViewModel.trendingSearches,
-        trendingCategories = searchViewModel.trendingCategories,
         onSearchClick = navActions::navigateToSearching,
         onCategoryClick = { categoryName ->
             recipeViewModel.resetFilters()
             recipeViewModel.updateNameQuery(categoryName)
+            searchViewModel.addRecentSearch(categoryName)
             navActions.navigateToSearched()
         },
         onRecentSearchClick = { query ->
             recipeViewModel.resetFilters()
             recipeViewModel.updateNameQuery(query)
-            navActions.navigateToSearched()
-        },
-        onTrendingTagClick = { tag ->
-            recipeViewModel.resetFilters()
-            recipeViewModel.updateNameQuery(tag.removePrefix("#"))
+            searchViewModel.addRecentSearch(query)
             navActions.navigateToSearched()
         },
         onClearAllRecentSearches = searchViewModel::clearAllRecentSearches,
@@ -57,7 +52,8 @@ fun FeaturedSearchDestination(
 @Composable
 fun SearchingDestination(
     navActions: GustoriaNavigationActions,
-    viewModel: RecipeViewModel
+    viewModel: RecipeViewModel,
+    searchViewModel: SearchViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = SearchViewModel.Factory)
 ) {
     val filters by viewModel.filters.collectAsStateWithLifecycle()
     val recipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
@@ -66,7 +62,13 @@ fun SearchingDestination(
         filters = filters,
         resultCount = recipes.size,
         onClose = navActions::navigateBack,
-        onShowResultsClick = { navActions.navigateToSearched() },
+        onShowResultsClick = {
+            val query = filters.nameQuery.trim()
+            if (query.isNotBlank()) {
+                searchViewModel.addRecentSearch(query)
+            }
+            navActions.navigateToSearched()
+        },
         onResetFilters = viewModel::resetFilters,
         onToggleDifficulty = viewModel::toggleDifficulty,
         onToggleCost = viewModel::toggleCost,

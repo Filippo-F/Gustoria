@@ -1,6 +1,5 @@
 package com.example.gustoria.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,15 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -43,22 +42,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gustoria.R
+import com.example.gustoria.dataclass.RecentSearch
+import com.example.gustoria.ui.utils.formatTimestamp
 
-import com.example.gustoria.viewmodel.RecentSearch
-import com.example.gustoria.viewmodel.TrendingCategory
 
 @Composable
 fun FeaturedSearchScreen(
     recentSearches: List<RecentSearch>,
-    trendingSearches: List<String>,
-    trendingCategories: List<TrendingCategory>,
     onSearchClick: () -> Unit,
     onCategoryClick: (String) -> Unit,
     onRecentSearchClick: (String) -> Unit,
-    onTrendingTagClick: (String) -> Unit,
     onClearAllRecentSearches: () -> Unit,
     onRemoveRecentSearch: (String) -> Unit
 ) {
+    val categoryTitles = stringArrayResource(R.array.search_trending_categories).toList()
+    val categoryImages = stringArrayResource(R.array.search_trending_category_images).toList()
+    val categories = categoryTitles.zip(categoryImages)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,7 +86,7 @@ fun FeaturedSearchScreen(
                             append("craving?")
                         }
                     },
-                    style = MaterialTheme.typography.headlineLarge, // Rimpicciolito da displaySmall
+                    style = MaterialTheme.typography.headlineLarge,
                     lineHeight = 36.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onBackground
@@ -139,37 +139,60 @@ fun FeaturedSearchScreen(
                             modifier = Modifier.clickable { onClearAllRecentSearches() }
                         )
                     }
-                    
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(vertical = 12.dp)
-                    ) {
-                        items(recentSearches, key = { it.id }) { recent ->
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
-                                color = Color.Transparent,
-                                modifier = Modifier.clickable { onRecentSearchClick(recent.title) }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    recentSearches.take(5).forEach { recent ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onRecentSearchClick(recent.title) }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            // Leading food icon thumbnail
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                                ) {
-                                    Text(
-                                        text = recent.title,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Remove",
-                                        modifier = Modifier
-                                            .size(12.dp)
-                                            .clickable { onRemoveRecentSearch(recent.id) },
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                    )
-                                }
+                                AsyncImage(
+                                    model = null,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop,
+                                    fallback = painterResource(R.drawable.no_image),
+                                    error = painterResource(R.drawable.no_image)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            // Title + timestamp
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = recent.title,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 2
+                                )
+                                Text(
+                                    text = formatTimestamp(recent.searchedAt),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                    letterSpacing = 0.8.sp
+                                )
+                            }
+                            // Remove button
+                            IconButton(
+                                onClick = { onRemoveRecentSearch(recent.id) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Remove",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                )
                             }
                         }
                     }
@@ -177,13 +200,13 @@ fun FeaturedSearchScreen(
                 }
             }
 
-            // TRENDING CATEGORIES
+            // EXPLORE CATEGORIES
             item {
                 Text("EXPLORE CATEGORIES", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, letterSpacing = 1.1.sp)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            val chunkedCategories = trendingCategories.chunked(2)
+            val chunkedCategories = categories.chunked(2)
             items(chunkedCategories) { rowCategories ->
                 Row(
                     modifier = Modifier
@@ -191,20 +214,21 @@ fun FeaturedSearchScreen(
                         .padding(vertical = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    rowCategories.forEach { category ->
+                    rowCategories.forEach { (title, imageUrl) ->
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(16.dp))
-                                .clickable { onCategoryClick(category.title) }
+                                .clickable { onCategoryClick(title) }
                         ) {
                             AsyncImage(
-                                model = category.imageUrl,
-                                contentDescription = category.title,
-                                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
+                                model = imageUrl,
+                                contentDescription = title,
+                                modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
-                                fallback = painterResource(R.drawable.no_image)
+                                fallback = painterResource(R.drawable.no_image),
+                                error = painterResource(R.drawable.no_image)
                             )
                             Box(
                                 modifier = Modifier
@@ -216,9 +240,8 @@ fun FeaturedSearchScreen(
                                         )
                                     )
                             )
-
                             Text(
-                                text = category.title,
+                                text = title,
                                 color = Color.White,
                                 fontWeight = FontWeight.ExtraBold,
                                 style = MaterialTheme.typography.titleMedium,
@@ -226,7 +249,7 @@ fun FeaturedSearchScreen(
                             )
                         }
                     }
-                    // Add an empty spacer if the row has only one item to keep alignment
+                    // Keep alignment when last row has a single item
                     if (rowCategories.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }

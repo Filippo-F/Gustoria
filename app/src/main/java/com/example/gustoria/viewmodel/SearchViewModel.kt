@@ -2,52 +2,68 @@ package com.example.gustoria.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.gustoria.GustoriaApplication
+import com.example.gustoria.dataclass.RecentSearch
+import com.example.gustoria.domain.UserRepoInterface
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-data class RecentSearch(val id: String, val title: String, val subtitle: String)
-data class TrendingCategory(val id: String, val title: String, val imageUrl: String?)
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val userRepository: UserRepoInterface
+) : ViewModel() {
 
-    val trendingSearches = listOf("#Pizza", "#Sushi")
+    private val currentUserId: String?
+        get() = FirebaseAuth.getInstance().currentUser?.uid
 
-    private val _recentSearches = MutableStateFlow(
-        listOf(
-            RecentSearch("1", "Summer Harvest Buddha Bowl", "SEARCHED 2H AGO"),
-            RecentSearch("2", "Smoked Paprika Roast Salmon", "SEARCHED YESTERDAY"),
-            RecentSearch("3", "Artisanal Sourdough Pizza Base", "SEARCHED 3D AGO")
-        )
-    )
-    val recentSearches: StateFlow<List<RecentSearch>> = _recentSearches.asStateFlow()
+    /** Recent searches loaded in real-time from Firestore, ordered newest-first. */
+    val recentSearches: StateFlow<List<RecentSearch>> = run {
+        val uid = currentUserId
+        if (uid != null) {
+            userRepository.getRecentSearches(uid)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+        } else {
+            flowOf(emptyList<RecentSearch>()).stateIn(
+                viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
+            )
+        }
+    }
 
-    val trendingCategories = listOf(
-        TrendingCategory("c1", "Spaghetti", "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c2", "Pizza", "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c3", "Sushi", "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c4", "Salad", "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c5", "Soup", "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c6", "Risotto", "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c7", "Burger", "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80"),
-        TrendingCategory("c8", "Dessert", "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=300&q=80")
-    )
-    
-    fun clearAllRecentSearches() {
-        _recentSearches.value = emptyList()
+    /** Saves a new search term to Firestore (only if non-blank and not already the most recent). */
+    fun addRecentSearch(title: String) {
+        val uid = currentUserId ?: return
+        if (title.isBlank()) return
+        viewModelScope.launch {
+            userRepository.addRecentSearch(uid, title)
+        }
     }
 
     fun removeRecentSearch(id: String) {
-        _recentSearches.update { list -> list.filter { it.id != id } }
+        val uid = currentUserId ?: return
+        viewModelScope.launch {
+            userRepository.removeRecentSearch(uid, id)
+        }
+    }
+
+    fun clearAllRecentSearches() {
+        val uid = currentUserId ?: return
+        viewModelScope.launch {
+            userRepository.clearAllRecentSearches(uid)
+        }
     }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                SearchViewModel()
+                val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as GustoriaApplication
+                SearchViewModel(userRepository = app.container.userRepository)
             }
         }
     }

@@ -1,17 +1,21 @@
 package com.example.gustoria.data.firebaseRepo
 
 import com.example.gustoria.dataclass.CookingRole
+import com.example.gustoria.dataclass.RecentSearch
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.Collections
 import com.example.gustoria.domain.UserRepoInterface
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class FirebaseUserRepo(
     private val firestore: FirebaseFirestore
@@ -206,6 +210,63 @@ class FirebaseUserRepo(
         return usersCollection.document(currentUserId)
             .snapshots()
             .map { it.toObject(User::class.java)?.followingIds?.contains(targetUserId) == true }
+    }
+
+    private fun recentSearchesCollection(userId: String) =
+        usersCollection.document(userId).collection(Collections.RECENT_SEARCHES)
+
+    override fun getRecentSearches(userId: String): Flow<List<RecentSearch>> {
+        return recentSearchesCollection(userId)
+            .orderBy("searchedAt", Query.Direction.DESCENDING)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.documents.mapNotNull { doc ->
+                    RecentSearch(
+                        id = doc.getString("id") ?: doc.id,
+                        title = doc.getString("title") ?: "",
+                        searchedAt = doc.getLong("searchedAt") ?: System.currentTimeMillis()
+                    )
+                }
+            }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    override suspend fun addRecentSearch(userId: String, title: String) {
+        val collection = recentSearchesCollection(userId)
+
+        // Avoid duplicate: remove any existing entry with the same title (case-insensitive)
+        val existing = collection
+            .whereEqualTo("title", title)
+            .get().await()
+        existing.documents.forEach { it.reference.delete().await() }
+
+        // Enforce maximum of 10 recent searches — delete oldest if needed
+        val all = collection
+            .orderBy("searchedAt", Query.Direction.DESCENDING)
+            .get().await()
+        if (all.size() >= 10) {
+            all.documents.drop(9).forEach { it.reference.delete().await() }
+        }
+
+        // Save the new entry
+        val id = Uuid.random().toString()
+        val entry = mapOf(
+            "id" to id,
+            "title" to title,
+            "searchedAt" to System.currentTimeMillis()
+        )
+        collection.document(id).set(entry).await()
+    }
+
+    override suspend fun removeRecentSearch(userId: String, searchId: String) {
+        recentSearchesCollection(userId).document(searchId).delete().await()
+    }
+
+    override suspend fun clearAllRecentSearches(userId: String) {
+        val docs = recentSearchesCollection(userId).get().await()
+        firestore.runBatch { batch ->
+            docs.documents.forEach { batch.delete(it.reference) }
+        }.await()
     }
 
 }

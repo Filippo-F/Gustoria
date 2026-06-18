@@ -38,6 +38,7 @@ import coil.compose.AsyncImage
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Review
+import com.example.gustoria.ui.utils.formatTimestamp
 
 @Composable
 fun ReviewCard(
@@ -108,6 +109,13 @@ fun ReviewCard(
                         Text(
                             text = displayName,
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
+                    if (review.timestamp > 0L) {
+                        Text(
+                            text = formatTimestamp(review.timestamp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     }
                 }

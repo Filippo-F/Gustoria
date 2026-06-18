@@ -34,10 +34,10 @@ import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
-import java.text.SimpleDateFormat
+import java.util.Locale
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,8 +51,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import java.util.Date
-import java.util.Locale
+import com.example.gustoria.ui.utils.formatTimestamp
 
 @MultiPreview
 @Preview
@@ -286,15 +285,4 @@ private fun NotificationItem(
         color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
     )
 }
-
-private fun formatTimestamp(timestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = now - timestamp
-    return when {
-        diff < 60_000 -> "Just now"
-        diff < 3_600_000 -> "${diff / 60_000}m ago"
-        diff < 86_400_000 -> "${diff / 3_600_000}h ago"
-        diff < 172_800_000 -> "Yesterday"
-        else -> SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(timestamp))
-    }
-}
+

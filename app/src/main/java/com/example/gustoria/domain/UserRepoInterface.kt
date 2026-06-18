@@ -1,6 +1,7 @@
 package com.example.gustoria.domain
 
 import com.example.gustoria.dataclass.User
+import com.example.gustoria.dataclass.RecentSearch
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepoInterface {
@@ -58,4 +59,15 @@ interface UserRepoInterface {
     // True se il loggedUser segue già targetUserId
     fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean>
 
+    // Ritorna le ricerche recenti dell'utente in tempo reale, ordinate dalla più recente
+    fun getRecentSearches(userId: String): Flow<List<RecentSearch>>
+
+    // Aggiunge una ricerca recente; rimuove automaticamente la più vecchia se si supera il limite di 10
+    suspend fun addRecentSearch(userId: String, title: String)
+
+    // Rimuove una singola ricerca recente tramite il suo ID
+    suspend fun removeRecentSearch(userId: String, searchId: String)
+
+    // Cancella tutte le ricerche recenti dell'utente
+    suspend fun clearAllRecentSearches(userId: String)
 }

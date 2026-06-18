@@ -17,5 +17,5 @@ data class Review (
 
     val photoUri: String? = null,
 
-    val timestamp: String = ""
+    val timestamp: Long = 0L
 )

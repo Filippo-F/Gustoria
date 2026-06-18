@@ -5,4 +5,5 @@ object Collections {
     const val RECIPES = "recipes"
     const val USERS = "users"
     const val NOTIFICATIONS = "notifications"
+    const val RECENT_SEARCHES = "recentSearches"
 }

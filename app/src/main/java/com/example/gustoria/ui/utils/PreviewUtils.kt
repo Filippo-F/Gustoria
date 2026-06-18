@@ -1,6 +1,7 @@
 package com.example.gustoria.ui.utils
 
 import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.dataclass.RecentSearch
 import com.example.gustoria.dataclass.Review
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.RecipeRepoInterface
@@ -61,6 +62,10 @@ object PreviewUtils {
         override suspend fun followUser(currentUserId: String, targetUserId: String) {}
         override suspend fun unfollowUser(currentUserId: String, targetUserId: String) {}
         override fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean> = flowOf(false)
+        override fun getRecentSearches(userId: String): Flow<List<RecentSearch>> = flowOf(emptyList())
+        override suspend fun addRecentSearch(userId: String, title: String) {}
+        override suspend fun removeRecentSearch(userId: String, searchId: String) {}
+        override suspend fun clearAllRecentSearches(userId: String) {}
     }
 
     fun createFakeReviewRepo() = object : ReviewRepoInterface {

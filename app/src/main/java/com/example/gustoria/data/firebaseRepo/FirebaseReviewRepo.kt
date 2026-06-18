@@ -31,7 +31,7 @@ class FirebaseReviewRepo(
                     description = "Semplicissima e deliziosa! Il sugo di pomodoro fresco fa tutta la differenza.",
                     rating = 5.0f,
                     likedByUserIds = listOf("101"), // 202 scrive, 101 mette like
-                    timestamp = (now - 86400000 * 7).toString()
+                    timestamp = (now - 86400000 * 7)
                 ),
                 Review(
                     id = "review_spaghetti_2",
@@ -40,7 +40,7 @@ class FirebaseReviewRepo(
                     description = "Ottima ricetta, la faccio ogni settimana. Ho aggiunto un po' di peperoncino.",
                     rating = 4.5f,
                     likedByUserIds = listOf("101"),
-                    timestamp = (now - 86400000 * 5).toString()
+                    timestamp = (now - 86400000 * 5)
                 ),
                 Review(
                     id = "review_spaghetti_3",
@@ -49,7 +49,7 @@ class FirebaseReviewRepo(
                     description = "Veloce e gustosa, perfetta per un pranzo last-minute. 10/10!",
                     rating = 5.0f,
                     likedByUserIds = listOf("101"),
-                    timestamp = (now - 86400000 * 3).toString()
+                    timestamp = (now - 86400000 * 3)
                 ),
                 Review(
                     id = "review_spaghetti_4",
@@ -57,7 +57,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_spaghetti_pomodoro",
                     description = "Buona, ma ho preferito usare pomodorini invece dei pelati.",
                     rating = 4.0f,
-                    timestamp = (now - 86400000).toString()
+                    timestamp = (now - 86400000)
                 ),
 
                 // 4 reviews for recipe_sushi_rolls (owned by 202)
@@ -68,7 +68,7 @@ class FirebaseReviewRepo(
                     description = "Ottimo sushi casalingo! Difficile ma il risultato è fantastico.",
                     rating = 5.0f,
                     likedByUserIds = listOf("202"), // 101 scrive, 202 mette like
-                    timestamp = (now - 86400000 * 6).toString()
+                    timestamp = (now - 86400000 * 6)
                 ),
                 Review(
                     id = "review_sushi_2",
@@ -77,7 +77,7 @@ class FirebaseReviewRepo(
                     description = "Ho seguito la ricetta passo passo, il riso era perfetto. Proverò con il tonno.",
                     rating = 4.5f,
                     likedByUserIds = listOf("202"),
-                    timestamp = (now - 86400000 * 4).toString()
+                    timestamp = (now - 86400000 * 4)
                 ),
                 Review(
                     id = "review_sushi_3",
@@ -85,7 +85,7 @@ class FirebaseReviewRepo(
                     recipeId = "recipe_sushi_rolls",
                     description = "Molto bello esteticamente, ma la tecnica di arrotolamento richiede pratica.",
                     rating = 4.0f,
-                    timestamp = (now - 86400000 * 2).toString()
+                    timestamp = (now - 86400000 * 2)
                 ),
                 Review(
                     id = "review_sushi_4",
@@ -94,7 +94,7 @@ class FirebaseReviewRepo(
                     description = "Perfetto per una cena speciale! Ingredienti facilmente reperibili.",
                     rating = 5.0f,
                     likedByUserIds = listOf("202"),
-                    timestamp = (now - 3600000).toString()
+                    timestamp = (now - 3600000)
                 ),
 
                 // Extra reviews for other recipes
@@ -105,7 +105,7 @@ class FirebaseReviewRepo(
                     description = "Impasto meraviglioso, meglio di molte pizzerie!",
                     rating = 5.0f,
                     likedByUserIds = listOf("101"),
-                    timestamp = (now - 86400000 * 10).toString()
+                    timestamp = (now - 86400000 * 10)
                 ),
                 Review(
                     id = "review_burger_1",
@@ -114,7 +114,7 @@ class FirebaseReviewRepo(
                     description = "La tecnica smash burger è perfetta, crosta croccante e interno succoso.",
                     rating = 4.5f,
                     likedByUserIds = listOf("202"),
-                    timestamp = (now - 86400000 * 2).toString()
+                    timestamp = (now - 86400000 * 2)
                 )
             )
 
