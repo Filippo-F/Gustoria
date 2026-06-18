@@ -23,7 +23,6 @@ class SearchViewModel(
     private val currentUserId: String?
         get() = FirebaseAuth.getInstance().currentUser?.uid
 
-    /** Recent searches loaded in real-time from Firestore, ordered newest-first. */
     val recentSearches: StateFlow<List<RecentSearch>> = run {
         val uid = currentUserId
         if (uid != null) {
@@ -36,7 +35,6 @@ class SearchViewModel(
         }
     }
 
-    /** Saves a new search term to Firestore (only if non-blank and not already the most recent). */
     fun addRecentSearch(title: String) {
         val uid = currentUserId ?: return
         if (title.isBlank()) return
@@ -62,8 +60,9 @@ class SearchViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as GustoriaApplication
-                SearchViewModel(userRepository = app.container.userRepository)
+                val application = (this[APPLICATION_KEY] as GustoriaApplication)
+                val userRepository = application.container.userRepository
+                SearchViewModel(userRepository)
             }
         }
     }
