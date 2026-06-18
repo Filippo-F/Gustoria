@@ -2,6 +2,7 @@ package com.example.gustoria.ui.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,6 +70,14 @@ fun RegistrationDestination(
     onCancel: () -> Unit,
     viewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory)
 ) {
+    DisposableEffect(Unit) {
+        onDispose {
+            if (viewModel.state.value.showRegistration) {
+                viewModel.cancelRegistration()
+            }
+        }
+    }
+
     BackHandler {
         viewModel.cancelRegistration()
         onCancel()

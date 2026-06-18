@@ -24,6 +24,7 @@ import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
+import com.example.gustoria.viewmodel.AuthenticationViewModel
 
 
 class GustoriaNavigationActions(private val navController: NavController) {
@@ -178,6 +179,9 @@ fun GustoriaApp(
     navController: NavHostController,
     navActions: GustoriaNavigationActions
 ) {
+    // Initialize AuthenticationViewModel at root to handle half-registered users
+    viewModel<AuthenticationViewModel>(factory = AuthenticationViewModel.Factory)
+
     Scaffold(
         bottomBar = {
             AppBottomNavBar(
@@ -201,7 +205,6 @@ fun GustoriaApp(
                     // To have the dialog width not stuck at fixed size
                     dialogProperties = DialogProperties(
                         usePlatformDefaultWidth = false,
-                        dismissOnClickOutside = true
                     )
                 ) {
                     AuthenticationDestination(
@@ -216,7 +219,6 @@ fun GustoriaApp(
                 dialog<ActionRequirement>(
                     dialogProperties = DialogProperties(
                         usePlatformDefaultWidth = false,
-                        dismissOnClickOutside = true
                     )
                 ) { backStackEntry ->
                     val args: ActionRequirement = backStackEntry.toRoute()
@@ -233,7 +235,6 @@ fun GustoriaApp(
                 dialog<Registration>(
                     dialogProperties = DialogProperties(
                         usePlatformDefaultWidth = false,
-                        dismissOnClickOutside = false
                     )
                 ) {
                     RegistrationDestination(

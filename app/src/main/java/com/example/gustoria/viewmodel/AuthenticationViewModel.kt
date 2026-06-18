@@ -52,6 +52,21 @@ class AuthenticationViewModel(
         initialValue = AuthUiState()
     )
 
+    init {
+        viewModelScope.launch {
+            // Check at startup and whenever currentUserId changes
+            SessionManagerFacade.currentUserId.collect { userId ->
+                if (userId != null) {
+                    val user = userRepo.getUserById(userId).first()
+                    if (user == null && !_uiState.value.showRegistration) {
+                        // Check for user authenticated but not registerd in firestore
+                        SessionManagerFacade.logOut()
+                    }
+                }
+            }
+        }
+    }
+
     fun updateNickname(value: String) {
         _uiState.update { it.copy(nickname = value, errors = it.errors - "nickname") }
     }
