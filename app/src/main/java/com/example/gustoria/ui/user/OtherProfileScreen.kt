@@ -40,6 +40,9 @@ import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 import com.example.gustoria.dataclass.Recipe
 import androidx.compose.foundation.lazy.items
+import com.example.gustoria.dataclass.User
+import com.example.gustoria.ui.recipe.components.RecipeCard
+import com.example.gustoria.ui.recipe.components.RecipeCardContent
 
 @MultiPreview
 @Composable
@@ -168,7 +171,7 @@ fun ValueBox(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OtherProfileScreen(
-    user: com.example.gustoria.dataclass.User?,
+    user: User?,
     recipeCount: Int,
     likeCount: Int,
     isFollowing: Boolean,
@@ -281,10 +284,11 @@ fun OtherProfileScreen(
                     }
                 } else {
                     items(recipes, key = { it.id }) { recipe ->
-                        com.example.gustoria.ui.recipe.components.RecipeCard(
+                        RecipeCard(
                             recipe = recipe,
                             onClick = { onRecipeClick(recipe.id) },
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                            content = { RecipeCardContent(recipe, imageHeight = 160.dp) }
                         )
                     }
                 }

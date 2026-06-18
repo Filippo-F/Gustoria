@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.data.utils.ImageUploader
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
@@ -201,13 +202,13 @@ class OwnedProfileViewModel(
                     val publicProfileUrl = if (draft.profileImageUri != null && !draft.profileImageUri.startsWith("http")) {
                         // Delete old image if a new one is uploaded
                         user.value?.profileImageUri?.let { oldUrl ->
-                            com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                            ImageUploader.deleteImage(oldUrl, "profiles")
                         }
-                        com.example.gustoria.data.utils.ImageUploader.uploadImage(draft.profileImageUri, "profiles")
+                        ImageUploader.uploadImage(draft.profileImageUri, "profiles")
                     } else if (draft.profileImageUri == null) {
                         // Delete image if it was removed
                         user.value?.profileImageUri?.let { oldUrl ->
-                            com.example.gustoria.data.utils.ImageUploader.deleteImage(oldUrl, "profiles")
+                            ImageUploader.deleteImage(oldUrl, "profiles")
                         }
                         null
                     } else {

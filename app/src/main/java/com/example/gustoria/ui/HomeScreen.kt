@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.ui.recipe.components.RecipeCard
+import com.example.gustoria.ui.recipe.components.RecipeCardContent
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
 
@@ -230,7 +231,7 @@ private fun RecommendedRow(
                 onClick = { onRecipeClick(recipe.id) },
                 modifier = Modifier.width(260.dp),
                 content = {
-                    com.example.gustoria.ui.recipe.components.RecipeCardContent(
+                    RecipeCardContent(
                         recipe = recipe,
                         imageHeight = 160.dp
                     )

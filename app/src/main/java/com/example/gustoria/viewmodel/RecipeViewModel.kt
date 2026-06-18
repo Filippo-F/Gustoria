@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.data.utils.ImageUploader
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.ui.recipe.RecipeFilters
 import com.example.gustoria.ui.recipe.applyFilters
@@ -203,7 +204,7 @@ class RecipeViewModel(
 
             // 5. Delete image from storage
             recipe?.imageUri?.let {
-                com.example.gustoria.data.utils.ImageUploader.deleteImage(it, "recipes")
+                ImageUploader.deleteImage(it, "recipes")
             }
 
             // 6. Delete recipe

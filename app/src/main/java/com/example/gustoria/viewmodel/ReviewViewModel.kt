@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.data.utils.ImageUploader
 import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
@@ -57,7 +58,7 @@ class ReviewViewModel(
             try {
                 // Upload image
                 val publicPhotoUrl = review.photoUri?.let { uri ->
-                    com.example.gustoria.data.utils.ImageUploader.uploadImage(uri, "reviews")
+                    ImageUploader.uploadImage(uri, "reviews")
                 } ?: review.photoUri
 
                 // Create review
@@ -125,7 +126,7 @@ class ReviewViewModel(
             // Get review to find image URL
             reviewRepository.getReviewById(reviewId).first()?.let { review ->
                 review.photoUri?.let { url ->
-                    com.example.gustoria.data.utils.ImageUploader.deleteImage(url, "reviews")
+                    ImageUploader.deleteImage(url, "reviews")
                 }
             }
             reviewRepository.deleteReview(reviewId)

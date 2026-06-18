@@ -8,9 +8,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.data.utils.ImageUploader
+import com.example.gustoria.dataclass.Notification
+import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
@@ -22,6 +24,15 @@ import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalUuidApi::class)
 class RecipeCollectionViewModel(
@@ -155,7 +166,7 @@ class RecipeCollectionViewModel(
 
             // 5. Delete image
             recipe?.imageUri?.let {
-                com.example.gustoria.data.utils.ImageUploader.deleteImage(it, "recipes")
+                ImageUploader.deleteImage(it, "recipes")
             }
 
             // 6. Delete recipe
@@ -178,9 +189,9 @@ class RecipeCollectionViewModel(
             // Notify original recipe owner
             if (recipe.ownerId != userId) {
                 notificationRepo.addNotification(
-                    com.example.gustoria.dataclass.Notification(
+                    Notification(
                         recipientUserId = recipe.ownerId,
-                        type = com.example.gustoria.dataclass.NotificationType.RECIPE_DUPLICATED.name,
+                        type = NotificationType.RECIPE_DUPLICATED.name,
                         title = "Your recipe was duplicated!",
                         message = "\"${duplicatedRecipe.name}\" was inspired by your recipe.",
                         targetRecipeId = duplicatedRecipe.id

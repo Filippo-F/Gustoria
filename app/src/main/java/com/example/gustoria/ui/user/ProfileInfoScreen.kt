@@ -63,6 +63,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.gustoria.dataclass.CookingRole
+import com.example.gustoria.dataclass.User
 import com.example.gustoria.ui.CameraXScreen
 import com.example.gustoria.ui.ThreeItemTopNavbar
 import com.example.gustoria.ui.theme.GustoriaTheme
@@ -85,7 +86,7 @@ fun ProfileInfoScreenPreview() {
 
 @Composable
 fun ProfileInfoScreen(
-    user: com.example.gustoria.dataclass.User?,
+    user: User?,
     viewModel: OwnedProfileViewModel,
     onBack: () -> Unit,
     onSave: () -> Unit

@@ -10,6 +10,7 @@ import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.dataclass.RecipeIngredient
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.data.utils.ImageUploader
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.ReviewRepoInterface
@@ -232,15 +233,15 @@ class EditRecipeViewModel(
                     } else {
                         // Se c'è una vecchia immagine e la stiamo cambiando, eliminiamo la vecchia
                         if (originalRecipe?.imageUri != null && originalRecipe?.imageUri != currentState.imageUri) {
-                            com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+                            ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
                         }
-                        com.example.gustoria.data.utils.ImageUploader.uploadImage(currentState.imageUri, "recipes")
+                        ImageUploader.uploadImage(currentState.imageUri, "recipes")
                             ?: currentState.imageUri
                     }
                 } else {
                     // Se l'utente ha rimosso l'immagine (uri vuota) ma prima c'era
                     if (originalRecipe?.imageUri != null) {
-                        com.example.gustoria.data.utils.ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
+                        ImageUploader.deleteImage(originalRecipe?.imageUri, "recipes")
                     }
                     null
                 }
@@ -302,7 +303,7 @@ class EditRecipeViewModel(
 
                 // 5. Elimina l'immagine da Supabase
                 originalRecipe?.imageUri?.let {
-                    com.example.gustoria.data.utils.ImageUploader.deleteImage(it, "recipes")
+                    ImageUploader.deleteImage(it, "recipes")
                 }
 
                 // 6. Elimina la ricetta
