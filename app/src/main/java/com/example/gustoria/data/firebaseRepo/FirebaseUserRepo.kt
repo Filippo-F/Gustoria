@@ -80,7 +80,8 @@ class FirebaseUserRepo(
                     favoriteIngredients = listOf("Guanciale", "Pecorino", "Olive Oil"),
                     favouriteRecipesIds = listOf("r103_1", "r105_2"),
                     triedRecipesIds = listOf("r102_1"),
-                    followingIds = listOf("102", "104")
+                    followingIds = listOf("102", "104"),
+                    numberOfFollowers = 2
                 ),
                 User(
                     internalId = "102",
@@ -96,7 +97,8 @@ class FirebaseUserRepo(
                     favoriteIngredients = listOf("Chili", "Cilantro", "Lime"),
                     favouriteRecipesIds = emptyList(),
                     triedRecipesIds = listOf("r101_1"),
-                    followingIds = listOf("101", "103")
+                    followingIds = listOf("101", "103"),
+                    numberOfFollowers = 2
                 ),
                 User(
                     internalId = "103",
@@ -112,7 +114,8 @@ class FirebaseUserRepo(
                     favoriteIngredients = listOf("Tofu", "Avocado", "Quinoa"),
                     favouriteRecipesIds = listOf("r101_2"),
                     triedRecipesIds = listOf("r104_1"),
-                    followingIds = listOf("105")
+                    followingIds = listOf("105"),
+                    numberOfFollowers = 2
                 ),
                 User(
                     internalId = "104",
@@ -128,7 +131,8 @@ class FirebaseUserRepo(
                     favoriteIngredients = listOf("Butter", "Vanilla Extract", "Chocolate"),
                     favouriteRecipesIds = listOf("r105_1"),
                     triedRecipesIds = emptyList(),
-                    followingIds = listOf("101", "105")
+                    followingIds = listOf("101", "105"),
+                    numberOfFollowers = 2
                 ),
                 User(
                     internalId = "105",
@@ -138,13 +142,14 @@ class FirebaseUserRepo(
                     description = "Fast, easy, and delicious meals for busy people.",
                     cookingRole = CookingRole.HOME_COOK,
                     phoneNumber = "+39 333 9998887",
-                    profileImageUri = "https://png.pngtree.com/png-vector/20241204/ourmid/pngtree-profile-picture-icon-flat-design-illustration-vector-png-image_14564505.png",
+                    profileImageUri = "https://freesvg.org/img/winkboy.png",
                     cuisinePreferences = listOf("Japanese", "Italian"),
                     dietaryRestrictions = emptyList(),
                     favoriteIngredients = listOf("Soy Sauce", "Eggs", "Rice"),
                     favouriteRecipesIds = listOf("r101_1", "r103_2"),
                     triedRecipesIds = listOf("r103_1", "r104_1"),
-                    followingIds = listOf("102", "103", "104")
+                    followingIds = listOf("102", "103", "104"),
+                    numberOfFollowers = 2
                 )
             )
 
