@@ -35,7 +35,7 @@ fun HomeDestination(
 ) {
     val recommendedRecipes by viewModel.recommendedRecipes.collectAsStateWithLifecycle()
     val selectedCategoryRecipes by viewModel.selectedCategoryRecipes.collectAsStateWithLifecycle()
-    val myRecipes by viewModel.myRecipes.collectAsStateWithLifecycle()
+    val otherRecipes by viewModel.othersRecipes.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val unreadCount by notificationViewModel.unreadCount.collectAsStateWithLifecycle()
     val currentUser by profileViewModel.user.collectAsStateWithLifecycle()
@@ -60,7 +60,7 @@ fun HomeDestination(
         HomeScreen(
             recommendedRecipes = recommendedRecipes,
             selectedCategoryRecipes = selectedCategoryRecipes,
-            myRecipes = myRecipes,
+            otherRecipes = otherRecipes,
             selectedCategory = selectedCategory,
             unreadCount = unreadCount,
             profileImageUri = currentUser?.profileImageUri,

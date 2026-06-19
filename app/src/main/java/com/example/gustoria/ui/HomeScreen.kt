@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -56,7 +58,7 @@ fun HomeScreenPreview() {
         HomeScreen(
             recommendedRecipes = emptyList(),
             selectedCategoryRecipes = emptyList(),
-            myRecipes = emptyList(),
+            otherRecipes = emptyList(),
             selectedCategory = "All",
             unreadCount = 3,
             profileImageUri = null,
@@ -73,7 +75,7 @@ fun HomeScreenPreview() {
 fun HomeScreen(
     recommendedRecipes: List<Recipe>,
     selectedCategoryRecipes: List<Recipe>,
-    myRecipes: List<Recipe>,
+    otherRecipes: List<Recipe>,
     selectedCategory: String,
     unreadCount: Int,
     profileImageUri: String?,
@@ -183,19 +185,14 @@ fun HomeScreen(
         item {
             HomeSectionHeader(title = "RECENT CREATIONS")
             Spacer(Modifier.height(8.dp))
-            if (myRecipes.isEmpty()) {
-                Text(
-                    text = "No recipes created yet.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            } else {
-                RecentCreationsRow(
-                    recipes = myRecipes,
-                    onRecipeClick = onNavigateToRecipeDetails
-                )
-            }
+        }
+
+        recentCreationsGrid(
+            recipes = otherRecipes,
+            onRecipeClick = onNavigateToRecipeDetails
+        )
+
+        item {
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -257,21 +254,41 @@ private fun RecommendedRow(
     }
 }
 
-@Composable
-private fun RecentCreationsRow(
+private fun LazyListScope.recentCreationsGrid(
     recipes: List<Recipe>,
     onRecipeClick: (String) -> Unit
 ) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(recipes, key = { it.id }) { recipe ->
-            RecipeCard(
-                recipe = recipe,
-                onClick = { onRecipeClick(recipe.id) },
-                modifier = Modifier.width(180.dp)
+    if (recipes.isEmpty()) {
+        item {
+            Text(
+                text = "No recipes created yet.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
+        }
+    } else {
+        val latestRecipes = recipes.take(10)
+        val chunkedRecipes = latestRecipes.chunked(2)
+        items(chunkedRecipes) { rowRecipes ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                rowRecipes.forEach { recipe ->
+                    RecipeCard(
+                        recipe = recipe,
+                        onClick = { onRecipeClick(recipe.id) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                // Fill space if the row has only one item
+                if (rowRecipes.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }

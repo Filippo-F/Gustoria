@@ -13,6 +13,9 @@ interface RecipeRepoInterface {
     // Get the recipes created by a specific user
     fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>>
 
+    // Get the recipes created by all users except the specified one
+    fun getRecipesExcludingOwner(userId: String): Flow<List<Recipe>>
+
     // Insert a new recipe on the platform
     suspend fun addRecipe(recipe: Recipe)
 

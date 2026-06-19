@@ -94,6 +94,17 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val othersRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
+        .flatMapLatest { userId ->
+            recipeRepository.getRecipesExcludingOwner(userId ?: "")
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
     fun selectCategory(category: String) {
         _selectedCategory.value = category
     }

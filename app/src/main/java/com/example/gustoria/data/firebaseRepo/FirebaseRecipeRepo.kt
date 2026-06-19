@@ -577,6 +577,13 @@ class FirebaseRecipeRepo(
             .map { it.toObjects(Recipe::class.java) }
     }
 
+    override fun getRecipesExcludingOwner(userId: String): Flow<List<Recipe>> {
+        return recipesCollection
+            .whereNotEqualTo("ownerId", userId)
+            .snapshots()
+            .map { it.toObjects(Recipe::class.java) }
+    }
+
     override suspend fun addRecipe(recipe: Recipe) {
         recipesCollection.document(recipe.id).set(recipe).await()
     }
