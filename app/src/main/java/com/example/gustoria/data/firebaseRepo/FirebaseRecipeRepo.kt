@@ -277,9 +277,279 @@ class FirebaseRecipeRepo(
                     createdAt = "2026-03-05T19:00:00"
                 )
             )
+            val placeholderRecipesV2 = listOf(
+                // User 101 Recipes
+                Recipe(
+                    id = "r101_1",
+                    ownerId = "101",
+                    name = "Authentic Carbonara",
+                    description = "The classic Roman pasta dish, made with just 4 ingredients.",
+                    imageUri = "https://media-assets.lacucinaitaliana.it/photos/61fd250e7e33782b60f4b6c2/1:1/w_2560%2Cc_limit/Carbonara-classica.jpg",
+                    cost = "€€",
+                    difficulty = "Medium",
+                    cuisineType = "Italian",
+                    mealType = "Dinner",
+                    cookingTimeMinutes = 20,
+                    servings = 2,
+                    rating = 4.8f,
+                    dietaryTags = emptyList(),
+                    tags = listOf("Pasta", "Traditional", "Quick"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Spaghetti", quantity = 200, unit = "g"),
+                        RecipeIngredient(name = "Guanciale", quantity = 100, unit = "g"),
+                        RecipeIngredient(name = "Pecorino Romano", quantity = 50, unit = "g"),
+                        RecipeIngredient(name = "Eggs", quantity = 2, unit = "large")
+                    ),
+                    steps = listOf(
+                        "Boil salted water and cook spaghetti.",
+                        "Brown the guanciale in a pan until crispy.",
+                        "Whisk eggs and pecorino in a bowl.",
+                        "Combine pasta, guanciale, and egg mixture away from heat. Serve immediately."
+                    ),
+                    likedByUserIds = listOf("102", "105"),
+                ),
+                Recipe(
+                    id = "r101_2",
+                    ownerId = "101",
+                    name = "Classic Tiramisu",
+                    description = "A coffee-flavored Italian dessert.",
+                    imageUri = "https://www.giallozafferano.com/images/260-26067/Tiramisu_1200x800.jpg",
+                    cost = "€€",
+                    difficulty = "Medium",
+                    cuisineType = "Italian",
+                    mealType = "Dessert",
+                    cookingTimeMinutes = 30,
+                    servings = 6,
+                    rating = 4.9f,
+                    dietaryTags = listOf("Vegetarian"),
+                    tags = listOf("Sweet", "Coffee", "No-Bake"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Mascarpone", quantity = 250, unit = "g"),
+                        RecipeIngredient(name = "Espresso", quantity = 1, unit = "cup"),
+                        RecipeIngredient(name = "Ladyfingers", quantity = 200, unit = "g"),
+                        RecipeIngredient(name = "Cocoa Powder", quantity = 2, unit = "tbsp")
+                    ),
+                    steps = listOf(
+                        "Brew espresso and let it cool.",
+                        "Whip mascarpone with sugar and eggs.",
+                        "Dip ladyfingers briefly in espresso and layer them in a dish.",
+                        "Spread mascarpone cream over the ladyfingers. Repeat layers.",
+                        "Dust with cocoa powder and chill."
+                    ),
+                    likedByUserIds = listOf("103"),
+                ),
+
+                // User 102 Recipes
+                Recipe(
+                    id = "r102_1",
+                    ownerId = "102",
+                    name = "Spicy Chicken Tacos",
+                    description = "Fiery tacos with homemade salsa.",
+                    imageUri = "https://www.sprinklesandsprouts.com/wp-content/uploads/2024/09/Spicy-Chicken-Tacos-SQ.jpg",
+                    cost = "€",
+                    difficulty = "Easy",
+                    cuisineType = "Mexican",
+                    mealType = "Lunch",
+                    cookingTimeMinutes = 25,
+                    servings = 3,
+                    rating = 4.5f,
+                    dietaryTags = listOf("Gluten-Free"),
+                    tags = listOf("Spicy", "Street Food"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Corn Tortillas", quantity = 6, unit = "pieces"),
+                        RecipeIngredient(name = "Chicken Breast", quantity = 300, unit = "g"),
+                        RecipeIngredient(name = "Chili Powder", quantity = 1, unit = "tbsp"),
+                        RecipeIngredient(name = "Lime", quantity = 1, unit = "piece")
+                    ),
+                    steps = listOf(
+                        "Dice chicken and toss in chili powder and lime juice.",
+                        "Cook chicken in a skillet until browned.",
+                        "Warm the tortillas.",
+                        "Assemble tacos and garnish with fresh cilantro."
+                    ),
+                    likedByUserIds = listOf("101", "104"),
+                ),
+
+                // User 103 Recipes
+                Recipe(
+                    id = "r103_1",
+                    ownerId = "103",
+                    name = "Creamy Vegan Mac and Cheese",
+                    description = "Dairy-free comfort food made with a cashew base.",
+                    imageUri = "https://bitofthegoodstuff.com/wp-content/uploads/2019/12/Vegan-Macaroni-Cheeze-2-1000.jpg",
+                    cost = "€€",
+                    difficulty = "Medium",
+                    cuisineType = "American",
+                    mealType = "Dinner",
+                    cookingTimeMinutes = 40,
+                    servings = 4,
+                    rating = 4.7f,
+                    dietaryTags = listOf("Vegan", "Dairy-Free"),
+                    tags = listOf("Comfort Food", "Healthy"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Macaroni", quantity = 250, unit = "g"),
+                        RecipeIngredient(name = "Raw Cashews", quantity = 1, unit = "cup"),
+                        RecipeIngredient(name = "Nutritional Yeast", quantity = 3, unit = "tbsp"),
+                        RecipeIngredient(name = "Garlic Powder", quantity = 1, unit = "tsp")
+                    ),
+                    steps = listOf(
+                        "Soak cashews in hot water for 20 minutes.",
+                        "Cook macaroni according to package instructions.",
+                        "Blend cashews, nutritional yeast, garlic powder, and water until smooth.",
+                        "Mix the sauce with the pasta and heat through."
+                    ),
+                    likedByUserIds = listOf("101", "105"),
+                ),
+                Recipe(
+                    id = "r103_2",
+                    ownerId = "103",
+                    name = "Avocado Toast with a Twist",
+                    description = "Quick breakfast with secret spices.",
+                    imageUri = "https://www.seriouseats.com/thmb/t5rugZ8T1CHzZo0ljUx7lWJNN2g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__images__2016__05__20160502-avocado-toast-vicky-wasik-blue-cheese-3-9ce8acb777124a92bac3be2395742eca.jpg",
+                    cost = "€",
+                    difficulty = "Easy",
+                    cuisineType = "International",
+                    mealType = "Breakfast",
+                    cookingTimeMinutes = 5,
+                    servings = 1,
+                    rating = 4.2f,
+                    dietaryTags = listOf("Vegan", "Vegetarian"),
+                    tags = listOf("Quick", "Morning"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Sourdough Bread", quantity = 1, unit = "slice"),
+                        RecipeIngredient(name = "Avocado", quantity = 1, unit = "half"),
+                        RecipeIngredient(name = "Chili Flakes", quantity = 1, unit = "pinch"),
+                        RecipeIngredient(name = "Lemon Juice", quantity = 1, unit = "tsp")
+                    ),
+                    steps = listOf(
+                        "Toast the sourdough bread.",
+                        "Mash the avocado with lemon juice.",
+                        "Spread over the toast and sprinkle with chili flakes."
+                    ),
+                    likedByUserIds = emptyList(),
+                ),
+                Recipe(
+                    id = "r103_3",
+                    ownerId = "103",
+                    name = "Green Detox Smoothie",
+                    description = "Start your day with a boost of greens.",
+                    imageUri = "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/7e9dbaae4d82710cb05cfd3eb173aae5/Derivates/a125a309099e85af661461978a981df3ccc37296.jpg",
+                    cost = "€",
+                    difficulty = "Easy",
+                    cuisineType = "Healthy",
+                    mealType = "Breakfast",
+                    cookingTimeMinutes = 5,
+                    servings = 1,
+                    rating = 4.0f,
+                    dietaryTags = listOf("Vegan", "Gluten-Free"),
+                    tags = listOf("Smoothie", "Detox"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Spinach", quantity = 1, unit = "handful"),
+                        RecipeIngredient(name = "Green Apple", quantity = 1, unit = "piece"),
+                        RecipeIngredient(name = "Ginger", quantity = 1, unit = "small piece"),
+                        RecipeIngredient(name = "Water", quantity = 1, unit = "cup")
+                    ),
+                    steps = listOf(
+                        "Chop the apple and ginger.",
+                        "Place all ingredients in a blender.",
+                        "Blend until completely smooth and serve cold."
+                    ),
+                    likedByUserIds = listOf("102"),
+                ),
+
+                // User 104 Recipes
+                Recipe(
+                    id = "r104_1",
+                    ownerId = "104",
+                    name = "Fudgy Brownies",
+                    description = "The ultimate rich and dense chocolate brownies.",
+                    imageUri = "https://www.afarmgirlsdabbles.com/wp-content/uploads/2025/05/Fudgy-Brownies_0043s-500x500.jpg",
+                    cost = "€€",
+                    difficulty = "Medium",
+                    cuisineType = "American",
+                    mealType = "Dessert",
+                    cookingTimeMinutes = 45,
+                    servings = 9,
+                    rating = 4.9f,
+                    dietaryTags = emptyList(),
+                    tags = listOf("Chocolate", "Baking", "Indulgent"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Dark Chocolate", quantity = 200, unit = "g"),
+                        RecipeIngredient(name = "Butter", quantity = 150, unit = "g"),
+                        RecipeIngredient(name = "Sugar", quantity = 200, unit = "g"),
+                        RecipeIngredient(name = "Flour", quantity = 100, unit = "g")
+                    ),
+                    steps = listOf(
+                        "Melt butter and chocolate together.",
+                        "Whisk in sugar and eggs.",
+                        "Fold in the flour gently.",
+                        "Pour into a pan and bake at 180°C for 25 minutes."
+                    ),
+                    likedByUserIds = listOf("103", "105"),
+                ),
+
+                // User 105 Recipes
+                Recipe(
+                    id = "r105_1",
+                    ownerId = "105",
+                    name = "15-Minute Fried Rice",
+                    description = "Use up your leftover rice for a quick dinner.",
+                    imageUri = "https://cicili.tv/wp-content/uploads/2025/12/15-Min-Chicken-Fried-Rice-Small-1.jpg",
+                    cost = "€",
+                    difficulty = "Easy",
+                    cuisineType = "Asian",
+                    mealType = "Dinner",
+                    cookingTimeMinutes = 15,
+                    servings = 2,
+                    rating = 4.3f,
+                    dietaryTags = listOf("Vegetarian"),
+                    tags = listOf("Quick", "Leftovers"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Cooked Rice", quantity = 2, unit = "cups"),
+                        RecipeIngredient(name = "Soy Sauce", quantity = 2, unit = "tbsp"),
+                        RecipeIngredient(name = "Eggs", quantity = 2, unit = "pieces"),
+                        RecipeIngredient(name = "Mixed Vegetables", quantity = 1, unit = "cup")
+                    ),
+                    steps = listOf(
+                        "Scramble the eggs in a wok and set aside.",
+                        "Stir-fry the vegetables until tender.",
+                        "Add the rice and soy sauce, tossing constantly.",
+                        "Mix the eggs back in and serve."
+                    ),
+                    likedByUserIds = listOf("101", "104"),
+                ),
+                Recipe(
+                    id = "r105_2",
+                    ownerId = "105",
+                    name = "Mug Cake",
+                    description = "When you need dessert in 3 minutes.",
+                    imageUri = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/mug-cake-a012dbb.jpg",
+                    cost = "€",
+                    difficulty = "Easy",
+                    cuisineType = "American",
+                    mealType = "Dessert",
+                    cookingTimeMinutes = 3,
+                    servings = 1,
+                    rating = 4.1f,
+                    dietaryTags = emptyList(),
+                    tags = listOf("Microwave", "Late Night"),
+                    ingredients = listOf(
+                        RecipeIngredient(name = "Flour", quantity = 3, unit = "tbsp"),
+                        RecipeIngredient(name = "Sugar", quantity = 2, unit = "tbsp"),
+                        RecipeIngredient(name = "Cocoa Powder", quantity = 1, unit = "tbsp"),
+                        RecipeIngredient(name = "Milk", quantity = 3, unit = "tbsp")
+                    ),
+                    steps = listOf(
+                        "Mix all dry ingredients in a microwave-safe mug.",
+                        "Stir in the milk until smooth.",
+                        "Microwave on high for 90 seconds."
+                    ),
+                    likedByUserIds = emptyList(),
+                )
+            )
 
             firestore.runBatch { batch ->
-                placeholderRecipes.forEach { recipe ->
+                placeholderRecipesV2.forEach { recipe ->
                     val docRef = recipesCollection.document(recipe.id)
                     batch.set(docRef, recipe)
                 }

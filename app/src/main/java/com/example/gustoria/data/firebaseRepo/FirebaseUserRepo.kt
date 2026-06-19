@@ -65,9 +65,91 @@ class FirebaseUserRepo(
                     numberOfFollowers = 1
                 )
             )
+            val placeholderUsersV2 = listOf(
+                User(
+                    internalId = "101",
+                    nickname = "ChefAle",
+                    firstName = "Alessandro",
+                    lastName = "Rossi",
+                    description = "Lover of traditional Italian cuisine.",
+                    cookingRole = CookingRole.PROFESSIONAL_CHEF,
+                    phoneNumber = "+39 333 1234567",
+                    profileImageUri = "https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-man-avatar-image-for-profile-png-image_9197908.png",
+                    cuisinePreferences = listOf("Italian", "Mediterranean"),
+                    dietaryRestrictions = emptyList(),
+                    favoriteIngredients = listOf("Guanciale", "Pecorino", "Olive Oil"),
+                    favouriteRecipesIds = listOf("r103_1", "r105_2"),
+                    triedRecipesIds = listOf("r102_1"),
+                    followingIds = listOf("102", "104")
+                ),
+                User(
+                    internalId = "102",
+                    nickname = "SpicyMia",
+                    firstName = "Mia",
+                    lastName = "Bianchi",
+                    description = "Always looking for the next spicy challenge.",
+                    cookingRole = CookingRole.HOME_COOK,
+                    phoneNumber = "+39 333 7654321",
+                    profileImageUri = "https://static.vecteezy.com/system/resources/previews/027/312/398/non_2x/portrait-of-a-female-journalist-isolated-essential-workers-avatar-icons-characters-for-social-media-and-networking-user-profile-website-and-app-3d-render-illustration-png.png",
+                    cuisinePreferences = listOf("Mexican", "Indian", "Thai"),
+                    dietaryRestrictions = listOf("Gluten-Free"),
+                    favoriteIngredients = listOf("Chili", "Cilantro", "Lime"),
+                    favouriteRecipesIds = emptyList(),
+                    triedRecipesIds = listOf("r101_1"),
+                    followingIds = listOf("101", "103")
+                ),
+                User(
+                    internalId = "103",
+                    nickname = "GreenEats",
+                    firstName = "Lorenzo",
+                    lastName = "Verdi",
+                    description = "Plant-based recipes for a sustainable future.",
+                    cookingRole = CookingRole.CONTENT_CREATOR,
+                    phoneNumber = "+39 333 1112223",
+                    profileImageUri = "https://img.magnific.com/free-psd/3d-illustration-human-avatar-profile_23-2150671142.jpg",
+                    cuisinePreferences = listOf("Vegan", "Healthy"),
+                    dietaryRestrictions = listOf("Vegan", "Vegetarian"),
+                    favoriteIngredients = listOf("Tofu", "Avocado", "Quinoa"),
+                    favouriteRecipesIds = listOf("r101_2"),
+                    triedRecipesIds = listOf("r104_1"),
+                    followingIds = listOf("105")
+                ),
+                User(
+                    internalId = "104",
+                    nickname = "BakeMaster",
+                    firstName = "Giulia",
+                    lastName = "Romano",
+                    description = "If it has sugar and butter, I'm baking it.",
+                    cookingRole = CookingRole.FOOD_LOVER,
+                    phoneNumber = "+39 333 4445556",
+                    profileImageUri = "https://img.magnific.com/free-psd/3d-rendering-hair-style-avatar-design_23-2151869153.jpg",
+                    cuisinePreferences = listOf("French", "American"),
+                    dietaryRestrictions = emptyList(),
+                    favoriteIngredients = listOf("Butter", "Vanilla Extract", "Chocolate"),
+                    favouriteRecipesIds = listOf("r105_1"),
+                    triedRecipesIds = emptyList(),
+                    followingIds = listOf("101", "105")
+                ),
+                User(
+                    internalId = "105",
+                    nickname = "QuickMeals",
+                    firstName = "Davide",
+                    lastName = "Ferrari",
+                    description = "Fast, easy, and delicious meals for busy people.",
+                    cookingRole = CookingRole.HOME_COOK,
+                    phoneNumber = "+39 333 9998887",
+                    profileImageUri = "https://png.pngtree.com/png-vector/20241204/ourmid/pngtree-profile-picture-icon-flat-design-illustration-vector-png-image_14564505.png",
+                    cuisinePreferences = listOf("Japanese", "Italian"),
+                    dietaryRestrictions = emptyList(),
+                    favoriteIngredients = listOf("Soy Sauce", "Eggs", "Rice"),
+                    favouriteRecipesIds = listOf("r101_1", "r103_2"),
+                    triedRecipesIds = listOf("r103_1", "r104_1"),
+                    followingIds = listOf("102", "103", "104")
+                )
+            )
 
             firestore.runBatch { batch ->
-                placeholdersUser.forEach { user ->
+                placeholderUsersV2.forEach { user ->
                     val docRef = usersCollection.document(user.internalId)
                     batch.set(docRef, user)
                 }

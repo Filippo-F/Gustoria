@@ -117,9 +117,136 @@ class FirebaseReviewRepo(
                     timestamp = (now - 86400000 * 2)
                 )
             )
+            val placeholderReviewsV2 = listOf(
+                // Reviews for r101_1 (3 reviews)
+                Review(
+                    id = "rev_1",
+                    userId = "102",
+                    recipeId = "r101_1",
+                    description = "Absolutely perfect! Tastes just like my trip to Rome.",
+                    rating = 5.0f,
+                    likedByUserIds = listOf("104", "105"),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_2",
+                    userId = "104",
+                    recipeId = "r101_1",
+                    description = "A bit too salty for me, but the texture was great.",
+                    rating = 3.0f,
+                    likedByUserIds = emptyList(),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_3",
+                    userId = "105",
+                    recipeId = "r101_1",
+                    description = "So easy to make! Added this to my weekly rotation.",
+                    rating = 5.0f,
+                    likedByUserIds = listOf("101"),
+                    photoUri = null,
+                ),
+
+                // Reviews for r101_2 (0 reviews) - INTENTIONALLY LEFT EMPTY
+
+                // Reviews for r102_1 (1 review)
+                Review(
+                    id = "rev_4",
+                    userId = "101",
+                    recipeId = "r102_1",
+                    description = "Loved the spice level! I used habanero instead of standard chili powder.",
+                    rating = 4.0f,
+                    likedByUserIds = listOf("102"),
+                    photoUri = null,
+                ),
+
+                // Reviews for r103_1 (2 reviews)
+                Review(
+                    id = "rev_5",
+                    userId = "105",
+                    recipeId = "r103_1",
+                    description = "Didn't think a vegan cheese sauce could be this creamy. Amazing.",
+                    rating = 5.0f,
+                    likedByUserIds = listOf("103"),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_6",
+                    userId = "101",
+                    recipeId = "r103_1",
+                    description = "As a traditional chef, I was skeptical, but this is a solid dish.",
+                    rating = 4.0f,
+                    likedByUserIds = emptyList(),
+                    photoUri = null,
+                ),
+
+                // Reviews for r103_2 (0 reviews) - INTENTIONALLY LEFT EMPTY
+
+                // Reviews for r103_3 (1 review)
+                Review(
+                    id = "rev_7",
+                    userId = "102",
+                    recipeId = "r103_3",
+                    description = "Very refreshing, but a bit too ginger-heavy for my morning.",
+                    rating = 3.0f,
+                    likedByUserIds = emptyList(),
+                    photoUri = null,
+                ),
+
+                // Reviews for r104_1 (2 reviews)
+                Review(
+                    id = "rev_8",
+                    userId = "103",
+                    recipeId = "r104_1",
+                    description = "I swapped the butter for coconut oil and it still turned out great!",
+                    rating = 4.0f,
+                    likedByUserIds = listOf("104"),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_9",
+                    userId = "105",
+                    recipeId = "r104_1",
+                    description = "The fudgiest brownies I have ever made. 10/10.",
+                    rating = 5.0f,
+                    likedByUserIds = listOf("101", "102"),
+                    photoUri = null,
+                ),
+
+                // Reviews for r105_1 (3 reviews)
+                Review(
+                    id = "rev_10",
+                    userId = "101",
+                    recipeId = "r105_1",
+                    description = "Good base recipe. I threw in some leftover pancetta and it was fantastic.",
+                    rating = 4.0f,
+                    likedByUserIds = listOf("105"),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_11",
+                    userId = "102",
+                    recipeId = "r105_1",
+                    description = "Quick and easy! Splashed some sriracha on top for extra heat.",
+                    rating = 4.0f,
+                    likedByUserIds = emptyList(),
+                    photoUri = null,
+                ),
+                Review(
+                    id = "rev_12",
+                    userId = "104",
+                    recipeId = "r105_1",
+                    description = "Saved my life after a long shift. Simple and tasty.",
+                    rating = 5.0f,
+                    likedByUserIds = listOf("103", "105"),
+                    photoUri = null,
+                ),
+
+                // Reviews for r105_2 (0 reviews) - INTENTIONALLY LEFT EMPTY
+            )
 
             firestore.runBatch { batch ->
-                placeholderReviews.forEach { review ->
+                placeholderReviewsV2.forEach { review ->
                     val docRef = reviewsCollection.document(review.id)
                     batch.set(docRef, review)
                 }
