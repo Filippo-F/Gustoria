@@ -81,30 +81,4 @@
         <item>Professional Chef</item>
     </string-array>
 
-    <string-array name="search_trending_categories">
-        <item>Italian</item>
-        <item>Japanese</item>
-        <item>Mexican</item>
-        <item>Asian</item>
-        <item>Mediterranean</item>
-        <item>Vegan</item>
-        <item>Vegetarian</item>
-        <item>Gluten-Free</item>
-        <item>Dessert</item>
-        <item>Breakfast</item>
-    </string-array>
-
-    <string-array name="search_trending_category_images">
-        <item>https://images.unsplash.com/photo-1516100882582-96c3a05fe590?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1582169296194-e4d644c48063?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-        <item>https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&amp;fit=crop&amp;w=300&amp;q=80</item>
-    </string-array>
-
 </resources>
