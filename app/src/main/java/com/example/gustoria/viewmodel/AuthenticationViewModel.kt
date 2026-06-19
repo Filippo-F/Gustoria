@@ -60,7 +60,7 @@ class AuthenticationViewModel(
                     val user = userRepo.getUserById(userId).first()
                     if (user == null && !_uiState.value.showRegistration) {
                         // Check for user authenticated but not registerd in firestore
-                        SessionManagerFacade.logOut()
+                        _uiState.update { it.copy(showRegistration = true) }
                     }
                 }
             }
