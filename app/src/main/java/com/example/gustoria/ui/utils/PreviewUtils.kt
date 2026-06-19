@@ -25,6 +25,7 @@ object PreviewUtils {
             )
         )
         override fun getRecipeByOwner(ownerId: String): Flow<List<Recipe>> = flowOf(emptyList())
+        override fun getRecipesExcludingOwner(userId: String): Flow<List<Recipe>> = flowOf(emptyList())
         override suspend fun addRecipe(recipe: Recipe) {}
         override suspend fun updateRecipe(recipeId: String, recipe: Recipe) {}
         override suspend fun deleteRecipe(recipeId: String) {}
