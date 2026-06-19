@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -53,7 +54,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -81,7 +86,9 @@ fun ProfileInfoScreenPreview() {
             user = null,
             viewModel = viewModel(factory = OwnedProfileViewModel.Factory),
             onBack = {},
-            onSave = {}
+            onSave = {},
+            onAddCuisine = {},
+            onAddDiet = {}
         )
     }
 }
@@ -91,7 +98,9 @@ fun ProfileInfoScreen(
     user: User?,
     viewModel: OwnedProfileViewModel,
     onBack: () -> Unit,
-    onSave: () -> Unit
+    onSave: () -> Unit,
+    onAddCuisine: () -> Unit,
+    onAddDiet: () -> Unit
 ) {
     // Initialize editing draft when user data is loaded
     LaunchedEffect(user) {
@@ -286,20 +295,13 @@ fun ProfileInfoScreen(
 
                 InfoSectionItem(
                     title = "Favorite Cuisine",
-                    description = "Your favorite types of food (comma separated)",
+                    description = "Your favorite types of food",
                     titleColor = MaterialTheme.colorScheme.secondary
                 ) {
-                    OutlinedTextField(
-                        value = viewModel.cuisinePreferencesText,
-                        onValueChange = { viewModel.setCuisinePreferencesFromText(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        placeholder = { Text("e.g. Italian, Japanese, Mexican") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.secondary
-                        )
+                    TagGrid(
+                        tags = draft.cuisinePreferences,
+                        color = MaterialTheme.colorScheme.secondary,
+                        onAddClick = onAddCuisine
                     )
                 }
 
@@ -307,20 +309,13 @@ fun ProfileInfoScreen(
 
                 InfoSectionItem(
                     title = "Diet Preference",
-                    description = "Any dietary restrictions or preferences (comma separated)",
+                    description = "Any dietary restrictions or preferences",
                     titleColor = MaterialTheme.colorScheme.secondary
                 ) {
-                    OutlinedTextField(
-                        value = viewModel.dietaryRestrictionsText,
-                        onValueChange = { viewModel.setDietaryRestrictionsFromText(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        placeholder = { Text("e.g. Vegan, Gluten-free") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.secondary
-                        )
+                    TagGrid(
+                        tags = draft.dietaryRestrictions,
+                        color = MaterialTheme.colorScheme.secondary,
+                        onAddClick = onAddDiet
                     )
                 }
 
@@ -328,20 +323,12 @@ fun ProfileInfoScreen(
 
                 InfoSectionItem(
                     title = "Favorite Ingredients",
-                    description = "Ingredients you love to use (comma separated)",
+                    description = "Ingredients you love to use",
                     titleColor = MaterialTheme.colorScheme.secondary
                 ) {
-                    OutlinedTextField(
-                        value = viewModel.favoriteIngredientsText,
-                        onValueChange = { viewModel.setFavoriteIngredientsFromText(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        placeholder = { Text("e.g. Garlic, Basil, Olive Oil") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.secondary
-                        )
+                    TagGrid(
+                        tags = draft.favoriteIngredients,
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
 
@@ -563,6 +550,103 @@ fun AccountInfoItem(
                     keyboardOptions = keyboardOptions
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun TagGrid(
+    tags: List<String>,
+    color: Color,
+    onAddClick: () -> Unit = {}
+) {
+    val items = tags + null
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items.chunked(2).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { item ->
+                    if (item != null) {
+                        TagBox(
+                            text = item,
+                            modifier = Modifier.weight(1f),
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    } else {
+                        AddTagBox(
+                            modifier = Modifier.weight(1f),
+                            color = color,
+                            onClick = onAddClick
+                        )
+                    }
+                }
+                if (rowItems.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TagBox(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color,
+    contentColor: Color
+) {
+    Surface(
+        color = containerColor,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier.height(48.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = contentColor
+            )
+        }
+    }
+}
+
+@Composable
+fun AddTagBox(
+    modifier: Modifier = Modifier,
+    color: Color,
+    onClick: () -> Unit = {}
+) {
+    Surface(
+        onClick = onClick,
+        color = Color.Transparent,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier.height(48.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .drawBehind {
+                    val stroke = Stroke(
+                        width = 1.5.dp.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                    )
+                    drawRoundRect(
+                        color = color.copy(alpha = 0.4f),
+                        style = stroke,
+                        cornerRadius = CornerRadius(12.dp.toPx())
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add",
+                tint = color.copy(alpha = 0.7f)
+            )
         }
     }
 }

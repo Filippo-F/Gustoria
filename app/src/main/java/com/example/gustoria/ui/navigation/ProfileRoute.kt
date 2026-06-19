@@ -5,12 +5,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringArrayResource
+import com.example.gustoria.R
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.ui.user.HelpAndFeedbackDialogue
 import com.example.gustoria.ui.user.OwnedProfileScreen
 import com.example.gustoria.ui.user.ProfileInfoScreen
 import com.example.gustoria.ui.user.SettingsScreen
 import com.example.gustoria.ui.user.SignOutDialogue
+import com.example.gustoria.ui.user.components.SelectionDialogContent
 import com.example.gustoria.viewmodel.OwnedProfileViewModel
 import com.example.gustoria.viewmodel.SettingsViewModel
 import com.example.gustoria.ui.user.OtherProfileScreen
@@ -120,7 +123,9 @@ fun ProfileInfoDestination(
             viewModel.cancelEditing()
             navActions.navigateBack()
         },
-        onSave = navActions::navigateBack
+        onSave = navActions::navigateBack,
+        onAddCuisine = navActions::navigateToCulinaryPreference,
+        onAddDiet = navActions::navigateToDietPreference
     )
 }
 
@@ -134,6 +139,36 @@ fun SettingsDestination(
     SettingsScreen(
         viewModel = viewModel,
         onBack = navActions::navigateBack
+    )
+}
+
+@Composable
+fun CulinaryPreferenceDestination(
+    navActions: GustoriaNavigationActions,
+    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
+) {
+    val options = stringArrayResource(R.array.recipe_cuisine_types).toList()
+    SelectionDialogContent(
+        title = "Select Cuisine",
+        options = options,
+        selectedOptions = viewModel.editableUser?.cuisinePreferences ?: emptyList(),
+        onToggleOption = viewModel::toggleCuisinePreference,
+        onDismiss = navActions::navigateBack
+    )
+}
+
+@Composable
+fun DietPreferenceDestination(
+    navActions: GustoriaNavigationActions,
+    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
+) {
+    val options = stringArrayResource(R.array.recipe_dietary_tags).toList()
+    SelectionDialogContent(
+        title = "Select Diet Preference",
+        options = options,
+        selectedOptions = viewModel.editableUser?.dietaryRestrictions ?: emptyList(),
+        onToggleOption = viewModel::toggleDietaryRestriction,
+        onDismiss = navActions::navigateBack
     )
 }
 

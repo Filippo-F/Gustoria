@@ -25,6 +25,7 @@ import com.example.gustoria.viewmodel.RecipeViewModel
 import com.example.gustoria.viewmodel.ReviewViewModel
 import com.example.gustoria.viewmodel.RecipeCollectionViewModel
 import com.example.gustoria.viewmodel.AuthenticationViewModel
+import com.example.gustoria.viewmodel.OwnedProfileViewModel
 
 
 class GustoriaNavigationActions(private val navController: NavController) {
@@ -416,14 +417,35 @@ fun GustoriaApp(
                         )
                     }
                     navigation<Profile.ProfileInfo>(startDestination = Profile.ProfileInfo.OverallProfileInfo) {
-                        composable<Profile.ProfileInfo.OverallProfileInfo> {
-                            ProfileInfoDestination(navActions)
+                        composable<Profile.ProfileInfo.OverallProfileInfo> { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry<Profile.ProfileInfo>()
+                            }
+                            val profileVm: OwnedProfileViewModel = viewModel(
+                                parentEntry,
+                                factory = OwnedProfileViewModel.Factory
+                            )
+                            ProfileInfoDestination(navActions, viewModel = profileVm)
                         }
-                        dialog<Profile.ProfileInfo.CulinaryPreference> {
-                            Text("Culinary Preference")
+                        dialog<Profile.ProfileInfo.CulinaryPreference> { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry<Profile.ProfileInfo>()
+                            }
+                            val profileVm: OwnedProfileViewModel = viewModel(
+                                parentEntry,
+                                factory = OwnedProfileViewModel.Factory
+                            )
+                            CulinaryPreferenceDestination(navActions, viewModel = profileVm)
                         }
-                        dialog<Profile.ProfileInfo.DietPreference> {
-                            Text("Diet Preference")
+                        dialog<Profile.ProfileInfo.DietPreference> { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry<Profile.ProfileInfo>()
+                            }
+                            val profileVm: OwnedProfileViewModel = viewModel(
+                                parentEntry,
+                                factory = OwnedProfileViewModel.Factory
+                            )
+                            DietPreferenceDestination(navActions, viewModel = profileVm)
                         }
                     }
                     composable<Profile.Settings> {

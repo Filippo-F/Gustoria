@@ -271,6 +271,28 @@ class OwnedProfileViewModel(
         editableUser = editableUser?.copy(profileImageUri = uri)
     }
 
+    fun toggleCuisinePreference(cuisine: String) {
+        val current = editableUser?.cuisinePreferences ?: emptyList()
+        val next = if (current.contains(cuisine)) {
+            current.filter { it != cuisine }
+        } else {
+            current + cuisine
+        }
+        editableUser = editableUser?.copy(cuisinePreferences = next)
+        cuisinePreferencesText = next.joinToString(", ")
+    }
+
+    fun toggleDietaryRestriction(diet: String) {
+        val current = editableUser?.dietaryRestrictions ?: emptyList()
+        val next = if (current.contains(diet)) {
+            current.filter { it != diet }
+        } else {
+            current + diet
+        }
+        editableUser = editableUser?.copy(dietaryRestrictions = next)
+        dietaryRestrictionsText = next.joinToString(", ")
+    }
+
     private fun String.toTagList(): List<String> =
         split(",").map { it.trim() }.filter { it.isNotBlank() }
 
