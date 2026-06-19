@@ -55,6 +55,7 @@ fun HomeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         HomeScreen(
             recommendedRecipes = emptyList(),
+            selectedCategoryRecipes = emptyList(),
             myRecipes = emptyList(),
             selectedCategory = "All",
             unreadCount = 3,
@@ -71,6 +72,7 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreen(
     recommendedRecipes: List<Recipe>,
+    selectedCategoryRecipes: List<Recipe>,
     myRecipes: List<Recipe>,
     selectedCategory: String,
     unreadCount: Int,
@@ -160,6 +162,20 @@ fun HomeScreen(
                 selectedCategory = selectedCategory,
                 onCategorySelected = onCategorySelected
             )
+            Spacer(Modifier.height(8.dp))
+            if (selectedCategoryRecipes.isEmpty()) {
+                Text(
+                    text = "No recipes found in this category.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            } else {
+                RecommendedRow(
+                    recipes = selectedCategoryRecipes,
+                    onRecipeClick = onNavigateToRecipeDetails
+                )
+            }
             Spacer(Modifier.height(16.dp))
         }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.data.auth.SessionManagerFacade
 import com.example.gustoria.dataclass.Recipe
+import com.example.gustoria.dataclass.User
 import com.example.gustoria.domain.RecipeRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(
@@ -32,16 +34,49 @@ class HomeViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentUser = SessionManagerFacade.currentUserId
+        .flatMapLatest { userId ->
+            if (userId == null) flowOf(null)
+            else userRepository.getUserById(userId)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     private val _selectedCategory = MutableStateFlow("All")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
     val recommendedRecipes: StateFlow<List<Recipe>> = combine(
         allRecipes,
         SessionManagerFacade.currentUserId,
+        currentUser
+    ) { recipes, userId, user ->
+        val otherRecipes = recipes.filter { it.ownerId != (userId ?: "") }
+        
+        val filtered = if (user == null || (user.cuisinePreferences.isEmpty() && user.dietaryRestrictions.isEmpty())) {
+            otherRecipes
+        } else {
+            otherRecipes.filter { recipe ->
+                val matchesCuisine = user.cuisinePreferences.any { it.equals(recipe.cuisineType, ignoreCase = true) }
+                val matchesDiet = user.dietaryRestrictions.any { pref ->
+                    recipe.dietaryTags.any { tag -> tag.equals(pref, ignoreCase = true) }
+                }
+                matchesCuisine || matchesDiet
+            }
+        }
+        
+        // If no matches found for preferences, show all other recipes as fallback
+        if (filtered.isEmpty()) otherRecipes else filtered
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
+
+    val selectedCategoryRecipes: StateFlow<List<Recipe>> = combine(
+        allRecipes,
         _selectedCategory
-    ) { recipes, userId, category ->
-        recipes
-            .filter { it.ownerId != (userId ?: "") }
-            .filter { matchesCategory(it, category) }
+    ) { recipes, category ->
+        recipes.filter { matchesCategory(it, category) }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
