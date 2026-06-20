@@ -64,7 +64,7 @@ class NotificationViewModel(
             val userPrefs = (
                     user.cuisinePreferences +
                             user.dietaryRestrictions +
-                            user.favoriteIngredients
+                            user.favouriteMealTypes
                     ).map { it.lowercase() }
                 .filter { it.isNotBlank() }
                 .toSet()
