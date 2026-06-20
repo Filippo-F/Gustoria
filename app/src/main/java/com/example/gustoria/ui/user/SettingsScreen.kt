@@ -81,8 +81,6 @@ fun SettingsScreen(
             AppearanceAndDisplaySection(viewModel)
             Spacer(modifier = Modifier.height(32.dp))
             NotificationsSection(viewModel)
-            Spacer(modifier = Modifier.height(32.dp))
-            AppPreferenceSection(viewModel)
         }
     }
 }
@@ -185,14 +183,6 @@ fun NotificationsSection(viewModel: SettingsViewModel) {
             checked = viewModel.newRecipeAlertsEnabled,
             onCheckedChange = { viewModel.toggleNewRecipeAlerts() }
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        NotificationToggleItem(
-            title = "Gustoria weekly",
-            description = "Weekly digest of the best recipes and news",
-            icon = Icons.Default.Email,
-            checked = viewModel.gustoriaWeeklyEnabled,
-            onCheckedChange = { viewModel.toggleGustoriaWeekly() }
-        )
     }
 }
 
@@ -248,51 +238,6 @@ fun NotificationToggleItem(
                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppPreferenceSection(viewModel: SettingsViewModel) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "App Preference",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.tertiary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SettingItem(
-            title = "Unit measure",
-            description = "Choose between metric and imperial units",
-            titleColor = MaterialTheme.colorScheme.tertiary
-        ) {
-            val units = listOf("Metric", "Imperial")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                units.forEachIndexed { index, label ->
-                    FilterChip(
-                        selected = viewModel.unitMeasure == index,
-                        onClick = { viewModel.updateUnitMeasure(index) },
-                        label = {
-                            Text(
-                                text = label,
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        )
-                    )
-                }
-            }
         }
     }
 }
