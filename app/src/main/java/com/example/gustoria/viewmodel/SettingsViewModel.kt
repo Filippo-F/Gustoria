@@ -21,9 +21,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     var fontSize by mutableFloatStateOf(prefs.getFloat("font_size", 0.5f))
         private set
 
-    var unitMeasure by mutableIntStateOf(prefs.getInt("unit_measure", 0))
-        private set
-
     // TODO: Account preferences (Awaiting Firestore Integration)
     // Default to 'true' on fresh install, but eventually overwritten
     // when the user logs in and their Firestore profile is fetched.
@@ -31,9 +28,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         private set
 
     var newRecipeAlertsEnabled by mutableStateOf(true)
-        private set
-
-    var gustoriaWeeklyEnabled by mutableStateOf(false)
         private set
 
 
@@ -51,11 +45,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         prefs.edit { putFloat("font_size", fontSize) }
     }
 
-    fun updateUnitMeasure(index: Int) {
-        unitMeasure = index
-        prefs.edit { putInt("unit_measure", index) }
-    }
-
 
     // TODO: ACCOUNT SETTINGS UPDATE FUNCTIONS
     // Right now just update the UI.
@@ -66,9 +55,5 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun toggleNewRecipeAlerts() {
         newRecipeAlertsEnabled = !newRecipeAlertsEnabled
-    }
-
-    fun toggleGustoriaWeekly() {
-        gustoriaWeeklyEnabled = !gustoriaWeeklyEnabled
     }
 }
