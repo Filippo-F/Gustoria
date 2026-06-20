@@ -37,10 +37,9 @@ fun FeaturedSearchDestination(
             recipeViewModel.toggleCuisine(categoryName)
             navActions.navigateToSearched()
         },
-        onRecentSearchClick = { query ->
-            recipeViewModel.resetFilters()
-            recipeViewModel.updateNameQuery(query)
-            searchViewModel.addRecentSearch(query)
+        onRecentSearchClick = { recentSearch ->
+            recipeViewModel.setFilters(recentSearch.filters)
+            searchViewModel.addRecentSearch(recentSearch.filters)
             navActions.navigateToSearched()
         },
         onClearAllRecentSearches = searchViewModel::clearAllRecentSearches,
@@ -62,10 +61,7 @@ fun SearchingDestination(
         resultCount = recipes.size,
         onClose = navActions::navigateBack,
         onShowResultsClick = {
-            val query = filters.nameQuery.trim()
-            if (query.isNotBlank()) {
-                searchViewModel.addRecentSearch(query)
-            }
+            searchViewModel.addRecentSearch(filters)
             navActions.navigateToSearched()
         },
         onResetFilters = viewModel::resetFilters,

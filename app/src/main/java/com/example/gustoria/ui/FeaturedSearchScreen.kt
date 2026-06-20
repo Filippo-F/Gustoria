@@ -51,7 +51,7 @@ fun FeaturedSearchScreen(
     recentSearches: List<RecentSearch>,
     onSearchClick: () -> Unit,
     onCategoryClick: (String) -> Unit,
-    onRecentSearchClick: (String) -> Unit,
+    onRecentSearchClick: (RecentSearch) -> Unit,
     onClearAllRecentSearches: () -> Unit,
     onRemoveRecentSearch: (String) -> Unit
 ) {
@@ -147,7 +147,7 @@ fun FeaturedSearchScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onRecentSearchClick(recent.title) }
+                                .clickable { onRecentSearchClick(recent) }
                                 .padding(vertical = 8.dp)
                         ) {
                             // Leading food icon thumbnail

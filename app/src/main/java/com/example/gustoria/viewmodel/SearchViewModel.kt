@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.gustoria.ui.recipe.RecipeFilters
 
 
 class SearchViewModel(
@@ -36,11 +37,12 @@ class SearchViewModel(
         }
     }
 
-    fun addRecentSearch(title: String) {
+    fun addRecentSearch(filters: RecipeFilters) {
         val uid = currentUserId ?: return
-        if (title.isBlank()) return
+        val title = filters.displayTitle
+        if (title.isBlank() || title == "All Recipes") return
         viewModelScope.launch {
-            userRepository.addRecentSearch(uid, title)
+            userRepository.addRecentSearch(uid, title, filters)
         }
     }
 

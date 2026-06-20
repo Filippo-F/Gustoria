@@ -25,9 +25,9 @@ fun RecipeFilterSection(
     onNameQueryChange: (String) -> Unit,
     ingredientQuery: String,
     onIngredientQueryChange: (String) -> Unit,
-    selectedCosts: Set<String>,
+    selectedCosts: List<String>,
     onToggleCost: (String) -> Unit,
-    selectedDifficulties: Set<String>,
+    selectedDifficulties: List<String>,
     onToggleDifficulty: (String) -> Unit,
     onResetFilters: () -> Unit,
     showResetButton: Boolean = true

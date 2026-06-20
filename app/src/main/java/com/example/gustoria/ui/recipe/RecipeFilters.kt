@@ -5,11 +5,11 @@ import com.example.gustoria.dataclass.Recipe
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",
-    val selectedCosts: Set<String> = emptySet(),
-    val selectedDifficulties: Set<String> = emptySet(),
-    val selectedCuisines: Set<String> = emptySet(),
-    val selectedMealTypes: Set<String> = emptySet(),
-    val selectedDietaryTags: Set<String> = emptySet(),
+    val selectedCosts: List<String> = emptyList(),
+    val selectedDifficulties: List<String> = emptyList(),
+    val selectedCuisines: List<String> = emptyList(),
+    val selectedMealTypes: List<String> = emptyList(),
+    val selectedDietaryTags: List<String> = emptyList(),
     /** null = no time limit; otherwise max cooking time in minutes. */
     val maxCookingTimeMinutes: Int? = null,
     val minServings: Int? = null,
@@ -24,6 +24,21 @@ data class RecipeFilters(
                 selectedDietaryTags.isEmpty() &&
                 maxCookingTimeMinutes == null &&
                 minServings == null
+
+    val displayTitle: String
+        get() {
+            if (nameQuery.isNotBlank()) return nameQuery
+            if (ingredientQuery.isNotBlank()) return "Ingredients: $ingredientQuery"
+            
+            val activeTags = selectedCosts + selectedDifficulties + selectedCuisines + selectedMealTypes + selectedDietaryTags
+            val tagsString = activeTags.joinToString(" | ")
+            
+            if (tagsString.isNotBlank()) return tagsString
+            if (maxCookingTimeMinutes != null) return "≤ $maxCookingTimeMinutes min"
+            if (minServings != null) return "≥ $minServings servings"
+            
+            return "All Recipes"
+        }
 }
 
 /**

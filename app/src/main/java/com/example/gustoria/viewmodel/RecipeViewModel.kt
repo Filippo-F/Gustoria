@@ -124,6 +124,10 @@ class RecipeViewModel(
         _filters.value = RecipeFilters()
     }
 
+    fun setFilters(filters: RecipeFilters) {
+        _filters.value = filters
+    }
+
     fun isFavouriteFlow(recipeId: String): Flow<Boolean> {
         val userId = SessionManagerFacade.currentUserId.value
         return if (userId.isNullOrBlank()) {

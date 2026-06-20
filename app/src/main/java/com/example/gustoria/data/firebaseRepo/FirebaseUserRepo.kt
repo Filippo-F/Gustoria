@@ -14,6 +14,7 @@ import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import com.example.gustoria.ui.recipe.RecipeFilters
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -308,17 +309,13 @@ class FirebaseUserRepo(
             .snapshots()
             .map { snapshot ->
                 snapshot.documents.mapNotNull { doc ->
-                    RecentSearch(
-                        id = doc.getString("id") ?: doc.id,
-                        title = doc.getString("title") ?: "",
-                        searchedAt = doc.getLong("searchedAt") ?: System.currentTimeMillis()
-                    )
+                    doc.toObject(RecentSearch::class.java)
                 }
             }
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    override suspend fun addRecentSearch(userId: String, title: String) {
+    override suspend fun addRecentSearch(userId: String, title: String, filters: RecipeFilters) {
         val collection = recentSearchesCollection(userId)
 
         // Avoid duplicate: remove any existing entry with the same title (case-insensitive)
@@ -327,20 +324,21 @@ class FirebaseUserRepo(
             .get().await()
         existing.documents.forEach { it.reference.delete().await() }
 
-        // Enforce maximum of 10 recent searches — delete oldest if needed
+        // Enforce maximum of 5 recent searches — delete oldest if needed
         val all = collection
             .orderBy("searchedAt", Query.Direction.DESCENDING)
             .get().await()
-        if (all.size() >= 10) {
-            all.documents.drop(9).forEach { it.reference.delete().await() }
+        if (all.size() >= 5) {
+            all.documents.drop(4).forEach { it.reference.delete().await() }
         }
 
         // Save the new entry
         val id = Uuid.random().toString()
-        val entry = mapOf(
-            "id" to id,
-            "title" to title,
-            "searchedAt" to System.currentTimeMillis()
+        val entry = RecentSearch(
+            id = id,
+            title = title,
+            filters = filters,
+            searchedAt = System.currentTimeMillis()
         )
         collection.document(id).set(entry).await()
     }

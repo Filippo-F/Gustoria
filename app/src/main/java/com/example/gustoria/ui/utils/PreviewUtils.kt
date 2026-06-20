@@ -9,6 +9,7 @@ import com.example.gustoria.domain.ReviewRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import com.example.gustoria.ui.recipe.RecipeFilters
 
 object PreviewUtils {
     fun createFakeRecipeRepo() = object : RecipeRepoInterface {
@@ -64,7 +65,7 @@ object PreviewUtils {
         override suspend fun unfollowUser(currentUserId: String, targetUserId: String) {}
         override fun isFollowing(currentUserId: String, targetUserId: String): Flow<Boolean> = flowOf(false)
         override fun getRecentSearches(userId: String): Flow<List<RecentSearch>> = flowOf(emptyList())
-        override suspend fun addRecentSearch(userId: String, title: String) {}
+        override suspend fun addRecentSearch(userId: String, title: String, filters: RecipeFilters) {}
         override suspend fun removeRecentSearch(userId: String, searchId: String) {}
         override suspend fun clearAllRecentSearches(userId: String) {}
     }

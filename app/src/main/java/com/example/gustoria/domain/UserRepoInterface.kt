@@ -2,6 +2,7 @@ package com.example.gustoria.domain
 
 import com.example.gustoria.dataclass.User
 import com.example.gustoria.dataclass.RecentSearch
+import com.example.gustoria.ui.recipe.RecipeFilters
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepoInterface {
@@ -63,7 +64,7 @@ interface UserRepoInterface {
     fun getRecentSearches(userId: String): Flow<List<RecentSearch>>
 
     // Aggiunge una ricerca recente; rimuove automaticamente la più vecchia se si supera il limite di 10
-    suspend fun addRecentSearch(userId: String, title: String)
+    suspend fun addRecentSearch(userId: String, title: String, filters: RecipeFilters)
 
     // Rimuove una singola ricerca recente tramite il suo ID
     suspend fun removeRecentSearch(userId: String, searchId: String)
