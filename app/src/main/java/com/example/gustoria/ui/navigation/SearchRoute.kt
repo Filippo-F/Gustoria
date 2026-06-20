@@ -18,7 +18,7 @@ object Search {
     @Serializable
     object Searching
     @Serializable
-    data class Searched(val recipeId: String? = null)
+    data class Searched(val recipeId: String? = null, val initialFilter: String? = null)
 }
 
 @Composable
@@ -34,8 +34,7 @@ fun FeaturedSearchDestination(
         onSearchClick = navActions::navigateToSearching,
         onCategoryClick = { categoryName ->
             recipeViewModel.resetFilters()
-            recipeViewModel.updateNameQuery(categoryName)
-            searchViewModel.addRecentSearch(categoryName)
+            recipeViewModel.toggleCuisine(categoryName)
             navActions.navigateToSearched()
         },
         onRecentSearchClick = { query ->
@@ -84,15 +83,20 @@ fun SearchingDestination(
 @Composable
 fun SearchedDestination(
     recipeId: String?,
+    initialFilter: String? = null,
     navActions: GustoriaNavigationActions,
     viewModel: RecipeViewModel
 ) {
     val filteredRecipes by viewModel.filteredRecipes.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle()
 
-    LaunchedEffect(recipeId) {
+    LaunchedEffect(recipeId, initialFilter) {
         if (recipeId != null) {
             navActions.navigateToRecipeDetails(recipeId)
+        }
+        if (initialFilter != null) {
+            viewModel.resetFilters()
+            viewModel.toggleMealType(initialFilter)
         }
     }
 

@@ -109,8 +109,14 @@ class GustoriaNavigationActions(private val navController: NavController) {
         navController.navigate(Search.Searching)
     }
 
-    fun navigateToSearched(recipeId: String? = null) {
-        navController.navigate(Search.Searched(recipeId))
+    fun navigateToSearched(recipeId: String? = null, initialFilter: String? = null) {
+        navController.navigate(Search.Searched(recipeId, initialFilter)) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = false
+            }
+            launchSingleTop = true
+            restoreState = false
+        }
     }
 
     fun navigateToProfile() {
@@ -293,6 +299,7 @@ fun GustoriaApp(
                         )
                         SearchedDestination(
                             recipeId = args.recipeId,
+                            initialFilter = args.initialFilter,
                             navActions = navActions,
                             viewModel = recipeVm
                         )

@@ -36,19 +36,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.gustoria.R
 import com.example.gustoria.dataclass.Recipe
 import com.example.gustoria.ui.recipe.components.RecipeCard
 import com.example.gustoria.ui.recipe.components.RecipeCardContent
 import com.example.gustoria.ui.theme.GustoriaTheme
 import com.example.gustoria.ui.utils.MultiPreview
-
-// Home categories shown in section 2 (Explore)
-private val homeCategories = listOf(
-    "All", "Quick Meals", "Vegan", "Italian", "Gluten-Free", "Desserts", "Vegetarian"
-)
 
 @MultiPreview
 @Preview
@@ -57,9 +54,7 @@ fun HomeScreenPreview() {
     GustoriaTheme(dynamicColor = false) {
         HomeScreen(
             recommendedRecipes = emptyList(),
-            selectedCategoryRecipes = emptyList(),
             otherRecipes = emptyList(),
-            selectedCategory = "All",
             unreadCount = 3,
             profileImageUri = null,
             userInitials = "AB",
@@ -74,9 +69,7 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreen(
     recommendedRecipes: List<Recipe>,
-    selectedCategoryRecipes: List<Recipe>,
     otherRecipes: List<Recipe>,
-    selectedCategory: String,
     unreadCount: Int,
     profileImageUri: String?,
     userInitials: String?,
@@ -160,24 +153,11 @@ fun HomeScreen(
         item {
             HomeSectionHeader(title = "EXPLORE CATEGORIES")
             Spacer(Modifier.height(8.dp))
+            val categoryTitles = stringArrayResource(R.array.recipe_meal_types).toList()
             CategoryChipsRow(
-                selectedCategory = selectedCategory,
+                categories = categoryTitles,
                 onCategorySelected = onCategorySelected
             )
-            Spacer(Modifier.height(8.dp))
-            if (selectedCategoryRecipes.isEmpty()) {
-                Text(
-                    text = "No recipes found in this category.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            } else {
-                RecommendedRow(
-                    recipes = selectedCategoryRecipes,
-                    onRecipeClick = onNavigateToRecipeDetails
-                )
-            }
             Spacer(Modifier.height(16.dp))
         }
 
@@ -212,16 +192,16 @@ private fun HomeSectionHeader(title: String) {
 
 @Composable
 private fun CategoryChipsRow(
-    selectedCategory: String,
+    categories: List<String>,
     onCategorySelected: (String) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(homeCategories) { category ->
+        items(categories) { category ->
             FilterChip(
-                selected = category == selectedCategory,
+                selected = false,
                 onClick = { onCategorySelected(category) },
                 label = { Text(category) }
             )

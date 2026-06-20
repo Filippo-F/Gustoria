@@ -56,6 +56,9 @@ fun FeaturedSearchScreen(
     onRemoveRecentSearch: (String) -> Unit
 ) {
     val categoryTitles = stringArrayResource(R.array.recipe_cuisine_types).toList()
+    val categoryImageUrls = stringArrayResource(R.array.recipe_cuisine_images).toList()
+    val categoriesWithImages = categoryTitles.zip(categoryImageUrls)
+    val chunkedCategories = categoriesWithImages.chunked(2)
 
     Column(
         modifier = Modifier
@@ -204,7 +207,6 @@ fun FeaturedSearchScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            val chunkedCategories = categoryTitles.chunked(2)
             items(chunkedCategories) { rowCategories ->
                 Row(
                     modifier = Modifier
@@ -212,7 +214,7 @@ fun FeaturedSearchScreen(
                         .padding(vertical = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    rowCategories.forEach { title ->
+                    rowCategories.forEach { (title, imageUrl) ->
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -221,7 +223,7 @@ fun FeaturedSearchScreen(
                                 .clickable { onCategoryClick(title) }
                         ) {
                             AsyncImage(
-                                model = null,
+                                model = imageUrl,
                                 contentDescription = title,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,

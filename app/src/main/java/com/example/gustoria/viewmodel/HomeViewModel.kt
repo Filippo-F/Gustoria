@@ -42,8 +42,7 @@ class HomeViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    private val _selectedCategory = MutableStateFlow("All")
-    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
 
     val recommendedRecipes: StateFlow<List<Recipe>> = combine(
         allRecipes,
@@ -74,16 +73,7 @@ class HomeViewModel(
         initialValue = emptyList()
     )
 
-    val selectedCategoryRecipes: StateFlow<List<Recipe>> = combine(
-        allRecipes,
-        _selectedCategory
-    ) { recipes, category ->
-        recipes.filter { matchesCategory(it, category) }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
-    )
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val myRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
@@ -107,20 +97,7 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
-    fun selectCategory(category: String) {
-        _selectedCategory.value = category
-    }
-    private fun matchesCategory(recipe: Recipe, category: String): Boolean =
-        when (category) {
-            "All"         -> true
-            "Quick Meals" -> recipe.cookingTimeMinutes in 1..30
-            "Vegan"       -> recipe.dietaryTags.any { it.equals("Vegan", true) }
-            "Vegetarian"  -> recipe.dietaryTags.any { it.equals("Vegetarian", true) }
-            "Gluten-Free" -> recipe.dietaryTags.any { it.equals("Gluten-Free", true) }
-            "Italian"     -> recipe.cuisineType.equals("Italian", true)
-            "Desserts"    -> recipe.mealType.equals("Dessert", true)
-            else          -> true
-        }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

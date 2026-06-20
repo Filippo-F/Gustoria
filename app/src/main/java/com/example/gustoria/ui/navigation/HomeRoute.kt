@@ -34,9 +34,7 @@ fun HomeDestination(
     profileViewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
 ) {
     val recommendedRecipes by viewModel.recommendedRecipes.collectAsStateWithLifecycle()
-    val selectedCategoryRecipes by viewModel.selectedCategoryRecipes.collectAsStateWithLifecycle()
     val otherRecipes by viewModel.othersRecipes.collectAsStateWithLifecycle()
-    val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val unreadCount by notificationViewModel.unreadCount.collectAsStateWithLifecycle()
     val currentUser by profileViewModel.user.collectAsStateWithLifecycle()
 
@@ -59,9 +57,7 @@ fun HomeDestination(
         }
         HomeScreen(
             recommendedRecipes = recommendedRecipes,
-            selectedCategoryRecipes = selectedCategoryRecipes,
             otherRecipes = otherRecipes,
-            selectedCategory = selectedCategory,
             unreadCount = unreadCount,
             profileImageUri = currentUser?.profileImageUri,
             userInitials = userInitials,
@@ -74,7 +70,9 @@ fun HomeDestination(
             },
             onNavigateToNotifications = navActions::navigateToNotifications,
             onNavigateToRecipeDetails = navActions::navigateToRecipeDetails,
-            onCategorySelected = viewModel::selectCategory
+            onCategorySelected = { category -> 
+                navActions.navigateToSearched(initialFilter = category)
+            }
         )
         SnackbarHost(
             hostState = snackbarHostState,
