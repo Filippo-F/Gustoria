@@ -67,6 +67,9 @@ class GustoriaNavigationActions(private val navController: NavController) {
     fun navigateToDietPreference() {
         navController.navigate(Profile.ProfileInfo.DietPreference)
     }
+    fun navigateToMealPreference() {
+        navController.navigate(Profile.ProfileInfo.MealPreference)
+    }
 
     fun navigateToHome() {
         navigateWithTabHandling(Home)
@@ -446,6 +449,16 @@ fun GustoriaApp(
                                 factory = OwnedProfileViewModel.Factory
                             )
                             DietPreferenceDestination(navActions, viewModel = profileVm)
+                        }
+                        dialog<Profile.ProfileInfo.MealPreference> { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry<Profile.ProfileInfo>()
+                            }
+                            val profileVm: OwnedProfileViewModel = viewModel(
+                                parentEntry,
+                                factory = OwnedProfileViewModel.Factory
+                            )
+                            MealPreferenceDestination(navActions, viewModel = profileVm)
                         }
                     }
                     composable<Profile.Settings> {

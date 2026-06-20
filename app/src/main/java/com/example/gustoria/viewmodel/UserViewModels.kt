@@ -82,8 +82,6 @@ class OwnedProfileViewModel(
         private set
     var dietaryRestrictionsText by mutableStateOf("")
         private set
-    var favoriteIngredientsText by mutableStateOf("")
-        private set
 
     var isSubmitting by mutableStateOf(false)
         private set
@@ -110,7 +108,7 @@ class OwnedProfileViewModel(
         resetFieldEditingStates()
         cuisinePreferencesText = editableUser?.cuisinePreferences?.joinToString(", ") ?: ""
         dietaryRestrictionsText = editableUser?.dietaryRestrictions?.joinToString(", ") ?: ""
-        favoriteIngredientsText = editableUser?.favoriteIngredients?.joinToString(", ") ?: ""
+
     }
     fun cancelEditing() {
         editableUser = user.value
@@ -119,7 +117,7 @@ class OwnedProfileViewModel(
         resetFieldEditingStates()
         cuisinePreferencesText = editableUser?.cuisinePreferences?.joinToString(", ") ?: ""
         dietaryRestrictionsText = editableUser?.dietaryRestrictions?.joinToString(", ") ?: ""
-        favoriteIngredientsText = editableUser?.favoriteIngredients?.joinToString(", ") ?: ""
+
     }
 
     private fun resetFieldEditingStates() {
@@ -262,11 +260,6 @@ class OwnedProfileViewModel(
         editableUser = editableUser?.copy(dietaryRestrictions = text.toTagList())
     }
 
-    fun setFavoriteIngredientsFromText(text: String) {
-        favoriteIngredientsText = text
-        editableUser = editableUser?.copy(favoriteIngredients = text.toTagList())
-    }
-
     fun setProfileImageUri(uri: String?) {
         editableUser = editableUser?.copy(profileImageUri = uri)
     }
@@ -291,6 +284,11 @@ class OwnedProfileViewModel(
         }
         editableUser = editableUser?.copy(dietaryRestrictions = next)
         dietaryRestrictionsText = next.joinToString(", ")
+    }
+    fun toggleMealType(meal: String) {
+        val current = editableUser?.favouriteMealTypes ?: emptyList()
+        val next = if (current.contains(meal)) current - meal else current + meal
+        editableUser = editableUser?.copy(favouriteMealTypes = next)
     }
 
     private fun String.toTagList(): List<String> =

@@ -88,7 +88,8 @@ fun ProfileInfoScreenPreview() {
             onBack = {},
             onSave = {},
             onAddCuisine = {},
-            onAddDiet = {}
+            onAddDiet = {},
+            onAddMeal = {}
         )
     }
 }
@@ -100,7 +101,8 @@ fun ProfileInfoScreen(
     onBack: () -> Unit,
     onSave: () -> Unit,
     onAddCuisine: () -> Unit,
-    onAddDiet: () -> Unit
+    onAddDiet: () -> Unit,
+    onAddMeal: () -> Unit
 ) {
     // Initialize editing draft when user data is loaded
     LaunchedEffect(user) {
@@ -322,13 +324,14 @@ fun ProfileInfoScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 InfoSectionItem(
-                    title = "Favorite Ingredients",
-                    description = "Ingredients you love to use",
+                    title = "Favourite Meal",
+                    description = "Your favourite meal types",
                     titleColor = MaterialTheme.colorScheme.secondary
                 ) {
                     TagGrid(
-                        tags = draft.favoriteIngredients,
-                        color = MaterialTheme.colorScheme.secondary
+                        tags = draft.favouriteMealTypes,
+                        color = MaterialTheme.colorScheme.secondary,
+                        onAddClick = onAddMeal
                     )
                 }
 

@@ -37,7 +37,8 @@ object Profile {
         object CulinaryPreference
         @Serializable
         object DietPreference
-    }
+        @Serializable
+        object MealPreference    }
     @Serializable
     object Settings
     @Serializable
@@ -125,7 +126,8 @@ fun ProfileInfoDestination(
         },
         onSave = navActions::navigateBack,
         onAddCuisine = navActions::navigateToCulinaryPreference,
-        onAddDiet = navActions::navigateToDietPreference
+        onAddDiet = navActions::navigateToDietPreference,
+        onAddMeal = navActions::navigateToMealPreference
     )
 }
 
@@ -168,6 +170,20 @@ fun DietPreferenceDestination(
         options = options,
         selectedOptions = viewModel.editableUser?.dietaryRestrictions ?: emptyList(),
         onToggleOption = viewModel::toggleDietaryRestriction,
+        onDismiss = navActions::navigateBack
+    )
+}
+@Composable
+fun MealPreferenceDestination(
+    navActions: GustoriaNavigationActions,
+    viewModel: OwnedProfileViewModel = viewModel(factory = OwnedProfileViewModel.Factory)
+) {
+    val options = stringArrayResource(R.array.recipe_meal_types).toList()
+    SelectionDialogContent(
+        title = "Select Favourite Meal",
+        options = options,
+        selectedOptions = viewModel.editableUser?.favouriteMealTypes ?: emptyList(),
+        onToggleOption = viewModel::toggleMealType,
         onDismiss = navActions::navigateBack
     )
 }

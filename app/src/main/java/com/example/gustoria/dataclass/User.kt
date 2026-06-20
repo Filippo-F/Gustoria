@@ -28,7 +28,7 @@ data class User(
 
     val cuisinePreferences: List<String> = emptyList(),
     val dietaryRestrictions: List<String> = emptyList(),
-    val favoriteIngredients: List<String> = emptyList(),
+    val favouriteMealTypes: List<String> = emptyList(),
 
     val numberOfFollowers: Int = 0,
 

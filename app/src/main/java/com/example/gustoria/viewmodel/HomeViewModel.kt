@@ -51,8 +51,8 @@ class HomeViewModel(
         currentUser
     ) { recipes, userId, user ->
         val otherRecipes = recipes.filter { it.ownerId != (userId ?: "") }
-        
-        val filtered = if (user == null || (user.cuisinePreferences.isEmpty() && user.dietaryRestrictions.isEmpty())) {
+
+        val filtered = if (user == null || (user.cuisinePreferences.isEmpty() && user.dietaryRestrictions.isEmpty()&& user.favouriteMealTypes.isEmpty())) {
             otherRecipes
         } else {
             otherRecipes.filter { recipe ->
@@ -60,6 +60,8 @@ class HomeViewModel(
                 val matchesDiet = user.dietaryRestrictions.any { pref ->
                     recipe.dietaryTags.any { tag -> tag.equals(pref, ignoreCase = true) }
                 }
+                val matchesMeal = user.favouriteMealTypes.any { it.equals(recipe.mealType, ignoreCase = true) }
+                matchesCuisine || matchesDiet || matchesMeal
                 matchesCuisine || matchesDiet
             }
         }
