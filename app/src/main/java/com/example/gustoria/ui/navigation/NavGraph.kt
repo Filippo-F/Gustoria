@@ -111,11 +111,7 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToSearched(recipeId: String? = null, initialFilter: String? = null) {
         navController.navigate(Search.Searched(recipeId, initialFilter)) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = false
-            }
             launchSingleTop = true
-            restoreState = false
         }
     }
 

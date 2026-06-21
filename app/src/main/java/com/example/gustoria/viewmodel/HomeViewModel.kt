@@ -61,7 +61,6 @@ class HomeViewModel(
                 }
                 val matchesMeal = user.favouriteMealTypes.any { it.equals(recipe.mealType, ignoreCase = true) }
                 matchesCuisine || matchesDiet || matchesMeal
-                matchesCuisine || matchesDiet
             }
         }
         
