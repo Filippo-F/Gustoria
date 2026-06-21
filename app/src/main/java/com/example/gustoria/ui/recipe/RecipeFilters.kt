@@ -2,6 +2,8 @@ package com.example.gustoria.ui.recipe
 
 import com.example.gustoria.dataclass.Recipe
 
+import com.google.firebase.firestore.Exclude
+
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",
@@ -14,6 +16,7 @@ data class RecipeFilters(
     val maxCookingTimeMinutes: Int? = null,
     val minServings: Int? = null,
 ) {
+    @get:Exclude
     val isEmpty: Boolean
         get() = nameQuery.isBlank() &&
                 ingredientQuery.isBlank() &&
@@ -25,6 +28,7 @@ data class RecipeFilters(
                 maxCookingTimeMinutes == null &&
                 minServings == null
 
+    @get:Exclude
     val displayTitle: String
         get() {
             if (nameQuery.isNotBlank()) return nameQuery
