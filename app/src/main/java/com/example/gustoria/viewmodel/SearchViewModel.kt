@@ -38,7 +38,7 @@ class SearchViewModel(
 
     fun addRecentSearch(filters: RecipeFilters) {
         val uid = currentUserId ?: return
-        val title = filters.displayTitle
+        val title = filters.generateDisplayTitle()
         if (title.isBlank() || title == "All Recipes") return
         viewModelScope.launch {
             userRepository.addRecentSearch(uid, title, filters)

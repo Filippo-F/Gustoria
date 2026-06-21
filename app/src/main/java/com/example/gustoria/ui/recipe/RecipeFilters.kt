@@ -2,8 +2,6 @@ package com.example.gustoria.ui.recipe
 
 import com.example.gustoria.dataclass.Recipe
 
-import com.google.firebase.firestore.Exclude
-
 data class RecipeFilters(
     val nameQuery: String = "",
     val ingredientQuery: String = "",
@@ -16,9 +14,8 @@ data class RecipeFilters(
     val maxCookingTimeMinutes: Int? = null,
     val minServings: Int? = null,
 ) {
-    @get:Exclude
-    val isEmpty: Boolean
-        get() = nameQuery.isBlank() &&
+    fun checkIsEmpty(): Boolean {
+        return nameQuery.isBlank() &&
                 ingredientQuery.isBlank() &&
                 selectedCosts.isEmpty() &&
                 selectedDifficulties.isEmpty() &&
@@ -27,22 +24,21 @@ data class RecipeFilters(
                 selectedDietaryTags.isEmpty() &&
                 maxCookingTimeMinutes == null &&
                 minServings == null
+    }
 
-    @get:Exclude
-    val displayTitle: String
-        get() {
-            if (nameQuery.isNotBlank()) return nameQuery
-            if (ingredientQuery.isNotBlank()) return "Ingredients: $ingredientQuery"
-            
-            val activeTags = selectedCosts + selectedDifficulties + selectedCuisines + selectedMealTypes + selectedDietaryTags
-            val tagsString = activeTags.joinToString(" | ")
-            
-            if (tagsString.isNotBlank()) return tagsString
-            if (maxCookingTimeMinutes != null) return "≤ $maxCookingTimeMinutes min"
-            if (minServings != null) return "≥ $minServings servings"
-            
-            return "All Recipes"
-        }
+    fun generateDisplayTitle(): String {
+        if (nameQuery.isNotBlank()) return nameQuery
+        if (ingredientQuery.isNotBlank()) return "Ingredients: $ingredientQuery"
+        
+        val activeTags = selectedCosts + selectedDifficulties + selectedCuisines + selectedMealTypes + selectedDietaryTags
+        val tagsString = activeTags.joinToString(" | ")
+        
+        if (tagsString.isNotBlank()) return tagsString
+        if (maxCookingTimeMinutes != null) return "≤ $maxCookingTimeMinutes min"
+        if (minServings != null) return "≥ $minServings servings"
+        
+        return "All Recipes"
+    }
 }
 
 /**
@@ -50,7 +46,7 @@ data class RecipeFilters(
  * Returns the full list when [filters] is empty.
  */
 fun List<Recipe>.applyFilters(filters: RecipeFilters): List<Recipe> {
-    if (filters.isEmpty) return this
+    if (filters.checkIsEmpty()) return this
     return filter { recipe ->
         val nameOk = filters.nameQuery.isBlank() ||
                 recipe.name.contains(filters.nameQuery, ignoreCase = true)
