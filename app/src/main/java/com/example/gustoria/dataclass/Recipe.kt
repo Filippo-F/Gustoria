@@ -20,9 +20,8 @@ data class Recipe(
 
     val cookingTimeMinutes: Int = 0,
     val servings: Int = 1,
-    val rating: Float = 0f, // average computed from reviews
+    //val rating: Float = 0f, // average computed from reviews
 
-    // Dietary tags
     val dietaryTags: List<String> = emptyList(),   // e.g. ["Vegan", "Gluten-Free"]
     // Free-form additional tags
     val tags: List<String> = emptyList(),

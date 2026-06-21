@@ -291,7 +291,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dinner",
                     cookingTimeMinutes = 20,
                     servings = 2,
-                    rating = 4.8f,
+                    //rating = 4.8f,
                     dietaryTags = emptyList(),
                     tags = listOf("Pasta", "Traditional", "Quick"),
                     ingredients = listOf(
@@ -320,7 +320,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dessert",
                     cookingTimeMinutes = 30,
                     servings = 6,
-                    rating = 4.9f,
+                    //rating = 4.9f,
                     dietaryTags = listOf("Vegetarian"),
                     tags = listOf("Sweet", "Coffee", "No-Bake"),
                     ingredients = listOf(
@@ -352,7 +352,7 @@ class FirebaseRecipeRepo(
                     mealType = "Lunch",
                     cookingTimeMinutes = 25,
                     servings = 3,
-                    rating = 4.5f,
+                    //rating = 4.5f,
                     dietaryTags = listOf("Gluten-Free"),
                     tags = listOf("Spicy", "Street Food"),
                     ingredients = listOf(
@@ -383,7 +383,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dinner",
                     cookingTimeMinutes = 40,
                     servings = 4,
-                    rating = 4.7f,
+                    //rating = 4.7f,
                     dietaryTags = listOf("Vegan", "Dairy-Free"),
                     tags = listOf("Comfort Food", "Healthy"),
                     ingredients = listOf(
@@ -412,7 +412,7 @@ class FirebaseRecipeRepo(
                     mealType = "Breakfast",
                     cookingTimeMinutes = 5,
                     servings = 1,
-                    rating = 4.2f,
+                    //rating = 4.2f,
                     dietaryTags = listOf("Vegan", "Vegetarian"),
                     tags = listOf("Quick", "Morning"),
                     ingredients = listOf(
@@ -440,7 +440,7 @@ class FirebaseRecipeRepo(
                     mealType = "Breakfast",
                     cookingTimeMinutes = 5,
                     servings = 1,
-                    rating = 4.0f,
+                    //rating = 4.0f,
                     dietaryTags = listOf("Vegan", "Gluten-Free"),
                     tags = listOf("Smoothie", "Detox"),
                     ingredients = listOf(
@@ -470,7 +470,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dessert",
                     cookingTimeMinutes = 45,
                     servings = 9,
-                    rating = 4.9f,
+                    //rating = 4.9f,
                     dietaryTags = emptyList(),
                     tags = listOf("Chocolate", "Baking", "Indulgent"),
                     ingredients = listOf(
@@ -501,7 +501,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dinner",
                     cookingTimeMinutes = 15,
                     servings = 2,
-                    rating = 4.3f,
+                    //rating = 4.3f,
                     dietaryTags = listOf("Vegetarian"),
                     tags = listOf("Quick", "Leftovers"),
                     ingredients = listOf(
@@ -530,7 +530,7 @@ class FirebaseRecipeRepo(
                     mealType = "Dessert",
                     cookingTimeMinutes = 3,
                     servings = 1,
-                    rating = 4.1f,
+                    //rating = 4.1f,
                     dietaryTags = emptyList(),
                     tags = listOf("Microwave", "Late Night"),
                     ingredients = listOf(

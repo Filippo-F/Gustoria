@@ -9,13 +9,15 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.dataclass.RecentSearch
 import com.example.gustoria.domain.UserRepoInterface
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.gustoria.ui.recipe.RecipeFilters
+import com.example.gustoria.data.auth.SessionManagerFacade
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 class SearchViewModel(
@@ -23,19 +25,16 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val currentUserId: String?
-        get() = FirebaseAuth.getInstance().currentUser?.uid
+        get() = SessionManagerFacade.currentUserId.value
 
-    val recentSearches: StateFlow<List<RecentSearch>> = run {
-        val uid = currentUserId
-        if (uid != null) {
-            userRepository.getRecentSearches(uid)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-        } else {
-            flowOf(emptyList<RecentSearch>()).stateIn(
-                viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
-            )
-        }
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recentSearches: StateFlow<List<RecentSearch>> =
+        SessionManagerFacade.currentUserId
+            .flatMapLatest { uid ->
+                if (uid.isNullOrBlank()) flowOf(emptyList())
+                else userRepository.getRecentSearches(uid)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun addRecentSearch(filters: RecipeFilters) {
         val uid = currentUserId ?: return
