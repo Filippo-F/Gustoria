@@ -26,7 +26,7 @@ class FirebaseUserRepo(
     suspend fun initializeData() {
         val existing = usersCollection.limit(1).get().await()
         if (existing.isEmpty) {
-            val placeholdersUser = listOf(
+            /*val placeholdersUser = listOf(
                 User(
                     internalId = "101",
                     nickname = "ChefMario",
@@ -56,7 +56,7 @@ class FirebaseUserRepo(
                     phoneNumber = "+39 987 6543210",
                     cookingRole = CookingRole.CONTENT_CREATOR,
                     cuisinePreferences = listOf("Japanese", "Thai", "American"),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Lunch", "Dinner", "Dessert"),
                     favouriteRecipesIds = listOf(
                         "recipe_spaghetti_pomodoro",
                         "recipe_margherita_pizza"
@@ -65,7 +65,7 @@ class FirebaseUserRepo(
                     followingIds = listOf("101"),
                     numberOfFollowers = 1
                 )
-            )
+            )*/
             val placeholderUsersV2 = listOf(
                 User(
                     internalId = "101",
@@ -78,7 +78,7 @@ class FirebaseUserRepo(
                     profileImageUri = "https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-man-avatar-image-for-profile-png-image_9197908.png",
                     cuisinePreferences = listOf("Italian", "Mediterranean"),
                     dietaryRestrictions = emptyList(),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Lunch", "Dinner", "Dessert"),
                     favouriteRecipesIds = listOf("r103_1", "r105_2"),
                     triedRecipesIds = listOf("r102_1"),
                     followingIds = listOf("102", "104"),
@@ -95,7 +95,7 @@ class FirebaseUserRepo(
                     profileImageUri = "https://static.vecteezy.com/system/resources/previews/027/312/398/non_2x/portrait-of-a-female-journalist-isolated-essential-workers-avatar-icons-characters-for-social-media-and-networking-user-profile-website-and-app-3d-render-illustration-png.png",
                     cuisinePreferences = listOf("Mexican", "Indian", "Thai"),
                     dietaryRestrictions = listOf("Gluten-Free"),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Lunch", "Dinner"),
                     favouriteRecipesIds = emptyList(),
                     triedRecipesIds = listOf("r101_1"),
                     followingIds = listOf("101", "103"),
@@ -112,7 +112,7 @@ class FirebaseUserRepo(
                     profileImageUri = "https://img.magnific.com/free-psd/3d-illustration-human-avatar-profile_23-2150671142.jpg",
                     cuisinePreferences = listOf("Vegan", "Healthy"),
                     dietaryRestrictions = listOf("Vegan", "Vegetarian"),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Breakfast", "Lunch"),
                     favouriteRecipesIds = listOf("r101_2"),
                     triedRecipesIds = listOf("r104_1"),
                     followingIds = listOf("105"),
@@ -129,7 +129,7 @@ class FirebaseUserRepo(
                     profileImageUri = "https://img.magnific.com/free-psd/3d-rendering-hair-style-avatar-design_23-2151869153.jpg",
                     cuisinePreferences = listOf("French", "American"),
                     dietaryRestrictions = emptyList(),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Dessert", "Breakfast"),
                     favouriteRecipesIds = listOf("r105_1"),
                     triedRecipesIds = emptyList(),
                     followingIds = listOf("101", "105"),
@@ -146,7 +146,7 @@ class FirebaseUserRepo(
                     profileImageUri = "https://freesvg.org/img/winkboy.png",
                     cuisinePreferences = listOf("Japanese", "Italian"),
                     dietaryRestrictions = emptyList(),
-                    favouriteMealTypes = listOf("Snack"),
+                    favouriteMealTypes = listOf("Snack", "Breakfast", "Lunch"),
                     favouriteRecipesIds = listOf("r101_1", "r103_2"),
                     triedRecipesIds = listOf("r103_1", "r104_1"),
                     followingIds = listOf("102", "103", "104"),
