@@ -67,7 +67,7 @@ fun FeaturedSearchScreen(
     ) {
         ThreeItemTopNavbar(
             modifier = Modifier.fillMaxWidth().height(56.dp),
-            title = "GUSTORIA",
+            title = "Search",
             showBackButton = false
         )
 

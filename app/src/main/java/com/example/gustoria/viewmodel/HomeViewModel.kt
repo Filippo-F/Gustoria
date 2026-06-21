@@ -28,62 +28,12 @@ class HomeViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val allRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
-        .flatMapLatest { _ ->
-            recipeRepository.getAllRecipes()
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val currentUser = SessionManagerFacade.currentUserId
         .flatMapLatest { userId ->
             if (userId == null) flowOf(null)
             else userRepository.getUserById(userId)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-
-
-    val recommendedRecipes: StateFlow<List<Recipe>> = combine(
-        allRecipes,
-        SessionManagerFacade.currentUserId,
-        currentUser
-    ) { recipes, userId, user ->
-        val otherRecipes = recipes.filter { it.ownerId != (userId ?: "") }
-
-        val filtered = if (user == null || (user.cuisinePreferences.isEmpty() && user.dietaryRestrictions.isEmpty()&& user.favouriteMealTypes.isEmpty())) {
-            otherRecipes
-        } else {
-            otherRecipes.filter { recipe ->
-                val matchesCuisine = user.cuisinePreferences.any { it.equals(recipe.cuisineType, ignoreCase = true) }
-                val matchesDiet = user.dietaryRestrictions.any { pref ->
-                    recipe.dietaryTags.any { tag -> tag.equals(pref, ignoreCase = true) }
-                }
-                val matchesMeal = user.favouriteMealTypes.any { it.equals(recipe.mealType, ignoreCase = true) }
-                matchesCuisine || matchesDiet || matchesMeal
-            }
-        }
-        
-        // If no matches found for preferences, show all other recipes as fallback
-        if (filtered.isEmpty()) otherRecipes else filtered
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
-    )
-
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val myRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
-        .flatMapLatest { userId ->
-            recipeRepository.getRecipeByOwner(userId ?: "")
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val othersRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
@@ -96,7 +46,43 @@ class HomeViewModel(
             initialValue = emptyList()
         )
 
+    val recommendedRecipes: StateFlow<List<Recipe>> = combine(
+        othersRecipes,
+        currentUser
+    ) { recipes, user ->
+        if (user == null || (user.cuisinePreferences.isEmpty() && 
+            user.dietaryRestrictions.isEmpty() && 
+            user.favouriteMealTypes.isEmpty())) {
+            recipes
+        } else {
+            val filtered = recipes.filter { recipe ->
+                val matchesCuisine = user.cuisinePreferences.any { it.equals(recipe.cuisineType, ignoreCase = true) }
+                val matchesDiet = user.dietaryRestrictions.any { pref ->
+                    recipe.dietaryTags.any { tag -> tag.equals(pref, ignoreCase = true) }
+                }
+                val matchesMeal = user.favouriteMealTypes.any { it.equals(recipe.mealType, ignoreCase = true) }
+                
+                matchesCuisine || matchesDiet || matchesMeal
+            }
+            // If no matches found for preferences, show all other recipes as fallback
+            if (filtered.isEmpty()) recipes else filtered
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val myRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId
+        .flatMapLatest { userId ->
+            recipeRepository.getRecipeByOwner(userId ?: "")
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
