@@ -47,24 +47,35 @@ class RecipeCollectionViewModel(
     private val _filters = MutableStateFlow(RecipeFilters())
     val filters: StateFlow<RecipeFilters> = _filters.asStateFlow()
     // 1. Saved Recipes
-    private val savedRecipes: StateFlow<List<Recipe>> = combine(
-        repo.getAllRecipes(),
-        userRepo.getFavouriteRecipeIds(userId)
-    ) { allRecipes, favouriteIds ->
-        allRecipes.filter { it.id in favouriteIds }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val savedRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId.flatMapLatest { uid ->
+        if (uid.isNullOrBlank()) flowOf(emptyList())
+        else combine(
+            repo.getAllRecipes(),
+            userRepo.getFavouriteRecipeIds(uid)
+        ) { allRecipes, favouriteIds ->
+            allRecipes.filter { it.id in favouriteIds }
+        }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // 2. Tried Recipes
-    private val triedRecipes: StateFlow<List<Recipe>> = combine(
-        repo.getAllRecipes(),
-        userRepo.getTriedRecipeIds(userId)
-    ) { allRecipes, triedIds ->
-        allRecipes.filter { it.id in triedIds }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val triedRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId.flatMapLatest { uid ->
+        if (uid.isNullOrBlank()) flowOf(emptyList())
+        else combine(
+            repo.getAllRecipes(),
+            userRepo.getTriedRecipeIds(uid)
+        ) { allRecipes, triedIds ->
+            allRecipes.filter { it.id in triedIds }
+        }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // 3. Created Recipes (Owned by User)
-    private val createdRecipes: StateFlow<List<Recipe>> = repo.getRecipeByOwner(userId)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val createdRecipes: StateFlow<List<Recipe>> = SessionManagerFacade.currentUserId.flatMapLatest { uid ->
+        if (uid.isNullOrBlank()) flowOf(emptyList())
+        else repo.getRecipeByOwner(uid)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // Keep track of current tab (0: Saved, 1: Tried, 2: Created)
     private val _currentTab = MutableStateFlow(0)
@@ -81,7 +92,6 @@ class RecipeCollectionViewModel(
 
     fun setTab(index: Int) {
         _currentTab.value = index
-        resetFilters()
     }
 
     // Dynamically change list based on active tab and filters
@@ -182,7 +192,8 @@ class RecipeCollectionViewModel(
                 id = newId,
                 ownerId = userId,
                 name = if (recipe.name.endsWith(" (Copy)")) recipe.name else "${recipe.name} (Copy)",
-                imageUri = null // Reset image for the duplicated recipe
+                imageUri = null, // Reset image for the duplicated recipe
+                likedByUserIds = emptyList() // Reset likes for the new recipe
             )
             repo.addRecipe(duplicatedRecipe)
 

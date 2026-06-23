@@ -63,6 +63,10 @@ fun RecipeCollectionScreen(
     onIngredientQueryChange: (String) -> Unit,
     onToggleCost: (String) -> Unit,
     onToggleDifficulty: (String) -> Unit,
+    onToggleCuisine: (String) -> Unit,
+    onToggleMealType: (String) -> Unit,
+    onToggleDietaryTag: (String) -> Unit,
+    onSetMaxCookingTime: (Int?) -> Unit,
     onOpenFilters: () -> Unit
 ) {
     RecipeCollectionListContent(
@@ -78,6 +82,10 @@ fun RecipeCollectionScreen(
         onIngredientQueryChange = onIngredientQueryChange,
         onToggleCost = onToggleCost,
         onToggleDifficulty = onToggleDifficulty,
+        onToggleCuisine = onToggleCuisine,
+        onToggleMealType = onToggleMealType,
+        onToggleDietaryTag = onToggleDietaryTag,
+        onSetMaxCookingTime = onSetMaxCookingTime,
         onOpenFilters = onOpenFilters
     )
 }
@@ -97,10 +105,17 @@ private fun RecipeCollectionListContent(
     onIngredientQueryChange: (String) -> Unit,
     onToggleCost: (String) -> Unit,
     onToggleDifficulty: (String) -> Unit,
+    onToggleCuisine: (String) -> Unit,
+    onToggleMealType: (String) -> Unit,
+    onToggleDietaryTag: (String) -> Unit,
+    onSetMaxCookingTime: (Int?) -> Unit,
     onOpenFilters: () -> Unit
 ) {
     val allCosts = stringArrayResource(R.array.recipe_costs).toList()
     val allDifficulties = stringArrayResource(R.array.recipe_difficulties).toList()
+    val allCuisines = stringArrayResource(R.array.recipe_cuisine_types).toList()
+    val allMealTypes = stringArrayResource(R.array.recipe_meal_types).toList()
+    val allDietaryTags = stringArrayResource(R.array.recipe_dietary_tags).toList()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var idToDelete by remember { mutableStateOf("") }
@@ -115,6 +130,10 @@ private fun RecipeCollectionListContent(
             if (filters.ingredientQuery.isNotBlank()) add(filters.ingredientQuery)
             addAll(filters.selectedCosts)
             addAll(filters.selectedDifficulties)
+            addAll(filters.selectedCuisines)
+            addAll(filters.selectedMealTypes)
+            addAll(filters.selectedDietaryTags)
+            filters.maxCookingTimeMinutes?.let { add("≤ $it min") }
         }
     }
 
@@ -202,11 +221,15 @@ private fun RecipeCollectionListContent(
                     InputChip(
                         selected = true,
                         onClick = {
-                            when (label) {
-                                in allCosts -> onToggleCost(label)
-                                in allDifficulties -> onToggleDifficulty(label)
-                                filters.nameQuery -> onNameQueryChange("")
-                                filters.ingredientQuery -> onIngredientQueryChange("")
+                            when {
+                                label in allCosts -> onToggleCost(label)
+                                label in allDifficulties -> onToggleDifficulty(label)
+                                label in allCuisines -> onToggleCuisine(label)
+                                label in allMealTypes -> onToggleMealType(label)
+                                label in allDietaryTags -> onToggleDietaryTag(label)
+                                label == filters.nameQuery -> onNameQueryChange("")
+                                label == filters.ingredientQuery -> onIngredientQueryChange("")
+                                label.startsWith("≤") && label.endsWith("min") -> onSetMaxCookingTime(null)
                             }
                         },
                         label = { Text(label, style = MaterialTheme.typography.labelMedium) },

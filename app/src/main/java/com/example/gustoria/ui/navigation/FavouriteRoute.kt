@@ -54,6 +54,10 @@ fun FavouriteSavedDestination(
         onIngredientQueryChange = viewModel::setIngredientQuery,
         onToggleCost = viewModel::toggleCost,
         onToggleDifficulty = viewModel::toggleDifficulty,
+        onToggleCuisine = viewModel::toggleCuisine,
+        onToggleMealType = viewModel::toggleMealType,
+        onToggleDietaryTag = viewModel::toggleDietaryTag,
+        onSetMaxCookingTime = viewModel::setMaxCookingTime,
         onOpenFilters = navActions::navigateToFavouriteFiltering
     )
 }
@@ -91,6 +95,10 @@ fun FavouriteTriedDestination(
         onIngredientQueryChange = viewModel::setIngredientQuery,
         onToggleCost = viewModel::toggleCost,
         onToggleDifficulty = viewModel::toggleDifficulty,
+        onToggleCuisine = viewModel::toggleCuisine,
+        onToggleMealType = viewModel::toggleMealType,
+        onToggleDietaryTag = viewModel::toggleDietaryTag,
+        onSetMaxCookingTime = viewModel::setMaxCookingTime,
         onOpenFilters = navActions::navigateToFavouriteFiltering
     )
 }
@@ -128,6 +136,10 @@ fun FavouriteCreatedDestination(
         onIngredientQueryChange = viewModel::setIngredientQuery,
         onToggleCost = viewModel::toggleCost,
         onToggleDifficulty = viewModel::toggleDifficulty,
+        onToggleCuisine = viewModel::toggleCuisine,
+        onToggleMealType = viewModel::toggleMealType,
+        onToggleDietaryTag = viewModel::toggleDietaryTag,
+        onSetMaxCookingTime = viewModel::setMaxCookingTime,
         onOpenFilters = navActions::navigateToFavouriteFiltering
     )
 }
