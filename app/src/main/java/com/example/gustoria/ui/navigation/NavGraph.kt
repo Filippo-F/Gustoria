@@ -141,13 +141,13 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToFavouriteFiltering() {
         if (SessionManagerFacade.isLoggedIn) {
-            navigateWithTabHandling(Favourite.Filtering)
+            navController.navigate(Favourite.Filtering)
         } else {
             navigateToActionRequirement("filter your favorites")
         }
     }
 
-    fun navigateToFavouriteSaved() {
+    fun navigateToFavourite() {
         if (SessionManagerFacade.isLoggedIn) {
             navigateWithTabHandling(Favourite)
         } else {
@@ -155,9 +155,25 @@ class GustoriaNavigationActions(private val navController: NavController) {
         }
     }
 
+    fun navigateToFavouriteSaved() {
+        if (SessionManagerFacade.isLoggedIn) {
+            navController.navigate(Favourite.Saved) {
+                popUpTo(Favourite.Saved) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        } else {
+            navigateToActionRequirement("view your favorites")
+        }
+    }
+
     fun navigateToFavouriteTried() {
         if (SessionManagerFacade.isLoggedIn) {
-            navigateWithTabHandling(Favourite.Tried)
+            navController.navigate(Favourite.Tried) {
+                popUpTo(Favourite.Saved) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
         } else {
             navigateToActionRequirement("view your tried recipes")
         }
@@ -165,7 +181,11 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToFavouriteCreated() {
         if (SessionManagerFacade.isLoggedIn) {
-            navigateWithTabHandling(Favourite.Created)
+            navController.navigate(Favourite.Created) {
+                popUpTo(Favourite.Saved) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
         } else {
             navigateToActionRequirement("view your created recipes")
         }

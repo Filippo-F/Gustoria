@@ -113,7 +113,7 @@ fun AppBottomNavBar(
                     unselectedIcon = Icons.Outlined.FavoriteBorder,
                     label = "Favorites",
                     selected = currentDestination?.hierarchy?.any { it.hasRoute<Favourite>() } == true,
-                    onClick = navActions::navigateToFavouriteSaved
+                    onClick = navActions::navigateToFavourite
                 )
                 CustomNavItem(
                     selectedIcon = Icons.Filled.Person,
