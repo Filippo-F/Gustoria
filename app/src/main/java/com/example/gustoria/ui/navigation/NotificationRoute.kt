@@ -29,6 +29,14 @@ fun NotificationsDestination(
                 NotificationType.NEW_FOLLOWER.name -> {
                     notification.targetUserId?.let { navActions.navigateToOtherProfile(it) }
                 }
+                NotificationType.REVIEW_RECEIVED.name, NotificationType.REVIEW_LIKED.name -> {
+                    notification.targetRecipeId?.let {
+                        // Stack navigation: go to recipe details first, then to reviews list
+                        // so that "back" from reviews goes to recipe details.
+                        navActions.navigateToRecipeDetails(it)
+                        navActions.navigateToReviewsList(it)
+                    }
+                }
                 else -> {
                     notification.targetRecipeId?.let { navActions.navigateToRecipeDetails(it) }
                 }
