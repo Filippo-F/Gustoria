@@ -354,4 +354,16 @@ class FirebaseUserRepo(
         }.await()
     }
 
+    override suspend fun updatePushNotificationsEnabled(userId: String, enabled: Boolean) {
+        usersCollection.document(userId)
+            .update("pushNotificationsEnabled", enabled)
+            .await()
+    }
+
+    override suspend fun updateNewRecipeAlertsEnabled(userId: String, enabled: Boolean) {
+        usersCollection.document(userId)
+            .update("newRecipeAlertsEnabled", enabled)
+            .await()
+    }
+
 }

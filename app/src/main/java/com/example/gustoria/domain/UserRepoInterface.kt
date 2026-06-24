@@ -71,4 +71,10 @@ interface UserRepoInterface {
 
     // Cancella tutte le ricerche recenti dell'utente
     suspend fun clearAllRecentSearches(userId: String)
+
+    // Aggiorna la preferenza push notifications dell'utente
+    suspend fun updatePushNotificationsEnabled(userId: String, enabled: Boolean)
+
+    // Aggiorna la preferenza new recipe alerts dell'utente
+    suspend fun updateNewRecipeAlertsEnabled(userId: String, enabled: Boolean)
 }

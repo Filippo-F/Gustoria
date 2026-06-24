@@ -136,7 +136,10 @@ fun SettingsDestination(
     navActions: GustoriaNavigationActions
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val viewModel: SettingsViewModel = viewModel(context as androidx.activity.ComponentActivity)
+    val viewModel: SettingsViewModel = viewModel(
+        viewModelStoreOwner = context as androidx.activity.ComponentActivity,
+        factory = SettingsViewModel.Factory
+    )
 
     SettingsScreen(
         viewModel = viewModel,

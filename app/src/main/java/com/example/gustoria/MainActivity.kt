@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val settingsViewModel: SettingsViewModel = viewModel()
+            val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
 
             val isDarkTheme = when (settingsViewModel.selectedTheme) {
                 0 -> false
