@@ -291,7 +291,11 @@ fun RecipeDetailsContent(
                                     text = { Text("Duplicate Recipe") },
                                     onClick = {
                                         showTopMenu = false
-                                        showDuplicateDialog = true
+                                        if (SessionManagerFacade.isLoggedIn) {
+                                            showDuplicateDialog = true
+                                        } else {
+                                            onDuplicateClick()
+                                        }
                                     },
                                     leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) }
                                 )
@@ -469,7 +473,13 @@ fun RecipeDetailsContent(
                     }
 
                     Button(
-                        onClick = { showDuplicateDialog = true },
+                        onClick = {
+                            if (SessionManagerFacade.isLoggedIn) {
+                                showDuplicateDialog = true
+                            } else {
+                                onDuplicateClick()
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
@@ -690,9 +700,7 @@ fun RecipeDetailsContent(
                     onDuplicateClick()
                     Toast.makeText(context, "Recipe copied to My Recipes!", Toast.LENGTH_SHORT).show()
                 },
-                onDismiss = {
-                    showDuplicateDialog = false
-                }
+                onDismiss = { showDuplicateDialog = false }
             )
         }
     }
