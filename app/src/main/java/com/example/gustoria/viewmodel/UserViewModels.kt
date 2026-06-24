@@ -43,7 +43,8 @@ data class ProfileValidation(
 @OptIn(ExperimentalCoroutinesApi::class)
 class OwnedProfileViewModel(
     private val userRepo: UserRepoInterface,
-    private val recipeRepo: RecipeRepoInterface
+    private val recipeRepo: RecipeRepoInterface,
+    private val notificationRepo: NotificationRepoInterface
 ) : ViewModel() {
 
     val user: StateFlow<User?> = SessionManagerFacade.currentUserId
@@ -217,6 +218,10 @@ class OwnedProfileViewModel(
                     val finalDraft = draft.copy(profileImageUri = publicProfileUrl)
                     userRepo.updateUser(finalDraft.internalId, finalDraft)
 
+                    // Preferences changed: clear stale recommended notifications
+                    // so they get regenerated fresh on next Notifications screen open
+                    notificationRepo.deleteRecommendedNotificationsForUser(finalDraft.internalId)
+
                     // Upload complete, so close screen
                     onSuccess()
                 } finally {
@@ -301,7 +306,8 @@ class OwnedProfileViewModel(
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
                 val userRepository = application.container.userRepository
                 val recipeRepository = application.container.recipeRepository
-                OwnedProfileViewModel(userRepository, recipeRepository)
+                val notificationRepository = application.container.notificationRepository
+                OwnedProfileViewModel(userRepository, recipeRepository, notificationRepository)
             }
         }
     }

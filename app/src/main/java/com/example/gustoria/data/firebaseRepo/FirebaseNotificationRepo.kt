@@ -85,4 +85,16 @@ class FirebaseNotificationRepo(
             }.await()
         }
     }
+
+    override suspend fun deleteRecommendedNotificationsForUser(userId: String) {
+        val snapshot = notificationsCollection
+            .whereEqualTo("recipientUserId", userId)
+            .whereEqualTo("type", NotificationType.RECOMMENDED_RECIPE.name)
+            .get().await()
+        if (!snapshot.isEmpty) {
+            firestore.runBatch { batch ->
+                snapshot.documents.forEach { batch.delete(it.reference) }
+            }.await()
+        }
+    }
 }

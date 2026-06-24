@@ -13,4 +13,6 @@ interface NotificationRepoInterface {
     suspend fun deleteNotificationsForRecipe(recipeId: String)
     // Elimina tutte le notifiche ricevute da un utente (quando disattiva le push notifications)
     suspend fun deleteAllNotificationsForUser(userId: String)
+    // Elimina le notifiche di tipo RECOMMENDED_RECIPE per un utente (quando cambiano le preferenze)
+    suspend fun deleteRecommendedNotificationsForUser(userId: String)
 }
