@@ -20,6 +20,7 @@ class FirebaseRecipeRepo(
     suspend fun initializeData() {
         val existing = recipesCollection.limit(1).get().await()
         if (existing.isEmpty) {
+            val now = System.currentTimeMillis()
             val placeholderRecipes = listOf(
                 // Ricette di User 101 (loggedUser)
                 Recipe(
@@ -51,7 +52,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("Pasta", "Quick"),
                     likedByUserIds = listOf("202"),
-                    createdAt = "2026-01-10T12:00:00"
+                    createdAt = now - 86400000L * 165 // ~165 days ago
                 ),
                 Recipe(
                     id = "recipe_margherita_pizza",
@@ -82,7 +83,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("Pizza", "Classic"),
                     likedByUserIds = listOf("202"),
-                    createdAt = "2026-01-15T18:30:00"
+                    createdAt = now - 86400000L * 160 // ~160 days ago
                 ),
                 Recipe(
                     id = "recipe_lasagna_bolognese",
@@ -113,7 +114,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("Pasta", "Baked"),
                     likedByUserIds = listOf("101"),
-                    createdAt = "2026-01-20T19:00:00"
+                    createdAt = now - 86400000L * 155 // ~155 days ago
                 ),
                 Recipe(
                     id = "recipe_risotto_milanese",
@@ -145,7 +146,7 @@ class FirebaseRecipeRepo(
                         "Manteca con burro e parmigiano"
                     ),
                     tags = listOf("Rice", "Classic"),
-                    createdAt = "2026-02-01T20:00:00"
+                    createdAt = now - 86400000L * 143 // ~143 days ago
                 ),
                 Recipe(
                     id = "recipe_tiramisu",
@@ -179,7 +180,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("NoBake"),
                     likedByUserIds = listOf("101"),
-                    createdAt = "2026-02-10T16:00:00"
+                    createdAt = now - 86400000L * 134 // ~134 days ago
                 ),
                 // Ricette di User 202
                 Recipe(
@@ -212,7 +213,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("Seafood", "Raw"),
                     likedByUserIds = listOf("101"),
-                    createdAt = "2026-02-15T13:00:00"
+                    createdAt = now - 86400000L * 129 // ~129 days ago
                 ),
                 Recipe(
                     id = "recipe_beef_burger",
@@ -242,7 +243,7 @@ class FirebaseRecipeRepo(
                     ),
                     tags = listOf("Meat", "Quick"),
                     likedByUserIds = listOf("101"),
-                    createdAt = "2026-03-01T12:30:00"
+                    createdAt = now - 86400000L * 115 // ~115 days ago
                 ),
                 Recipe(
                     id = "recipe_pad_thai",
@@ -274,7 +275,7 @@ class FirebaseRecipeRepo(
                         "Mescola tutto e servi con arachidi"
                     ),
                     tags = listOf("Noodles", "Spicy"),
-                    createdAt = "2026-03-05T19:00:00"
+                    createdAt = now - 86400000L * 111 // ~111 days ago
                 )
             )
             val placeholderRecipesV2 = listOf(

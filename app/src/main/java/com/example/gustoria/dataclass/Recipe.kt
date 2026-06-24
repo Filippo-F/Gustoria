@@ -32,6 +32,6 @@ data class Recipe(
     // IDs of users who have added this recipe to favorites (likes)
     val likedByUserIds: List<String> = emptyList(),
 
-    // Timestamp string, set at creation, never modified
-    val createdAt: String = "",
+    // Unix epoch ms, set at creation, never modified
+    val createdAt: Long = System.currentTimeMillis(),
 )

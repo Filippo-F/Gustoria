@@ -17,5 +17,5 @@ data class Review (
 
     val photoUri: String? = null,
 
-    val timestamp: Long = 0L
+    val timestamp: Long = System.currentTimeMillis()
 )

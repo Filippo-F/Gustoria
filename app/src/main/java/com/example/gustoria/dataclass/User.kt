@@ -1,6 +1,5 @@
 package com.example.gustoria.dataclass
 
-import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -37,5 +36,5 @@ data class User(
     val triedRecipesIds: List<String> = emptyList(),
     val followingIds: List<String> = emptyList(),
 
-    val createdAt: String = LocalDateTime.now().toString()
+    val createdAt: Long = System.currentTimeMillis()
 )
