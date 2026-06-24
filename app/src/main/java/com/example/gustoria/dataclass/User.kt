@@ -37,7 +37,6 @@ data class User(
     val followingIds: List<String> = emptyList(),
 
     val pushNotificationsEnabled: Boolean = true,
-    val newRecipeAlertsEnabled: Boolean = true,
 
     val createdAt: Long = System.currentTimeMillis()
 )

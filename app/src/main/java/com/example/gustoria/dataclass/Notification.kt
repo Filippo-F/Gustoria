@@ -10,7 +10,7 @@ enum class NotificationType {
     RECOMMENDED_RECIPE, // recommended recipe
     RECIPE_SAVED, // your recipe was saved by another user
     REVIEW_LIKED, // someone liked your review
-    NEW_FOLLOWER
+    NEW_FOLLOWER // new follower
 }
 
 @OptIn(ExperimentalUuidApi::class)
