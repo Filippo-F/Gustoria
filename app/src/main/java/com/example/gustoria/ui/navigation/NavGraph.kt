@@ -125,7 +125,9 @@ class GustoriaNavigationActions(private val navController: NavController) {
 
     fun navigateToCreateRecipe() {
         if (SessionManagerFacade.isLoggedIn) {
-            navigateWithTabHandling(Create)
+            navController.navigate(Create) {
+                launchSingleTop = true
+            }
         } else {
             navigateToActionRequirement("create a recipe")
         }
