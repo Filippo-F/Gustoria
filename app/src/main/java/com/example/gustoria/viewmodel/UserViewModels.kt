@@ -28,6 +28,7 @@ import com.example.gustoria.dataclass.Notification
 import com.example.gustoria.dataclass.NotificationType
 import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.dataclass.Recipe
+import kotlinx.coroutines.flow.first
 
 data class ProfileValidation(
     val nicknameError: String = "",
@@ -351,16 +352,19 @@ class OtherProfileViewModel(
                 userRepo.unfollowUser(currentUserId, viewedUserId)
             } else {
                 userRepo.followUser(currentUserId, viewedUserId)
-                notificationRepo.addNotification(
-                    Notification(
-                        recipientUserId = viewedUserId,
-                        type = NotificationType.NEW_FOLLOWER.name,
-                        title = "You have a new follower!",
-                        message = "Someone started following you.",
-                        targetRecipeId = null,
-                        targetUserId = currentUserId
+                val recipient = userRepo.getUserById(viewedUserId).first()
+                if (recipient?.pushNotificationsEnabled == true) {
+                    notificationRepo.addNotification(
+                        Notification(
+                            recipientUserId = viewedUserId,
+                            type = NotificationType.NEW_FOLLOWER.name,
+                            title = "You have a new follower!",
+                            message = "Someone started following you.",
+                            targetRecipeId = null,
+                            targetUserId = currentUserId
+                        )
                     )
-                )
+                }
             }
         }
     }

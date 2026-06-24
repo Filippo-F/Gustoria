@@ -74,4 +74,15 @@ class FirebaseNotificationRepo(
             snapshot.documents.forEach { batch.delete(it.reference) }
         }.await()
     }
+
+    override suspend fun deleteAllNotificationsForUser(userId: String) {
+        val snapshot = notificationsCollection
+            .whereEqualTo("recipientUserId", userId)
+            .get().await()
+        if (!snapshot.isEmpty) {
+            firestore.runBatch { batch ->
+                snapshot.documents.forEach { batch.delete(it.reference) }
+            }.await()
+        }
+    }
 }

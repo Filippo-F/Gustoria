@@ -150,15 +150,18 @@ class RecipeViewModel(
                 // Notify recipe owner
                 recipeRepository.getRecipeById(recipeId).first()?.let { recipe ->
                     if (recipe.ownerId != userId) {
-                        notificationRepo.addNotification(
-                            Notification(
-                                recipientUserId = recipe.ownerId,
-                                type = NotificationType.RECIPE_SAVED.name,
-                                title = "Someone saved your recipe",
-                                message = "\"${recipe.name}\" was added to someone's favourites.",
-                                targetRecipeId = recipeId
+                        val owner = userRepo.getUserById(recipe.ownerId).first()
+                        if (owner?.pushNotificationsEnabled == true) {
+                            notificationRepo.addNotification(
+                                Notification(
+                                    recipientUserId = recipe.ownerId,
+                                    type = NotificationType.RECIPE_SAVED.name,
+                                    title = "Someone saved your recipe",
+                                    message = "\"${recipe.name}\" was added to someone's favourites.",
+                                    targetRecipeId = recipeId
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -235,15 +238,18 @@ class RecipeViewModel(
 
             // Notify original recipe owner
             if (recipe.ownerId != (SessionManagerFacade.currentUserId.value ?: "")) {
-                notificationRepo.addNotification(
-                    Notification(
-                        recipientUserId = recipe.ownerId,
-                        type = NotificationType.RECIPE_DUPLICATED.name,
-                        title = "Your recipe was duplicated!",
-                        message = "\"${copy.name}\" was inspired by your recipe.",
-                        targetRecipeId = copy.id
+                val owner = userRepo.getUserById(recipe.ownerId).first()
+                if (owner?.pushNotificationsEnabled == true) {
+                    notificationRepo.addNotification(
+                        Notification(
+                            recipientUserId = recipe.ownerId,
+                            type = NotificationType.RECIPE_DUPLICATED.name,
+                            title = "Your recipe was duplicated!",
+                            message = "\"${copy.name}\" was inspired by your recipe.",
+                            targetRecipeId = copy.id
+                        )
                     )
-                )
+                }
             }
 
             onSuccess(newId)

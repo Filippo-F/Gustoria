@@ -360,10 +360,4 @@ class FirebaseUserRepo(
             .await()
     }
 
-    override suspend fun updateNewRecipeAlertsEnabled(userId: String, enabled: Boolean) {
-        usersCollection.document(userId)
-            .update("newRecipeAlertsEnabled", enabled)
-            .await()
-    }
-
 }

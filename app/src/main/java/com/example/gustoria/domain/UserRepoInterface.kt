@@ -74,7 +74,4 @@ interface UserRepoInterface {
 
     // Aggiorna la preferenza push notifications dell'utente
     suspend fun updatePushNotificationsEnabled(userId: String, enabled: Boolean)
-
-    // Aggiorna la preferenza new recipe alerts dell'utente
-    suspend fun updateNewRecipeAlertsEnabled(userId: String, enabled: Boolean)
 }

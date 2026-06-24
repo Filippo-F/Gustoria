@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gustoria.GustoriaApplication
 import com.example.gustoria.data.auth.SessionManagerFacade
+import com.example.gustoria.domain.NotificationRepoInterface
 import com.example.gustoria.domain.UserRepoInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
@@ -25,7 +26,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModel(
     application: Application,
-    private val userRepo: UserRepoInterface
+    private val userRepo: UserRepoInterface,
+    private val notificationRepo: NotificationRepoInterface
 ) : AndroidViewModel(application) {
 
     // Local preferences
@@ -41,9 +43,6 @@ class SettingsViewModel(
     var pushNotificationsEnabled by mutableStateOf(true)
         private set
 
-    var newRecipeAlertsEnabled by mutableStateOf(true)
-        private set
-
     init {
         // Whenever the logged-in user changes (or on first load), mirror the Firestore values
         viewModelScope.launch {
@@ -55,7 +54,6 @@ class SettingsViewModel(
                 .collect { user ->
                     user?.let {
                         pushNotificationsEnabled = it.pushNotificationsEnabled
-                        newRecipeAlertsEnabled = it.newRecipeAlertsEnabled
                     }
                 }
         }
@@ -82,15 +80,10 @@ class SettingsViewModel(
         val uid = SessionManagerFacade.currentUserId.value!!
         viewModelScope.launch {
             userRepo.updatePushNotificationsEnabled(uid, newValue)
-        }
-    }
-
-    fun toggleNewRecipeAlerts() {
-        val newValue = !newRecipeAlertsEnabled
-        newRecipeAlertsEnabled = newValue
-        val uid = SessionManagerFacade.currentUserId.value!!
-        viewModelScope.launch {
-            userRepo.updateNewRecipeAlertsEnabled(uid, newValue)
+            if (!newValue) {
+                // Delete all received notifications when disabling push notifications
+                notificationRepo.deleteAllNotificationsForUser(uid)
+            }
         }
     }
 
@@ -99,7 +92,8 @@ class SettingsViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as GustoriaApplication)
                 val userRepository = application.container.userRepository
-                SettingsViewModel(application, userRepository)
+                val notificationRepository = application.container.notificationRepository
+                SettingsViewModel(application, userRepository, notificationRepository)
             }
         }
     }

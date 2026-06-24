@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -174,14 +173,6 @@ fun NotificationsSection(viewModel: SettingsViewModel) {
             icon = Icons.Default.Notifications,
             checked = viewModel.pushNotificationsEnabled,
             onCheckedChange = { viewModel.togglePushNotifications() }
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        NotificationToggleItem(
-            title = "New recipe alerts",
-            description = "Get notified when new recipes are added",
-            icon = Icons.Default.Restaurant,
-            checked = viewModel.newRecipeAlertsEnabled,
-            onCheckedChange = { viewModel.toggleNewRecipeAlerts() }
         )
     }
 }

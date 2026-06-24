@@ -199,15 +199,18 @@ class RecipeCollectionViewModel(
 
             // Notify original recipe owner
             if (recipe.ownerId != userId) {
-                notificationRepo.addNotification(
-                    Notification(
-                        recipientUserId = recipe.ownerId,
-                        type = NotificationType.RECIPE_DUPLICATED.name,
-                        title = "Your recipe was duplicated!",
-                        message = "\"${duplicatedRecipe.name}\" was inspired by your recipe.",
-                        targetRecipeId = duplicatedRecipe.id
+                val owner = userRepo.getUserById(recipe.ownerId).first()
+                if (owner?.pushNotificationsEnabled == true) {
+                    notificationRepo.addNotification(
+                        Notification(
+                            recipientUserId = recipe.ownerId,
+                            type = NotificationType.RECIPE_DUPLICATED.name,
+                            title = "Your recipe was duplicated!",
+                            message = "\"${duplicatedRecipe.name}\" was inspired by your recipe.",
+                            targetRecipeId = duplicatedRecipe.id
+                        )
                     )
-                )
+                }
             }
 
             onSuccess(newId)
