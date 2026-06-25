@@ -69,7 +69,6 @@ object PreviewUtils {
         override suspend fun removeRecentSearch(userId: String, searchId: String) {}
         override suspend fun clearAllRecentSearches(userId: String) {}
         override suspend fun updatePushNotificationsEnabled(userId: String, enabled: Boolean) {}
-        override suspend fun updateNewRecipeAlertsEnabled(userId: String, enabled: Boolean) {}
     }
 
     fun createFakeReviewRepo() = object : ReviewRepoInterface {
