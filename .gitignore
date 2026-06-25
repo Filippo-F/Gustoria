@@ -14,3 +14,7 @@
 .cxx
 local.properties
 .idea/deploymentTargetSelector.xml
+
+*.apk
+*.dm
+output-metadata.json
