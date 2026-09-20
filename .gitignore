@@ -17,3 +17,12 @@ local.properties
 
 *.dm
 output-metadata.json
+
+# --- publication hygiene ---
+.idea/
+app/google-services.json
+*.apk
+/app/release/
+LAB_Media/
+*.jks
+*.keystore
