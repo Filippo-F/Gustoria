@@ -1,12 +1,13 @@
 package com.example.gustoria.data.utils
 
+import com.example.gustoria.BuildConfig
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.storage.Storage
 
 object SupabaseProvider {
     val client = createSupabaseClient(
-        supabaseUrl = "__SUPABASE_URL__",
-        supabaseKey = "__SUPABASE_ANON_KEY__"
+        supabaseUrl = BuildConfig.SUPABASE_URL,
+        supabaseKey = BuildConfig.SUPABASE_ANON_KEY
     ) {
         install(Storage)
     }
