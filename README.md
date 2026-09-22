@@ -28,7 +28,7 @@ Development** course at Politecnico di Torino (2026).
 ## Features
 
 - **Sign in with Google** through the AndroidX Credential Manager, backed by Firebase Auth, plus a
-  demo account for trying the app without credentials.
+  demo account used during development to test the app without signing in.
 - **Home feed** with recipes recommended from the user's stated taste preferences.
 - **Search** across recipes with filters (cuisine, cost, dietary preferences) on a dedicated filter
   screen, and a history of recent searches.
@@ -81,7 +81,8 @@ in-memory repositories before Firebase was wired in.
 
 ### Prerequisites
 
-- Android Studio (Ladybug or newer) with a JDK 21 toolchain
+- A recent Android Studio release with support for Android Gradle Plugin 9.1, and a JDK 21
+  toolchain (the one bundled with Android Studio works)
 - Android SDK 36
 - A Firebase project and a Supabase project of your own — the ones used during the course are not
   included in this repository
