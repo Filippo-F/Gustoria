@@ -45,7 +45,7 @@ Development** course at Politecnico di Torino (2026).
 | UI | Jetpack Compose, Material 3, Navigation Compose |
 | State | ViewModel + `StateFlow`, unidirectional data flow |
 | Auth | Firebase Auth with Google via AndroidX Credential Manager |
-| Database | Cloud Firestore and Firebase Realtime Database |
+| Database | Cloud Firestore |
 | Image storage | Supabase Storage |
 | Camera & images | CameraX, Coil |
 | Serialization | kotlinx.serialization |
@@ -61,7 +61,7 @@ app/src/main/java/com/example/gustoria/
 ├── dataclass/    Domain models (Recipe, Review, User, Notification, ...)
 ├── domain/       Repository interfaces (RecipeRepoInterface, UserRepoInterface, ...)
 ├── data/         Implementations
-│   ├── firebaseRepo/   Firestore / Realtime Database repositories
+│   ├── firebaseRepo/   Firestore repositories
 │   ├── auth/           SessionManagerFacade over FirebaseAuth
 │   ├── utils/          Supabase client and image upload
 │   └── AppContainer.kt Manual dependency container
@@ -86,7 +86,7 @@ in-memory repositories before Firebase was wired in.
 
 1. Create a project in the [Firebase console](https://console.firebase.google.com/).
 2. Add an Android app with the package name `com.example.gustoria`.
-3. Enable **Authentication → Google**, **Cloud Firestore**, and **Realtime Database**.
+3. Enable **Authentication → Google** and **Cloud Firestore**.
 4. Download `google-services.json` and place it in `app/`.
 
 `app/google-services.json` is deliberately git-ignored: it identifies a specific Firebase project,
