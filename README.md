@@ -7,6 +7,10 @@ Development** course at Politecnico di Torino (2026).
 
 **Kotlin** · **Jetpack Compose** · **Material 3** · **Firebase** · **Supabase Storage** · minSdk 29 · targetSdk 36
 
+<p align="center">
+  <img src="docs/demo.gif" alt="Gustoria demo: home feed, search filters, recipe details, dark mode" width="270">
+</p>
+
 ---
 
 ## Screenshots
@@ -135,7 +139,7 @@ Four students, all contributing across the stack:
 
 | | |
 |---|---|
+| Francesca De Bortoli | [@Franci8856](https://github.com/Franci8856) |
 | Filippo Ferrari | [@Filippo-F](https://github.com/Filippo-F) |
+| Adamo Nardelli | [@AdamoNard](https://github.com/AdamoNard) |
 | Andrea Ugliano | [@TigerSoulbound](https://github.com/TigerSoulbound) |
-| [@AdamoNard](https://github.com/AdamoNard) | |
-| Francesca | *(GitHub handle to be filled in)* |
