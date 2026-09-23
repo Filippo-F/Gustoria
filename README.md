@@ -8,7 +8,7 @@ Development** course at Politecnico di Torino (2026).
 **Kotlin** · **Jetpack Compose** · **Material 3** · **Firebase** · **Supabase Storage** · minSdk 29 · targetSdk 36
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Gustoria demo: home feed, search filters, recipe details, dark mode" width="270">
+  <img src="docs/demo.gif" alt="Gustoria demo: home feed, search filters, recipe details, dark mode" width="300">
 </p>
 
 ---
