@@ -53,7 +53,7 @@ Development** course at Politecnico di Torino (2026).
 | Image storage | Supabase Storage |
 | Camera & images | CameraX, Coil |
 | Serialization | kotlinx.serialization |
-| Build | Gradle 9.3.1, AGP, JDK 21 toolchain |
+| Build | Gradle 9.3.1, AGP 9.1.1, JDK 21 toolchain |
 
 ## Architecture
 
